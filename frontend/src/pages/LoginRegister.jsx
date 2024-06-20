@@ -1,13 +1,38 @@
 import React, { useState, useEffect } from 'react';
+import { Container, TextField, Button, Card, CardContent, Typography, CircularProgress } from '@mui/material';
+import { styled } from '@mui/system';
+
+const Root = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: '100vh',
+  backgroundColor: '#f5f5f5',
+});
+
+const StyledCard = styled(Card)({
+  maxWidth: 400,
+  padding: 16,
+  margin: 16,
+});
+
+const Form = styled('form')({
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 16,
+});
+
+const StyledButton = styled(Button)({
+  marginTop: 16,
+});
 
 function LoginRegister() {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const [isFirstUser, setIsFirstUser] = useState(true);
+  const [isFirstUser, setIsFirstUser] = useState(null); // Initially null to indicate loading
 
   useEffect(() => {
-    // Verifica se esiste un utente amministratore
     const checkFirstUser = async () => {
       try {
         const response = await fetch('http://localhost:5000/check-admin');
@@ -35,32 +60,45 @@ function LoginRegister() {
     setMessage(data.message);
   };
 
+  if (isFirstUser === null) {
+    return (
+      <Root>
+        <CircularProgress />
+      </Root>
+    );
+  }
+
   return (
-    <div>
-      <h2>{isFirstUser ? 'Register as Admin' : 'Login'}</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name:</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit">{isFirstUser ? 'Register' : 'Login'}</button>
-      </form>
-      {message && <p>{message}</p>}
-    </div>
+    <Root>
+      <StyledCard>
+        <CardContent>
+          <Typography variant="h5" component="h2" gutterBottom>
+            {isFirstUser ? 'Register as Admin' : 'Login'}
+          </Typography>
+          <Form onSubmit={handleSubmit}>
+            <TextField
+              label="Name"
+              variant="outlined"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+            <TextField
+              label="Password"
+              type="password"
+              variant="outlined"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <StyledButton type="submit" variant="contained" color="primary">
+              {isFirstUser ? 'Register' : 'Login'}
+            </StyledButton>
+          </Form>
+          {message && <Typography color="error">{message}</Typography>}
+        </CardContent>
+      </StyledCard>
+    </Root>
   );
 }
 

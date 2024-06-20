@@ -434,3 +434,20 @@ INFO:werkzeug: * Debugger PIN: 396-894-875
 INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:28:21] "[35m[1mGET /check-admin HTTP/1.1[0m" 500 -
 INFO:werkzeug: * Detected change in 'C:\\Users\\Davide Grieco\\CranialDevice_web\\backend\\run.py', reloading
 INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:30:38] "GET /check-admin HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:30:42] "OPTIONS /login HTTP/1.1" 200 -
+INFO:run:Received login data: {'name': 'admin', 'password': 'admin'}
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:30:43] "POST /login HTTP/1.1" 200 -
+INFO:run:Received login data: {'name': 'admin', 'password': 'asa'}
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:30:46] "[31m[1mPOST /login HTTP/1.1[0m" 401 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:30:54] "GET /check-admin HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:30:55] "GET /check-admin HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:30:56] "GET /check-admin HTTP/1.1" 200 -
