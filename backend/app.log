@@ -325,3 +325,112 @@ INFO:werkzeug: * Restarting with stat
 INFO:run:Connessione al database riuscita
 WARNING:werkzeug: * Debugger is active!
 INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:run:Connessione al database riuscita
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:14:25] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '11', 'password': '1'}
+INFO:run:Executing query: INSERT INTO users (name, password) VALUES (:name, :password), with params: name=11, password=1
+INFO:run:Insert result: 1
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:14:25] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:run:Received data: {'name': '11', 'password': '1'}
+INFO:run:Executing query: INSERT INTO users (name, password) VALUES (:name, :password), with params: name=11, password=1
+ERROR:run:IntegrityError: (psycopg2.errors.UniqueViolation) ERRORE:  un valore chiave duplicato viola il vincolo univoco "name_unique"
+DETAIL:  La chiave (name)=(11) esiste già.
+
+[SQL: INSERT INTO users (name, password) VALUES (%(name)s, %(password)s)]
+[parameters: {'name': '11', 'password': '1'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:14:26] "[31m[1mPOST /register HTTP/1.1[0m" 400 -
+INFO:werkzeug: * Detected change in 'C:\\Users\\Davide Grieco\\CranialDevice_web\\backend\\run.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:run:Connessione al database riuscita
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:20:49] "GET /check-admin HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:20:56] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': 'admin', 'password': 'admin'}
+INFO:run:Executing query: INSERT INTO users (name, password, isAdmin) VALUES (:name, :password, :isAdmin), with params: name=admin, password=admin, isAdmin=True
+ERROR:run:Error: (psycopg2.errors.UndefinedColumn) ERRORE:  la colonna "isadmin" della relazione "users" non esiste
+LINE 1: INSERT INTO users (name, password, isAdmin) VALUES ('admin',...
+                                           ^
+
+[SQL: INSERT INTO users (name, password, isAdmin) VALUES (%(name)s, %(password)s, %(isAdmin)s)]
+[parameters: {'name': 'admin', 'password': 'admin', 'isAdmin': True}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:20:56] "[35m[1mPOST /register HTTP/1.1[0m" 500 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:21:39] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': 'admin', 'password': 'admin'}
+INFO:run:Executing query: INSERT INTO users (name, password, isAdmin) VALUES (:name, :password, :isAdmin), with params: name=admin, password=admin, isAdmin=True
+INFO:run:Insert result: 1
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:21:39] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:21:44] "[35m[1mGET /check-admin HTTP/1.1[0m" 500 -
+INFO:werkzeug: * Detected change in 'C:\\Users\\Davide Grieco\\CranialDevice_web\\backend\\run.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:run:Connessione al database riuscita
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:24:18] "[35m[1mGET /check-admin HTTP/1.1[0m" 500 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:24:41] "[35m[1mGET /check-admin HTTP/1.1[0m" 500 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:24:45] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': 'admin', 'password': 'admin'}
+INFO:run:Executing query: INSERT INTO users (name, password, isAdmin) VALUES (:name, :password, :isAdmin), with params: name=admin, password=admin, isAdmin=True
+INFO:run:Insert result: 1
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:24:46] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:24:48] "[35m[1mGET /check-admin HTTP/1.1[0m" 500 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:26:44] "GET /check-admin HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:26:46] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': 'admin', 'password': 'admin'}
+INFO:run:Executing query: INSERT INTO users (name, password, isAdmin) VALUES (:name, :password, :isAdmin), with params: name=admin, password=admin, isAdmin=True
+ERROR:run:Error: (psycopg2.errors.UndefinedColumn) ERRORE:  la colonna "isadmin" della relazione "users" non esiste
+LINE 1: INSERT INTO users (name, password, isAdmin) VALUES ('admin',...
+                                           ^
+
+[SQL: INSERT INTO users (name, password, isAdmin) VALUES (%(name)s, %(password)s, %(isAdmin)s)]
+[parameters: {'name': 'admin', 'password': 'admin', 'isAdmin': True}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:26:47] "[35m[1mPOST /register HTTP/1.1[0m" 500 -
+INFO:werkzeug: * Detected change in 'C:\\Users\\Davide Grieco\\CranialDevice_web\\backend\\run.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:27:59] "[35m[1mGET /check-admin HTTP/1.1[0m" 500 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:28:02] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': 'admin', 'password': 'admin'}
+INFO:run:Executing query: INSERT INTO users (name, password, isadmin) VALUES (:name, :password, :isadmin), with params: name=admin, password=admin, isadmin=True
+INFO:run:Insert result: 1
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:28:03] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:28:05] "[35m[1mGET /check-admin HTTP/1.1[0m" 500 -
+INFO:run:Connessione al database riuscita
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:28:21] "[35m[1mGET /check-admin HTTP/1.1[0m" 500 -
+INFO:werkzeug: * Detected change in 'C:\\Users\\Davide Grieco\\CranialDevice_web\\backend\\run.py', reloading
+INFO:werkzeug: * Restarting with stat
