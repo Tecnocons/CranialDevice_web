@@ -17,3 +17,311 @@ INFO:werkzeug: * Debugger PIN: 396-894-875
 INFO:run:Azione: accesso alla pagina principale
 INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:05:14] "GET / HTTP/1.1" 200 -
 INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:05:14] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+INFO:werkzeug: * Detected change in 'C:\\Users\\Davide Grieco\\CranialDevice_web\\backend\\run.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:run:Connessione al database riuscita
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+ERROR:run:Errore di connessione al database
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+ERROR:run:Errore di connessione al database
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:run:Connessione al database riuscita
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:34:08] "[33mOPTIONS /register HTTP/1.1[0m" 404 -
+INFO:werkzeug: * Detected change in 'C:\\Users\\Davide Grieco\\CranialDevice_web\\backend\\run.py', reloading
+INFO:run:Connessione al database riuscita
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:38:02] "OPTIONS /register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:38:02] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:werkzeug: * Detected change in 'C:\\Users\\Davide Grieco\\CranialDevice_web\\backend\\run.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:41:18] "OPTIONS /register HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:41:19] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:werkzeug: * Detected change in 'C:\\Users\\Davide Grieco\\CranialDevice_web\\backend\\run.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:44:19] "OPTIONS /register HTTP/1.1" 200 -
+ERROR:run:IntegrityError: (psycopg2.errors.UniqueViolation) ERRORE:  un valore chiave duplicato viola il vincolo univoco "user_name_key"
+DETAIL:  La chiave (name)=(1) esiste già.
+
+[SQL: INSERT INTO "user" (uuid, name, password, "isAdmin") VALUES (%(uuid)s, %(name)s, %(password)s, %(isAdmin)s)]
+[parameters: {'uuid': '88ed581b-e372-4c5d-b770-87a266c38431', 'name': '1', 'password': '1', 'isAdmin': False}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:44:20] "[31m[1mPOST /register HTTP/1.1[0m" 400 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:44:28] "OPTIONS /register HTTP/1.1" 200 -
+ERROR:run:IntegrityError: (psycopg2.errors.UniqueViolation) ERRORE:  un valore chiave duplicato viola il vincolo univoco "user_name_key"
+DETAIL:  La chiave (name)=(1) esiste già.
+
+[SQL: INSERT INTO "user" (uuid, name, password, "isAdmin") VALUES (%(uuid)s, %(name)s, %(password)s, %(isAdmin)s)]
+[parameters: {'uuid': '6b175492-dd6a-4c3a-a4cf-8635f5e23a27', 'name': '1', 'password': '1', 'isAdmin': False}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:44:28] "[31m[1mPOST /register HTTP/1.1[0m" 400 -
+INFO:werkzeug: * Detected change in 'C:\\Users\\Davide Grieco\\CranialDevice_web\\backend\\run.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:47:18] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '1', 'password': '1'}
+ERROR:run:IntegrityError: (psycopg2.errors.UniqueViolation) ERRORE:  un valore chiave duplicato viola il vincolo univoco "user_name_key"
+DETAIL:  La chiave (name)=(1) esiste già.
+
+[SQL: INSERT INTO "user" (uuid, name, password, "isAdmin") VALUES (%(uuid)s, %(name)s, %(password)s, %(isAdmin)s)]
+[parameters: {'uuid': '9178c703-c3ed-464d-a6fb-f9f408b3aa13', 'name': '1', 'password': '1', 'isAdmin': False}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:47:18] "[31m[1mPOST /register HTTP/1.1[0m" 400 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:48:19] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '2', 'password': '1'}
+INFO:run:User 2 registered successfully.
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:48:19] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:48:38] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '2', 'password': '1'}
+ERROR:run:IntegrityError: (psycopg2.errors.UniqueViolation) ERRORE:  un valore chiave duplicato viola il vincolo univoco "user_name_key"
+DETAIL:  La chiave (name)=(2) esiste già.
+
+[SQL: INSERT INTO "user" (uuid, name, password, "isAdmin") VALUES (%(uuid)s, %(name)s, %(password)s, %(isAdmin)s)]
+[parameters: {'uuid': 'e52e6569-5d1c-4046-a3b2-059213eb83cc', 'name': '2', 'password': '1', 'isAdmin': False}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:48:38] "[31m[1mPOST /register HTTP/1.1[0m" 400 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:48:49] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '3', 'password': '1'}
+INFO:run:User 3 registered successfully.
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:48:49] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:run:Received data: {'name': '3', 'password': '1'}
+ERROR:run:IntegrityError: (psycopg2.errors.UniqueViolation) ERRORE:  un valore chiave duplicato viola il vincolo univoco "user_name_key"
+DETAIL:  La chiave (name)=(3) esiste già.
+
+[SQL: INSERT INTO "user" (uuid, name, password, "isAdmin") VALUES (%(uuid)s, %(name)s, %(password)s, %(isAdmin)s)]
+[parameters: {'uuid': '337276dc-af2c-4c1d-998a-55fda22d93b9', 'name': '3', 'password': '1', 'isAdmin': False}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:48:52] "[31m[1mPOST /register HTTP/1.1[0m" 400 -
+INFO:werkzeug: * Detected change in 'C:\\Users\\Davide Grieco\\CranialDevice_web\\backend\\run.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:52:27] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '3', 'password': '1'}
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:52:27] "[35m[1mPOST /register HTTP/1.1[0m" 500 -
+INFO:werkzeug: * Detected change in 'C:\\Users\\Davide Grieco\\CranialDevice_web\\backend\\run.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:run:Connessione al database riuscita
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:55:57] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '3', 'password': '3'}
+INFO:run:User 3 registered successfully.
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:55:57] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:run:Received data: {'name': '1', 'password': '3'}
+INFO:run:User 1 registered successfully.
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:56:02] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:56:04] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '1', 'password': '3'}
+INFO:run:User 1 registered successfully.
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:56:04] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:run:Received data: {'name': '1', 'password': '3'}
+INFO:run:User 1 registered successfully.
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:56:07] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:run:Received data: {'name': '1', 'password': '3'}
+INFO:run:User 1 registered successfully.
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:56:08] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:57:14] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '1', 'password': '3'}
+ERROR:run:Error: (psycopg2.errors.UndefinedTable) ERRORE:  la relazione "users" non esiste
+LINE 1: INSERT INTO users (uuid, name, password, "isAdmin") VALUES (...
+                    ^
+
+[SQL: INSERT INTO users (uuid, name, password, "isAdmin") VALUES (%(uuid)s, %(name)s, %(password)s, %(isAdmin)s)]
+[parameters: {'uuid': '92cb1e66-f656-4650-bafa-a8091fed5a7f', 'name': '1', 'password': '3', 'isAdmin': False}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:57:15] "[35m[1mPOST /register HTTP/1.1[0m" 500 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:57:29] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '1', 'password': '1'}
+ERROR:run:Error: (psycopg2.errors.UndefinedTable) ERRORE:  la relazione "users" non esiste
+LINE 1: INSERT INTO users (uuid, name, password, "isAdmin") VALUES (...
+                    ^
+
+[SQL: INSERT INTO users (uuid, name, password, "isAdmin") VALUES (%(uuid)s, %(name)s, %(password)s, %(isAdmin)s)]
+[parameters: {'uuid': 'f982fc2b-1e96-4b2a-a343-f05245d6e7b5', 'name': '1', 'password': '1', 'isAdmin': False}]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 12:57:29] "[35m[1mPOST /register HTTP/1.1[0m" 500 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:00:13] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '1', 'password': '1'}
+INFO:run:User 1 registered successfully.
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:00:14] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:run:Received data: {'name': '1', 'password': '1'}
+ERROR:run:IntegrityError: (psycopg2.errors.UniqueViolation) ERRORE:  un valore chiave duplicato viola il vincolo univoco "name_unique"
+DETAIL:  La chiave (name)=(1) esiste già.
+
+[SQL: INSERT INTO users (uuid, name, password, "isAdmin") VALUES (%(uuid)s, %(name)s, %(password)s, %(isAdmin)s)]
+[parameters: {'uuid': 'c58f7556-8eb0-413a-99db-6cefbef40a95', 'name': '1', 'password': '1', 'isAdmin': False}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:00:15] "[31m[1mPOST /register HTTP/1.1[0m" 400 -
+INFO:werkzeug: * Detected change in 'C:\\Users\\Davide Grieco\\CranialDevice_web\\backend\\run.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:run:Connessione al database riuscita
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:02:31] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '2', 'password': '2'}
+INFO:run:User 2 registered successfully.
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:02:32] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:werkzeug: * Detected change in 'C:\\Users\\Davide Grieco\\CranialDevice_web\\backend\\run.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:06:33] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '2', 'password': '2'}
+ERROR:run:Error: 'Engine' object has no attribute 'execute'
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:06:33] "[35m[1mPOST /register HTTP/1.1[0m" 500 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:06:43] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '3', 'password': '3'}
+ERROR:run:Error: 'Engine' object has no attribute 'execute'
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:06:43] "[35m[1mPOST /register HTTP/1.1[0m" 500 -
+INFO:werkzeug: * Detected change in 'C:\\Users\\Davide Grieco\\CranialDevice_web\\backend\\run.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:run:Connessione al database riuscita
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:07:49] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '3', 'password': '3'}
+INFO:run:User 3 registered successfully.
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:07:49] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:run:Received data: {'name': '3', 'password': '3'}
+INFO:run:User 3 registered successfully.
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:07:51] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:run:Received data: {'name': '3', 'password': '3'}
+INFO:run:User 3 registered successfully.
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:07:53] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:09:23] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '3', 'password': '3'}
+INFO:run:User 3 registered successfully.
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:09:24] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:run:Received data: {'name': '3', 'password': '3'}
+INFO:run:User 3 registered successfully.
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:09:24] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:10:29] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '1', 'password': '1'}
+ERROR:run:IntegrityError: (psycopg2.errors.UniqueViolation) ERRORE:  un valore chiave duplicato viola il vincolo univoco "name_unique"
+DETAIL:  La chiave (name)=(1) esiste già.
+
+[SQL: INSERT INTO users (name, password) VALUES (%(name)s, %(password)s)]
+[parameters: {'name': '1', 'password': '1'}]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:10:29] "[31m[1mPOST /register HTTP/1.1[0m" 400 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:10:38] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '11', 'password': '1'}
+INFO:run:User 11 registered successfully.
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:10:38] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:run:Received data: {'name': '11', 'password': '1'}
+INFO:run:User 11 registered successfully.
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:10:40] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:run:Received data: {'name': '11', 'password': '1'}
+INFO:run:User 11 registered successfully.
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:10:42] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:run:Received data: {'name': '11', 'password': '1'}
+INFO:run:User 11 registered successfully.
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:10:43] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:10:44] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '11', 'password': '1'}
+INFO:run:User 11 registered successfully.
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:10:44] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:werkzeug: * Detected change in 'C:\\Users\\Davide Grieco\\CranialDevice_web\\backend\\run.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+INFO:werkzeug:[31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+INFO:werkzeug:[33mPress CTRL+C to quit[0m
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:12:35] "OPTIONS /register HTTP/1.1" 200 -
+INFO:run:Received data: {'name': '11', 'password': '1'}
+INFO:run:Executing query: INSERT INTO users (name, password) VALUES (:name, :password), with params: name=11, password=1
+INFO:run:Insert result: 1
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:12:35] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:run:Received data: {'name': '11', 'password': '1'}
+INFO:run:Executing query: INSERT INTO users (name, password) VALUES (:name, :password), with params: name=11, password=1
+INFO:run:Insert result: 1
+INFO:werkzeug:127.0.0.1 - - [20/Jun/2024 13:12:38] "[35m[1mPOST /register HTTP/1.1[0m" 201 -
+INFO:werkzeug: * Detected change in 'C:\\Users\\Davide Grieco\\CranialDevice_web\\backend\\run.py', reloading
+INFO:werkzeug: * Restarting with stat
+INFO:run:Connessione al database riuscita
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 396-894-875
