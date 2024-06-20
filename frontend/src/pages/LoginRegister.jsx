@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Container, TextField, Button, Card, CardContent, Typography, CircularProgress } from '@mui/material';
+import { Container, TextField, Button, Card, CardContent, Typography, CircularProgress, InputAdornment } from '@mui/material';
 import { styled } from '@mui/system';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import LockIcon from '@mui/icons-material/Lock';
 
 const Root = styled('div')({
   display: 'flex',
@@ -26,11 +28,17 @@ const StyledButton = styled(Button)({
   marginTop: 16,
 });
 
+const Title = styled(Typography)({
+  fontFamily: 'Roboto, sans-serif',
+  fontWeight: 700,
+  marginBottom: 16,
+});
+
 function LoginRegister() {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const [isFirstUser, setIsFirstUser] = useState(null); // Initially null to indicate loading
+  const [isFirstUser, setIsFirstUser] = useState(null);
 
   useEffect(() => {
     const checkFirstUser = async () => {
@@ -72,9 +80,9 @@ function LoginRegister() {
     <Root>
       <StyledCard>
         <CardContent>
-          <Typography variant="h5" component="h2" gutterBottom>
+          <Title variant="h4" component="h2" gutterBottom>
             {isFirstUser ? 'Register as Admin' : 'Login'}
-          </Typography>
+          </Title>
           <Form onSubmit={handleSubmit}>
             <TextField
               label="Name"
@@ -82,6 +90,13 @@ function LoginRegister() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <AccountCircle />
+                  </InputAdornment>
+                ),
+              }}
             />
             <TextField
               label="Password"
@@ -90,6 +105,13 @@ function LoginRegister() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <LockIcon />
+                  </InputAdornment>
+                ),
+              }}
             />
             <StyledButton type="submit" variant="contained" color="primary">
               {isFirstUser ? 'Register' : 'Login'}
