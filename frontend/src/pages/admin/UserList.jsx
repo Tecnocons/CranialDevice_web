@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Table, TableBody, TableCell, TableHead, TableRow, Paper, Button } from '@mui/material';
+import { Container, Typography, Table, TableBody, TableCell, TableHead, TableRow, Paper, Button, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Checkbox, FormControlLabel, InputAdornment } from '@mui/material';
 import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useAuth } from '../../contexts/AuthContext';
 
 const Root = styled('div')({
@@ -28,6 +31,12 @@ function UserList() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -51,6 +60,50 @@ function UserList() {
     };
     fetchUsers();
   }, []);
+
+  const handleEditClick = async (user) => {
+    setSelectedUser(user);
+    setName(user.name);
+    try {
+      const response = await fetch(`http://localhost:5000/api/users/${user.uuid}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setPassword(data.password); // Set the password field with the decrypted password
+      setIsAdmin(data.isadmin);
+      setOpen(true);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleSave = async () => {
+    const updatedPassword = password === '' ? null : password; // If password field is empty, do not update the password
+    try {
+      const response = await fetch(`http://localhost:5000/api/users/${selectedUser.uuid}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, password: updatedPassword, isadmin: isAdmin }),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const updatedUser = { ...selectedUser, name, isadmin: isAdmin };
+      setUsers(users.map((user) => (user.uuid === updatedUser.uuid ? updatedUser : user)));
+      handleClose();
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
 
   if (loading) {
     return <Root><Typography>Loading...</Typography></Root>;
@@ -76,6 +129,7 @@ function UserList() {
             <TableRow>
               <TableCell>Name</TableCell>
               <TableCell>Admin</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -83,11 +137,66 @@ function UserList() {
               <TableRow key={user.uuid}>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.isadmin ? 'Yes' : 'No'}</TableCell>
+                <TableCell>
+                  <IconButton onClick={() => handleEditClick(user)}>
+                    <EditIcon />
+                  </IconButton>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </StyledTable>
       </Container>
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Edit User</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Modify the details of the user.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Name"
+            type="text"
+            fullWidth
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            label="Password"
+            type={showPassword ? 'text' : 'password'}
+            fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                  >
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+          <FormControlLabel
+            control={<Checkbox checked={isAdmin} onChange={(e) => setIsAdmin(e.target.checked)} />}
+            label="Admin"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleSave} color="primary">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Root>
   );
 }

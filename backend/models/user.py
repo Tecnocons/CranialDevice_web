@@ -12,3 +12,7 @@ class Users(db.Model):
 
     def check_password(self, password):
         return bcrypt.checkpw(password.encode('utf-8'), self.password.encode('utf-8'))
+
+    def get_decrypted_password(self):
+        # WARNING: This is just for demonstration and should not be used in production
+        return self.password  # Directly return the hashed password for demonstration
