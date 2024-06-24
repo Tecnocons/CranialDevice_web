@@ -14,7 +14,7 @@ def login():
     try:
         user = Users.query.filter_by(name=data['name']).first()
         if user and user.check_password(data['password']):
-            return jsonify({"message": f"Welcome {user.name}"}), 200
+            return jsonify({"message": f"Welcome {user.name}", "isAdmin": user.isadmin}), 200
         else:
             return jsonify({"message": "Invalid credentials"}), 401
     except Exception as e:

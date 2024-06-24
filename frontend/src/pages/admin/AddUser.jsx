@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Container, TextField, Button, Card, CardContent, Typography, CircularProgress, InputAdornment } from '@mui/material';
+import React, { useState } from 'react';
+import { Container, TextField, Button, Card, CardContent, Typography, InputAdornment, FormControlLabel, Checkbox } from '@mui/material';
 import { styled } from '@mui/system';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import LockIcon from '@mui/icons-material/Lock';
@@ -34,54 +34,32 @@ const Title = styled(Typography)({
   marginBottom: 16,
 });
 
-function LoginRegister() {
+function AddUser() {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
   const [message, setMessage] = useState('');
-  const [isFirstUser, setIsFirstUser] = useState(null);
-
-  useEffect(() => {
-    const checkFirstUser = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/check-admin');
-        const data = await response.json();
-        setIsFirstUser(data.isFirstUser);
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
-    checkFirstUser();
-  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = isFirstUser ? 'http://localhost:5000/api/register' : 'http://localhost:5000/api/login';
-    const response = await fetch(url, {
+    const response = await fetch('http://localhost:5000/api/add-user', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name, password }),
+      body: JSON.stringify({ name, password, isadmin: isAdmin }),
     });
 
     const data = await response.json();
     setMessage(data.message);
   };
 
-  if (isFirstUser === null) {
-    return (
-      <Root>
-        <CircularProgress />
-      </Root>
-    );
-  }
-
   return (
     <Root>
       <StyledCard>
         <CardContent>
           <Title variant="h4" component="h2" gutterBottom>
-            {isFirstUser ? 'Register as Admin' : 'Login'}
+            Add New User
           </Title>
           <Form onSubmit={handleSubmit}>
             <TextField
@@ -113,8 +91,19 @@ function LoginRegister() {
                 ),
               }}
             />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={isAdmin}
+                  onChange={(e) => setIsAdmin(e.target.checked)}
+                  name="isAdmin"
+                  color="primary"
+                />
+              }
+              label="Admin"
+            />
             <StyledButton type="submit" variant="contained" color="primary">
-              {isFirstUser ? 'Register' : 'Login'}
+              Add User
             </StyledButton>
           </Form>
           {message && <Typography color="error">{message}</Typography>}
@@ -124,4 +113,4 @@ function LoginRegister() {
   );
 }
 
-export default LoginRegister;
+export default AddUser;
