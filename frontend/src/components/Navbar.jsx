@@ -1,10 +1,11 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const isAdmin = new URLSearchParams(window.location.search).get('admin') === 'true';
+  const { user } = useAuth();
 
   const handleLogout = () => {
     navigate('/login');
@@ -16,10 +17,15 @@ const Navbar = () => {
         <Typography variant="h6" style={{ flexGrow: 1 }}>
           My Web App
         </Typography>
-        {isAdmin && (
-          <Button color="inherit" onClick={() => navigate('/add-user')}>
-            Add User
-          </Button>
+        {user && user.isAdmin && (
+          <>
+            <Button color="inherit" onClick={() => navigate('/add-user')}>
+              Add User
+            </Button>
+            <Button color="inherit" onClick={() => navigate('/users')}>
+              User List
+            </Button>
+          </>
         )}
         <Button color="inherit" onClick={handleLogout}>
           Logout

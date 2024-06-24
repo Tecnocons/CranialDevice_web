@@ -1,12 +1,10 @@
-//QUI STA NASCENDO UNA NUOVA WEB APP CREATA DAI BOSS Davide Grieco & Morgan Mario Soranna
-
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, TextField, Button, Card, CardContent, Typography, CircularProgress, InputAdornment } from '@mui/material';
 import { styled } from '@mui/system';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import LockIcon from '@mui/icons-material/Lock';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Root = styled('div')({
   display: 'flex',
@@ -40,6 +38,7 @@ const Title = styled(Typography)({
 
 function LoginRegister() {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -76,6 +75,7 @@ function LoginRegister() {
     setMessage(data.message);
 
     if (response.ok) {
+      setUser({ name: data.name, isAdmin: data.isAdmin });
       navigate(`/main?admin=${data.isAdmin}`);
     }
   };

@@ -1,17 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Container, Typography } from '@mui/material';
 import Navbar from '../../components/Navbar';
-import { useLocation } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 const MainPage = () => {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const location = useLocation();
-
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const adminStatus = searchParams.get('admin');
-    setIsAdmin(adminStatus === 'true');
-  }, [location]);
+  const { user } = useAuth();
 
   return (
     <>
@@ -21,7 +14,7 @@ const MainPage = () => {
           Main Page
         </Typography>
         <Typography>
-          {isAdmin ? 'Welcome, Admin! You have full access.' : 'Welcome, User! Your access is limited.'}
+          {user.isAdmin ? 'Welcome, Admin! You have full access.' : 'Welcome, User! Your access is limited.'}
         </Typography>
       </Container>
     </>
@@ -29,4 +22,3 @@ const MainPage = () => {
 };
 
 export default MainPage;
-    

@@ -4,5 +4,6 @@ sqlalchemy
 marshmallow
 python-dotenv
 psycopg2
-flask_sqlalcchemy
-flask_cors
+flask_sqlalchemy
+flask-cors
+bcrypt
