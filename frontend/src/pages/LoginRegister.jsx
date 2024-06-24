@@ -43,7 +43,7 @@ function LoginRegister() {
   useEffect(() => {
     const checkFirstUser = async () => {
       try {
-        const response = await fetch('http://localhost:5000/check-admin');
+        const response = await fetch('http://localhost:5000/api/check-admin');
         const data = await response.json();
         setIsFirstUser(data.isFirstUser);
       } catch (error) {
@@ -55,7 +55,7 @@ function LoginRegister() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = isFirstUser ? 'http://localhost:5000/register' : 'http://localhost:5000/login';
+    const url = isFirstUser ? 'http://localhost:5000/api/register' : 'http://localhost:5000/api/login';
     const response = await fetch(url, {
       method: 'POST',
       headers: {
