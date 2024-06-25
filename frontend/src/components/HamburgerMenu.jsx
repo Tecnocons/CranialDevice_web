@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 
 const HamburgerMenu = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const toggleDrawer = (open) => () => {
@@ -30,7 +30,7 @@ const HamburgerMenu = () => {
     { text: 'Placeholder 1', icon: <AddIcon />, onClick: () => {}, adminOnly: false },
     { text: 'Placeholder 2', icon: <AddIcon />, onClick: () => {}, adminOnly: false },
     { text: 'Placeholder 3', icon: <AddIcon />, onClick: () => {}, adminOnly: false },
-    { text: 'Logout', icon: <LogoutIcon />, onClick: () => navigate('/login'), adminOnly: false }
+    { text: 'Logout', icon: <LogoutIcon />, onClick: ()=> navigate('/login'), adminOnly: false }
   ];
 
   return (

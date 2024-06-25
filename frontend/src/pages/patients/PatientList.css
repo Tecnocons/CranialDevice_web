@@ -18,7 +18,7 @@
   .table-header {
     display: flex;
     justify-content: space-between;
-    align-items: top;
+    align-items: center;
     width: 100%;
     margin-bottom: 16px;
   }

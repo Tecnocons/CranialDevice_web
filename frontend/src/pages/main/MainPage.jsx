@@ -1,3 +1,4 @@
+// src/pages/main/MainPage.jsx
 import React from 'react';
 import { Container, Typography, Grid, Card, CardContent, CardHeader, Button } from '@mui/material';
 import HamburgerMenu from '../../components/HamburgerMenu';
@@ -22,6 +23,10 @@ const MainPage = () => {
       }
     ]
   };
+
+  if (!user) {
+    return <Typography>Loading...</Typography>;
+  }
 
   return (
     <>

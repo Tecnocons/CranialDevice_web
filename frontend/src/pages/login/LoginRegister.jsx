@@ -43,8 +43,10 @@ function LoginRegister() {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [isFirstUser, setIsFirstUser] = useState(null);
+  const [isMounted, setIsMounted] = useState(true);
 
   useEffect(() => {
+    setIsMounted(true);
     const checkFirstUser = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/check-admin');
@@ -52,13 +54,16 @@ function LoginRegister() {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
-        setIsFirstUser(data.isFirstUser);
+        if (isMounted) {
+          setIsFirstUser(data.isFirstUser);
+        }
       } catch (error) {
         console.error('Error:', error);
       }
     };
     checkFirstUser();
-  }, []);
+    return () => setIsMounted(false);
+  }, [isMounted]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
