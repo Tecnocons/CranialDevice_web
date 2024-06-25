@@ -83,7 +83,7 @@ def get_assigned_patients():
         result = db.session.execute(query, {'doctorid': doctor.uuid}).fetchall()
         patients = [
             {
-                #'uuid': row.uuid,
+                'uuid': row.uuid,
                 'eta': row.eta,
                 'altezza': row.altezza,
                 'peso': row.peso,
