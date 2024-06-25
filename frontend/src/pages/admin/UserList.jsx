@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import CloseIcon from '@mui/icons-material/Close';
 import { useAuth } from '../../contexts/AuthContext';
 
 const Root = styled('div')({
@@ -117,9 +118,9 @@ function UserList() {
     <Root>
       <Container component={Paper} style={{ padding: 16 }}>
         <Header>
-          <Button variant="contained" color="primary" onClick={() => navigate('/main')}>
-            Indietro
-          </Button>
+          <IconButton onClick={() => navigate('/main')}>
+            <CloseIcon />
+          </IconButton>
           <Typography variant="h4" component="h1" gutterBottom>
             User List
           </Typography>

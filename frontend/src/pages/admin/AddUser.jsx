@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { Container, TextField, Button, Card, CardContent, Typography, InputAdornment, FormControlLabel, Checkbox } from '@mui/material';
+import { Container, TextField, Button, Card, CardContent, Typography, InputAdornment, FormControlLabel, Checkbox, IconButton } from '@mui/material';
 import { styled } from '@mui/system';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import LockIcon from '@mui/icons-material/Lock';
+import CloseIcon from '@mui/icons-material/Close';
+import { useNavigate } from 'react-router-dom';
 
 const Root = styled('div')({
   display: 'flex',
@@ -39,6 +41,7 @@ function AddUser() {
   const [password, setPassword] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,10 +57,17 @@ function AddUser() {
     setMessage(data.message);
   };
 
+  const handleClose = () => {
+    navigate('/main'); // Navigate back to the main page
+  };
+
   return (
     <Root>
       <StyledCard>
         <CardContent>
+          <IconButton onClick={handleClose} style={{ alignSelf: 'flex-end' }}>
+            <CloseIcon />
+          </IconButton>
           <Title variant="h4" component="h2" gutterBottom>
             Add New User
           </Title>
