@@ -1,3 +1,4 @@
+// src/components/HamburgerMenu.jsx
 import React, { useState } from 'react';
 import { AppBar, Toolbar, IconButton, Typography, Drawer, List, ListItem, ListItemIcon, ListItemText, Divider } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -5,6 +6,7 @@ import AddIcon from '@mui/icons-material/Add';
 import ListIcon from '@mui/icons-material/List';
 import LogoutIcon from '@mui/icons-material/Logout';
 import CloseIcon from '@mui/icons-material/Close';
+import PeopleIcon from '@mui/icons-material/People';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -19,7 +21,8 @@ const HamburgerMenu = () => {
 
   const menuItems = [
     { text: 'Add User', icon: <AddIcon />, onClick: () => navigate('/add-user'), adminOnly: true },
-    { text: 'User List', icon: <ListIcon />, onClick: () => navigate('/users'), adminOnly: true }
+    { text: 'User List', icon: <ListIcon />, onClick: () => navigate('/users'), adminOnly: true },
+    { text: 'Lista pazienti', icon: <PeopleIcon />, onClick: () => navigate('/patients'), adminOnly: false }
   ];
 
   const additionalItems = [

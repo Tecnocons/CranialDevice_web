@@ -34,24 +34,30 @@ def create_patient():
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
-    
+
 @patients_bp.route('/patients', methods=['GET'])
 def get_patients():
     try:
-        query = text("SELECT eta, altezza, peso, nominativo, doctorid FROM patients")
+        query = text("""
+            SELECT p.uuid, p.eta, p.altezza, p.peso, p.nominativo, p.doctorid, u.name as doctor_name
+            FROM patients p
+            LEFT JOIN users u ON p.doctorid = u.uuid
+        """)
         result = db.session.execute(query).fetchall()
         patients = [
             {
-                'eta': row.eta, 
-                'altezza': row.altezza, 
-                'peso': row.peso, 
+                'uuid': row.uuid,
+                'eta': row.eta,
+                'altezza': row.altezza,
+                'peso': row.peso,
                 'nominativo': row.nominativo,
-                'doctorid': row.doctorid
+                'doctorid': row.doctorid,
+                'doctor_name': row.doctor_name
             } for row in result
         ]
         return jsonify(patients), 200
     except Exception as e:
-        return jsonify({"message": "An error occurred"}), 500
+        return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
 @patients_bp.route('/patients', methods=['PUT'])
 def update_patient():
