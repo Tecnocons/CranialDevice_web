@@ -29,7 +29,7 @@ const Header = () => {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6">
-                        My Web App
+                        Cranial
                     </Typography>
                 </Toolbar>
             </AppBar>
