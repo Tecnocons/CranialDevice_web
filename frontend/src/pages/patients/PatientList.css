@@ -1,7 +1,7 @@
 .table-header {
-  font-size: 1.2rem;
+  font-size: 1rem; /* Font size leggermente aumentato */
   font-weight: bold;
-  padding: 16px 20px;
+  padding: 6px 10px; /* Ridotto il padding */
 }
 
 .root {
@@ -17,17 +17,30 @@
   justify-content: flex-start;
   align-items: center;
   flex-grow: 1;
-  padding: 20px;
+  padding: 10px;
+}
+
+.table-container {
+  width: 100%;
+  max-width: 1000px; /* Ridotto il max-width */
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.table-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .styled-table {
   width: 100%;
-  max-width: 1200px;
-  margin: 20px auto;
+  margin: 5px 0; /* Ridotto il margine */
   border-collapse: collapse;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   background-color: #fff;
-  border-radius: 10px;
+  border-radius: 5px;
   overflow: hidden;
 }
 
@@ -39,7 +52,8 @@
 }
 
 .styled-table th, .styled-table td {
-  padding: 12px 15px;
+  padding: 6px 10px; /* Ridotto il padding */
+  font-size: 0.875rem; /* Font size leggermente aumentato */
 }
 
 .styled-table tbody tr {
@@ -58,13 +72,13 @@
   --color: #4d39b1;
   font-family: inherit;
   display: inline-block;
-  width: 3em;
-  height: 3em;
+  width: 6em;
+  height: 2.5em;
   line-height: 2.5em;
   overflow: hidden;
   cursor: pointer;
-  margin: 20px;
-  font-size: 24px;
+  margin: 0;
+  font-size: 20px; /* Ridotto il font size */
   z-index: 1;
   color: var(--color);
   border: 2px solid var(--color);
@@ -97,4 +111,8 @@
 .add-patient-btn:hover::before {
   top: -30px;
   left: -30px;
+}
+
+.pagination {
+  margin-top: auto;
 }

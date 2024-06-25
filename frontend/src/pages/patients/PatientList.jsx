@@ -12,10 +12,10 @@ import {
   TablePagination,
   IconButton,
   Dialog,
-  DialogTitle,
   DialogActions,
   DialogContent,
   DialogContentText,
+  DialogTitle,
 } from '@mui/material';
 import { Delete as DeleteIcon } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
@@ -149,15 +149,17 @@ function PatientList() {
     <div className="root">
       <HamburgerMenu />
       <div className="content">
-        <Container component={Paper}>
-          <Typography variant="h4" gutterBottom>
-            Lista Pazienti
-          </Typography>
-          {user && !user.isAdmin && (
-            <Button className="add-patient-btn" onClick={handleAddDialogOpen}>
-              +
-            </Button>
-          )}
+        <Container component={Paper} className="table-container">
+          <div className="table-header-container">
+            <Typography variant="h4" gutterBottom>
+              Lista Pazienti
+            </Typography>
+            {user && !user.isAdmin && (
+              <Button className="add-patient-btn" onClick={handleAddDialogOpen}>
+                Aggiungi
+              </Button>
+            )}
+          </div>
           <Table className="styled-table">
             <TableHead>
               <TableRow>
@@ -196,6 +198,7 @@ function PatientList() {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            className="pagination"
           />
         </Container>
       </div>
