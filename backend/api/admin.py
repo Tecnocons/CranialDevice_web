@@ -3,6 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import text
 from models import db
 from models.user import Users
+from flask_login import login_required
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -36,6 +37,7 @@ def check_admin():
         return jsonify({"message": "An error occurred"}), 500
 
 @admin_bp.route('/add-user', methods=['POST'])
+@login_required
 def add_user():
     data = request.get_json()
     if 'name' not in data or 'password' not in data or 'isadmin' not in data:

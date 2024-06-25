@@ -6,6 +6,7 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -16,6 +17,7 @@ export const AuthProvider = ({ children }) => {
         console.error("Error parsing user from localStorage", error);
       }
     }
+    setLoading(false);
   }, []);
 
   const login = (userData) => {
@@ -29,7 +31,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser: login, logout }}>
+    <AuthContext.Provider value={{ user, setUser: login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

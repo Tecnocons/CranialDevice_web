@@ -4,10 +4,12 @@ from sqlalchemy import text
 from models import db
 from models.patient import Patients
 from models.user import Users
+from flask_login import login_required, current_user
 
 patients_bp = Blueprint('patients', __name__)
 
 @patients_bp.route('/patients', methods=['POST'])
+@login_required
 def create_patient():
     data = request.get_json()
     if not data:
@@ -36,17 +38,18 @@ def create_patient():
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
     
 @patients_bp.route('/patients', methods=['GET'])
+@login_required
 def get_patients():
     try:
         query = text("""
-            SELECT p.uuid, p.eta, p.altezza, p.peso, p.nominativo, p.doctorid, u.name as doctor_name
+            SELECT p.eta, p.altezza, p.peso, p.nominativo, p.doctorid, u.name as doctor_name
             FROM patients p
             LEFT JOIN users u ON p.doctorid = u.uuid
         """)
         result = db.session.execute(query).fetchall()
         patients = [
             {
-                'uuid': row.uuid,
+                #'uuid': row.uuid,
                 'eta': row.eta,
                 'altezza': row.altezza,
                 'peso': row.peso,
@@ -60,6 +63,7 @@ def get_patients():
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
 @patients_bp.route('/patients/assigned', methods=['GET'])
+@login_required
 def get_assigned_patients():
     doctor_name = request.args.get('doctor_name')
     if not doctor_name:
@@ -93,6 +97,7 @@ def get_assigned_patients():
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
 @patients_bp.route('/patients', methods=['PUT'])
+@login_required
 def update_patient():
     data = request.get_json()
     uuid = data.get('uuid')
@@ -119,6 +124,7 @@ def update_patient():
         return jsonify({"message": "An error occurred"}), 500
 
 @patients_bp.route('/patients/<uuid>', methods=['DELETE'])
+@login_required
 def delete_patient(uuid):
     patient = Patients.query.filter_by(uuid=uuid).first()
     if not patient:

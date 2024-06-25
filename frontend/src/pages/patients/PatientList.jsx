@@ -1,4 +1,3 @@
-// src/pages/patients/PatientList.jsx
 import React, { useEffect, useState } from 'react';
 import { Container, Typography, Table, TableBody, TableCell, TableHead, TableRow, Paper } from '@mui/material';
 import { useAuth } from '../../contexts/AuthContext';
@@ -15,7 +14,10 @@ function PatientList() {
     const fetchPatients = async () => {
       try {
         const endpoint = user.isAdmin ? '/api/patients' : `/api/patients/assigned?doctor_name=${user.name}`;
-        const response = await fetch(`http://localhost:5000${endpoint}`);
+        const response = await fetch(`http://localhost:5000${endpoint}`, {
+          method: 'GET',
+          credentials: 'include'  // Includi le credenziali
+        });
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

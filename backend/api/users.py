@@ -3,10 +3,12 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import text
 from models import db
 from models.user import Users
+from flask_login import login_required
 
 users_bp = Blueprint('users', __name__)
 
 @users_bp.route('/users', methods=['GET'])
+@login_required
 def get_users():
     try:
         uuid = request.args.get('uuid', None)
@@ -28,6 +30,7 @@ def get_users():
         return jsonify({"message": "An error occurred"}), 500
     
 @users_bp.route('/users/<uuid>', methods=['GET'])
+@login_required
 def get_user(uuid):
     try:
         query = text("SELECT uuid, name, isadmin, password FROM users WHERE uuid = :uuid")
@@ -43,6 +46,7 @@ def get_user(uuid):
 
 
 @users_bp.route('/users/<uuid>', methods=['PUT'])
+@login_required
 def update_user(uuid):
     try:
         data = request.get_json()

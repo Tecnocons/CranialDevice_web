@@ -7,3 +7,4 @@ psycopg2
 flask_sqlalchemy
 flask-cors
 bcrypt
+flask-login

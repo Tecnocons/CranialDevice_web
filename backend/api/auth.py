@@ -1,6 +1,5 @@
 from flask import Blueprint, request, jsonify
-from sqlalchemy import text
-from models import db
+from flask_login import login_user
 from models.user import Users
 
 auth_bp = Blueprint('auth', __name__)
@@ -14,6 +13,7 @@ def login():
     try:
         user = Users.query.filter_by(name=data['name']).first()
         if user and user.check_password(data['password']):
+            login_user(user)
             return jsonify({
                 "message": f"Welcome {user.name}",
                 "name": user.name,
