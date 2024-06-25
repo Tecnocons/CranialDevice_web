@@ -6,6 +6,7 @@ from config import Config
 from api.auth import auth_bp
 from api.admin import admin_bp
 from api.users import users_bp  # Importa il nuovo blueprint
+from api.patients import patients_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -16,6 +17,7 @@ db.init_app(app)
 app.register_blueprint(auth_bp, url_prefix='/api')
 app.register_blueprint(admin_bp, url_prefix='/api')
 app.register_blueprint(users_bp, url_prefix='/api')  # Registra il nuovo blueprint
+app.register_blueprint(patients_bp, url_prefix='/api')
 
 if __name__ == '__main__':
     with app.app_context():
