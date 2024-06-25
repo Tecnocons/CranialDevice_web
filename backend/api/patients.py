@@ -19,9 +19,9 @@ def create_patient():
     altezza = data.get('altezza')
     peso = data.get('peso')
     nominativo = data.get('nominativo')
-    doctorid = data.get('doctorid')
+    doctorid = current_user.uuid  # Ottieni l'UUID del dottore dalla sessione
 
-    if not all([eta, altezza, peso, nominativo, doctorid]):
+    if not all([eta, altezza, peso, nominativo]):
         return jsonify({"message": "Missing fields in the request data"}), 400
 
     new_patient = Patients(eta=eta, altezza=altezza, peso=peso, nominativo=nominativo, doctorid=doctorid)
@@ -36,20 +36,20 @@ def create_patient():
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
-    
+
 @patients_bp.route('/patients', methods=['GET'])
 @login_required
 def get_patients():
     try:
         query = text("""
-            SELECT p.eta, p.altezza, p.peso, p.nominativo, p.doctorid, u.name as doctor_name
+            SELECT p.uuid, p.eta, p.altezza, p.peso, p.nominativo, p.doctorid, u.name as doctor_name
             FROM patients p
             LEFT JOIN users u ON p.doctorid = u.uuid
         """)
         result = db.session.execute(query).fetchall()
         patients = [
             {
-                #'uuid': row.uuid,
+                'uuid': row.uuid,
                 'eta': row.eta,
                 'altezza': row.altezza,
                 'peso': row.peso,
@@ -83,7 +83,7 @@ def get_assigned_patients():
         result = db.session.execute(query, {'doctorid': doctor.uuid}).fetchall()
         patients = [
             {
-                'uuid': row.uuid,
+                #'uuid': row.uuid,
                 'eta': row.eta,
                 'altezza': row.altezza,
                 'peso': row.peso,
