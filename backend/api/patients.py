@@ -34,7 +34,7 @@ def create_patient():
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
-
+    
 @patients_bp.route('/patients', methods=['GET'])
 def get_patients():
     try:
@@ -44,6 +44,39 @@ def get_patients():
             LEFT JOIN users u ON p.doctorid = u.uuid
         """)
         result = db.session.execute(query).fetchall()
+        patients = [
+            {
+                'uuid': row.uuid,
+                'eta': row.eta,
+                'altezza': row.altezza,
+                'peso': row.peso,
+                'nominativo': row.nominativo,
+                'doctorid': row.doctorid,
+                'doctor_name': row.doctor_name
+            } for row in result
+        ]
+        return jsonify(patients), 200
+    except Exception as e:
+        return jsonify({"message": "An error occurred", "error": str(e)}), 500
+
+@patients_bp.route('/patients/assigned', methods=['GET'])
+def get_assigned_patients():
+    doctor_name = request.args.get('doctor_name')
+    if not doctor_name:
+        return jsonify({"message": "Doctor name is required"}), 400
+
+    try:
+        doctor = Users.query.filter_by(name=doctor_name).first()
+        if not doctor:
+            return jsonify({"message": "Doctor not found"}), 404
+
+        query = text("""
+            SELECT p.uuid, p.eta, p.altezza, p.peso, p.nominativo, p.doctorid, u.name as doctor_name
+            FROM patients p
+            LEFT JOIN users u ON p.doctorid = u.uuid
+            WHERE p.doctorid = :doctorid
+        """)
+        result = db.session.execute(query, {'doctorid': doctor.uuid}).fetchall()
         patients = [
             {
                 'uuid': row.uuid,

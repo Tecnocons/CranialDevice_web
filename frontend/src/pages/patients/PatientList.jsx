@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Typography, Table, TableBody, TableCell, TableHead, TableRow, Paper } from '@mui/material';
 import { useAuth } from '../../contexts/AuthContext';
 import HamburgerMenu from '../../components/HamburgerMenu';
-import './PatientList.css'; // Importa il file CSS
+import './PatientList.css';
 
 function PatientList() {
   const [patients, setPatients] = useState([]);
@@ -14,7 +14,8 @@ function PatientList() {
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/patients');
+        const endpoint = user.isAdmin ? '/api/patients' : `/api/patients/assigned?doctor_name=${user.name}`;
+        const response = await fetch(`http://localhost:5000${endpoint}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -27,29 +28,29 @@ function PatientList() {
       }
     };
     fetchPatients();
-  }, []);
+  }, [user.isAdmin, user.name]);
 
   if (loading) {
-    return <div className="table-container"><Typography>Loading...</Typography></div>;
+    return <div className="root"><Typography>Loading...</Typography></div>;
   }
 
   if (error) {
-    return <div className="table-container"><Typography>Error: {error}</Typography></div>;
+    return <div className="root"><Typography>Error: {error}</Typography></div>;
   }
 
   return (
     <div className="root">
       <HamburgerMenu />
-      <div className="table-container">
+      <div className="content">
         <Container component={Paper}>
-          <Table className="table">
+          <Table className="styled-table">
             <TableHead>
               <TableRow>
-                <TableCell>Nominativo</TableCell>
-                <TableCell>Età</TableCell>
-                <TableCell>Altezza</TableCell>
-                <TableCell>Peso</TableCell>
-                <TableCell>Dottore</TableCell>
+                <TableCell className="table-header">Nominativo</TableCell>
+                <TableCell className="table-header">Età</TableCell>
+                <TableCell className="table-header">Altezza</TableCell>
+                <TableCell className="table-header">Peso</TableCell>
+                {user.isAdmin && <TableCell className="table-header">Dottore</TableCell>}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -59,7 +60,7 @@ function PatientList() {
                   <TableCell>{patient.eta}</TableCell>
                   <TableCell>{patient.altezza}</TableCell>
                   <TableCell>{patient.peso}</TableCell>
-                  <TableCell>{patient.doctor_name}</TableCell>
+                  {user.isAdmin && <TableCell>{patient.doctor_name}</TableCell>}
                 </TableRow>
               ))}
             </TableBody>
