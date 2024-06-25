@@ -3,6 +3,7 @@
 .table-header {
   font-size: 1.2rem;
   font-weight: bold;
+  padding: 16px 20px;
 }
 
 .root {
@@ -14,12 +15,86 @@
 
 .content {
   display: flex;
+  flex-direction: column;
   justify-content: flex-start;
-  align-items: flex-start;
+  align-items: center;
   flex-grow: 1;
-  padding: 16px;
+  padding: 20px;
 }
 
 .styled-table {
-  min-width: 650px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 20px auto;
+  border-collapse: collapse;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.styled-table thead tr {
+  background-color: #4270e4;
+  color: #ffffff;
+  text-align: left;
+  font-weight: bold;
+}
+
+.styled-table th, .styled-table td {
+  padding: 12px 15px;
+}
+
+.styled-table tbody tr {
+  border-bottom: 1px solid #5d5656;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:last-of-type {
+  border-bottom: 2px solid #009879;
+}
+
+.add-patient-btn {
+  --color: #0077ff; /* Colore di riempimento al passaggio del mouse */
+  font-family: inherit;
+  display: inline-block;
+  width: 6em;
+  height: 3em;
+  line-height: 2.5em;
+  overflow: hidden;
+  cursor: pointer;
+  margin: 20px;
+  font-size: 24px;
+  z-index: 1;
+  color: var(--color);
+  border: 20px solid black;  /* Bordo nero */
+  border-radius: 50%;
+  position: relative;
+  background-color: transparent;
+  transition: color 0.3s ease;
+  text-align: center;
+}
+
+.add-patient-btn::before {
+  position: absolute;
+  content: "";
+  background: var(--color);
+  width: 150px;
+  height: 200px;
+  z-index: -1;
+  border-radius: 6px;
+  top: 100%;
+  left: 100%;
+  transition: 0.3s all;
+}
+
+.add-patient-btn:hover {
+  color: white;
+}
+
+.add-patient-btn:hover::before {
+  top: -30px;
+  left: -30px;
 }

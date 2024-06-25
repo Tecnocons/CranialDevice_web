@@ -1,3 +1,4 @@
+// src/pages/patients/PatientList.jsx
 import React, { useEffect, useState } from 'react';
 import { Container, Typography, Table, TableBody, TableCell, TableHead, TableRow, Paper, Button } from '@mui/material';
 import { useAuth } from '../../contexts/AuthContext';
@@ -10,41 +11,36 @@ function PatientList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user } = useAuth();
-  const [dialogOpen, setDialogOpen] = useState(false);
-
-  const fetchPatients = async () => {
-    try {
-      const endpoint = user.isAdmin ? '/api/patients' : `/api/patients/assigned?doctor_name=${user.name}`;
-      const response = await fetch(`http://localhost:5000${endpoint}`, {
-        method: 'GET',
-        credentials: 'include'  // Includi le credenziali
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      setPatients(data);
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        const endpoint = user.isAdmin ? '/api/patients' : `/api/patients/assigned?doctor_name=${user.name}`;
+        const response = await fetch(`http://localhost:5000${endpoint}`, {
+          method: 'GET',
+          credentials: 'include'
+        });
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setPatients(data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
     fetchPatients();
   }, [user.isAdmin, user.name]);
 
   const handleDialogOpen = () => {
-    setDialogOpen(true);
+    setIsDialogOpen(true);
   };
 
   const handleDialogClose = () => {
-    setDialogOpen(false);
-  };
-
-  const handlePatientAdded = () => {
-    fetchPatients();
+    setIsDialogOpen(false);
   };
 
   if (loading) {
@@ -60,12 +56,12 @@ function PatientList() {
       <HamburgerMenu />
       <div className="content">
         <Container component={Paper}>
-          <Typography variant="h4" gutterBottom>
+          <Typography variant="h4" component="h1" gutterBottom>
             Lista Pazienti
           </Typography>
-          {user && !user.isAdmin && (
-            <Button variant="contained" color="primary" onClick={handleDialogOpen} style={{ marginBottom: '16px' }}>
-              Aggiungi Paziente
+          {!user.isAdmin && (
+            <Button className="add-patient-btn" onClick={handleDialogOpen}>
+              Aggiungi
             </Button>
           )}
           <Table className="styled-table">
@@ -92,7 +88,7 @@ function PatientList() {
           </Table>
         </Container>
       </div>
-      <AddPatientDialog open={dialogOpen} onClose={handleDialogClose} onPatientAdded={handlePatientAdded} />
+      <AddPatientDialog open={isDialogOpen} onClose={handleDialogClose} />
     </div>
   );
 }
