@@ -137,3 +137,24 @@ def delete_patient(uuid):
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": "An error occurred"}), 500
+
+@patients_bp.route('/patients/bulk_delete', methods=['DELETE'])
+@login_required
+def bulk_delete_patients():
+    data = request.get_json()
+    uuids = data.get('uuids')
+    if not uuids:
+        return jsonify({"message": "UUIDs are required"}), 400
+
+    try:
+        patients_to_delete = Patients.query.filter(Patients.uuid.in_(uuids)).all()
+        if not patients_to_delete:
+            return jsonify({"message": "No patients found for given UUIDs"}), 404
+
+        for patient in patients_to_delete:
+            db.session.delete(patient)
+        db.session.commit()
+        return jsonify({"message": "Patients deleted successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "An error occurred", "error": str(e)}), 500

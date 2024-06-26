@@ -16,6 +16,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Checkbox,
 } from '@mui/material';
 import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
@@ -35,6 +36,7 @@ function PatientList() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const [selectedPatients, setSelectedPatients] = useState([]);
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -69,11 +71,15 @@ function PatientList() {
     setPage(0);
   };
 
-  const handleDelete = async (uuid) => {
+  const handleDelete = async (uuids) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/patients/${uuid}`, {
+      const response = await fetch(`http://localhost:5000/api/patients/bulk_delete`, {
         method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         credentials: 'include',
+        body: JSON.stringify({ uuids }),
       });
 
       if (!response.ok) {
@@ -81,8 +87,9 @@ function PatientList() {
       }
 
       // Aggiorna la lista dei pazienti dopo la cancellazione
-      setPatients((prevPatients) => prevPatients.filter((patient) => patient.uuid !== uuid));
+      setPatients((prevPatients) => prevPatients.filter((patient) => !uuids.includes(patient.uuid)));
       setDeleteDialogOpen(false);
+      setSelectedPatients([]);
       setSelectedPatient(null);
     } catch (error) {
       console.error('Error deleting patient:', error.message);
@@ -169,6 +176,32 @@ function PatientList() {
     setSelectedPatient(null);
   };
 
+  const handleSelectPatient = (uuid) => {
+    if (selectedPatients.includes(uuid)) {
+      setSelectedPatients(selectedPatients.filter((id) => id !== uuid));
+    } else {
+      setSelectedPatients([...selectedPatients, uuid]);
+    }
+  };
+
+  const isSelected = (uuid) => selectedPatients.includes(uuid);
+
+  const handleSelectAllPatients = (event) => {
+    if (event.target.checked) {
+      const newSelecteds = patients.map((patient) => patient.uuid);
+      setSelectedPatients(newSelecteds);
+    } else {
+      setSelectedPatients([]);
+    }
+  };
+
+  const isAllSelected = selectedPatients.length === patients.length;
+
+  const handleMultipleDelete = () => {
+    setDeleteDialogOpen(true);
+    setSelectedPatient(null);
+  };
+
   if (loading) {
     return (
       <div className="root">
@@ -199,10 +232,22 @@ function PatientList() {
                 Aggiungi
               </Button>
             )}
+            {selectedPatients.length > 0 && (
+              <Button color="secondary" onClick={handleMultipleDelete}>
+                Elimina Selezionati
+              </Button>
+            )}
           </div>
           <Table className="styled-table">
             <TableHead>
               <TableRow>
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    indeterminate={selectedPatients.length > 0 && selectedPatients.length < patients.length}
+                    checked={isAllSelected}
+                    onChange={handleSelectAllPatients}
+                  />
+                </TableCell>
                 <TableCell className="table-header">Nominativo</TableCell>
                 <TableCell className="table-header">Età</TableCell>
                 <TableCell className="table-header">Altezza</TableCell>
@@ -213,7 +258,19 @@ function PatientList() {
             </TableHead>
             <TableBody>
               {patients.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((patient) => (
-                <TableRow key={patient.uuid}>
+                <TableRow
+                  key={patient.uuid}
+                  hover
+                  role="checkbox"
+                  aria-checked={isSelected(patient.uuid)}
+                  selected={isSelected(patient.uuid)}
+                >
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      checked={isSelected(patient.uuid)}
+                      onChange={() => handleSelectPatient(patient.uuid)}
+                    />
+                  </TableCell>
                   <TableCell>{patient.nominativo}</TableCell>
                   <TableCell>{patient.eta}</TableCell>
                   <TableCell>{patient.altezza}</TableCell>
@@ -221,7 +278,7 @@ function PatientList() {
                   {user && user.isAdmin && <TableCell>{patient.doctor_name}</TableCell>}
                   {user && !user.isAdmin && (
                     <TableCell>
-                      <IconButton onClick={() => handleEditDialogOpen(patient)} color="primary">
+                      <IconButton onClick={() => handleEditDialogOpen(patient)} color="primary" disabled={selectedPatients.length > 0}>
                         <EditIcon />
                       </IconButton>
                       <IconButton onClick={() => handleDeleteDialogOpen(patient)} color="secondary">
@@ -260,7 +317,9 @@ function PatientList() {
         <DialogTitle>Conferma Eliminazione</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Sei sicuro di voler eliminare il paziente {selectedPatient?.nominativo}?
+            {selectedPatient
+              ? `Sei sicuro di voler eliminare il paziente ${selectedPatient.nominativo}?`
+              : 'Sei sicuro di voler eliminare i pazienti selezionati?'}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -268,7 +327,7 @@ function PatientList() {
             Annulla
           </Button>
           <Button
-            onClick={() => handleDelete(selectedPatient.uuid)}
+            onClick={() => handleDelete(selectedPatient ? [selectedPatient.uuid] : selectedPatients)}
             color="primary"
             autoFocus
           >
