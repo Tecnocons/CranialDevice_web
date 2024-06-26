@@ -7,6 +7,7 @@ import {
   DialogTitle,
   TextField,
   Button,
+  MenuItem
 } from '@mui/material';
 
 const EditPatientDialog = ({ open, onClose, onEditSubmit, patient }) => {
@@ -15,6 +16,7 @@ const EditPatientDialog = ({ open, onClose, onEditSubmit, patient }) => {
     eta: patient.eta,
     altezza: patient.altezza,
     peso: patient.peso,
+    sesso: patient.sesso, // Aggiungi questo campo
   });
 
   const handleEditChange = (e) => {
@@ -68,6 +70,19 @@ const EditPatientDialog = ({ open, onClose, onEditSubmit, patient }) => {
           value={editedPatient.peso}
           onChange={handleEditChange}
         />
+        <TextField
+          margin="dense"
+          name="sesso"
+          label="Sesso"
+          select
+          fullWidth
+          value={editedPatient.sesso}
+          onChange={handleEditChange}
+        >
+          <MenuItem value="maschio">Maschio</MenuItem>
+          <MenuItem value="femmina">Femmina</MenuItem>
+          <MenuItem value="altro">Altro</MenuItem>
+        </TextField>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">

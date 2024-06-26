@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Button, Typography } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Button, Typography, MenuItem } from '@mui/material';
 import { useAuth } from '../../contexts/AuthContext';
 
 const AddPatientDialog = ({ open, onClose, onPatientAdded }) => {
@@ -8,7 +8,8 @@ const AddPatientDialog = ({ open, onClose, onPatientAdded }) => {
     nominativo: '',
     eta: '',
     altezza: '',
-    peso: ''
+    peso: '',
+    sesso: '', // Aggiungi questo campo
   });
   const [error, setError] = useState(null);
 
@@ -48,7 +49,8 @@ const AddPatientDialog = ({ open, onClose, onPatientAdded }) => {
       nominativo: '',
       eta: '',
       altezza: '',
-      peso: ''
+      peso: '',
+      sesso: '', // Reset sesso
     });
     setError(null);
     onClose();
@@ -99,6 +101,19 @@ const AddPatientDialog = ({ open, onClose, onPatientAdded }) => {
           value={newPatient.peso}
           onChange={handleChange}
         />
+        <TextField
+          margin="dense"
+          name="sesso"
+          label="Sesso"
+          select
+          fullWidth
+          value={newPatient.sesso}
+          onChange={handleChange}
+        >
+          <MenuItem value="maschio">Maschio</MenuItem>
+          <MenuItem value="femmina">Femmina</MenuItem>
+          <MenuItem value="altro">Altro</MenuItem>
+        </TextField>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} color="primary">

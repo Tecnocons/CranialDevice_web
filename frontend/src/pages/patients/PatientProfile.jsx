@@ -1,13 +1,39 @@
-import React from 'react';
-import { Container, Grid, Paper, Typography, IconButton, Button } from '@mui/material';
-import { useHistory } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Container, Grid, Paper, Typography, IconButton } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import jsPDF from 'jspdf';
-import './PatientInfo.css';
+import './PatientProfile.css';
 
-const PatientInfo = ({ patient }) => {
-  const history = useHistory();
+const PatientProfile = () => {
+  const { uuid } = useParams(); // Ottieni l'UUID dai parametri della rotta
+  const navigate = useNavigate();
+  const [patient, setPatient] = useState(null);
+
+  useEffect(() => {
+    const fetchPatient = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/patients/${uuid}`, {
+          method: 'GET',
+          credentials: 'include',
+        });
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setPatient(data);
+      } catch (error) {
+        console.error('Error fetching patient:', error);
+      }
+    };
+
+    fetchPatient();
+  }, [uuid]);
+
+  if (!patient) {
+    return <div>Loading...</div>;
+  }
 
   const measurements = [
     { date: '2024-06-20', value: '120/80' },
@@ -75,7 +101,7 @@ const PatientInfo = ({ patient }) => {
 
   return (
     <Container className="patient-info-container">
-      <IconButton onClick={() => history.goBack()} className="back-button">
+      <IconButton onClick={() => navigate(-1)} className="back-button">
         <ArrowBackIcon />
       </IconButton>
       <Grid container spacing={3}>
@@ -131,4 +157,4 @@ const PatientInfo = ({ patient }) => {
   );
 };
 
-export default PatientInfo;
+export default PatientProfile;

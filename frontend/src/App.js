@@ -6,6 +6,7 @@ import AddUser from './pages/admin/AddUser';
 import UserList from './pages/admin/UserList';
 import PatientList from './pages/patients/PatientList';
 import HamburgerMenu from './components/HamburgerMenu';
+import PatientProfile from './pages/patients/PatientProfile';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/users" element={<UserList />} />
         <Route path="/" element={<LoginRegister />} />
         <Route path="/patients" element={<PatientList />} />
+        <Route path="/patients/:uuid" element={<PatientProfile />} />
       </Routes>
     </Router>
   );

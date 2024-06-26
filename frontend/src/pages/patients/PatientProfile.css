@@ -1,0 +1,34 @@
+.patient-info-container {
+    margin-top: 20px;
+  }
+  
+  .back-button {
+    margin-bottom: 20px;
+  }
+  
+  .patient-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .patient-icon {
+    font-size: 48px;
+    margin-right: 20px;
+  }
+  
+  .patient-details {
+    flex-grow: 1;
+  }
+  
+  .pdf-button {
+    margin-left: auto;
+  }
+  
+  .info-block {
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+  }
+  

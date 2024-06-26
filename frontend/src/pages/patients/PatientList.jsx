@@ -23,12 +23,13 @@ import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
 import AddPatientDialog from './AddPatientDialog';
 import EditPatientDialog from './EditPatientDialog';
-import PatientInfo from './PatientInfo'; // Importa il nuovo componente
+import { useNavigate } from 'react-router-dom';
 import './PatientList.css';
 import HamburgerMenu from '../../components/HamburgerMenu';
 
 function PatientList() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -39,7 +40,6 @@ function PatientList() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [selectedPatients, setSelectedPatients] = useState([]);
-  const [patientInfoOpen, setPatientInfoOpen] = useState(false); // Stato per la scheda "Cartella Clinica"
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -209,13 +209,7 @@ function PatientList() {
   };
 
   const handlePatientInfoOpen = (patient) => {
-    setSelectedPatient(patient);
-    setPatientInfoOpen(true);
-  };
-
-  const handlePatientInfoClose = () => {
-    setPatientInfoOpen(false);
-    setSelectedPatient(null);
+    navigate(`/patients/${patient.uuid}`);
   };
 
   if (loading) {
@@ -359,9 +353,6 @@ function PatientList() {
           </Button>
         </DialogActions>
       </Dialog>
-      {user && selectedPatient && (
-        <PatientInfo open={patientInfoOpen} onClose={handlePatientInfoClose} patient={selectedPatient} />
-      )}
     </div>
   );
 }

@@ -7,3 +7,4 @@ class Patients(db.Model):
     peso = db.Column(db.Float, nullable=False)
     nominativo = db.Column(db.String, nullable=False)
     doctorid = db.Column(db.String, db.ForeignKey('users.uuid'), nullable=False)
+    sesso = db.Column(db.String, nullable=False)

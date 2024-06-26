@@ -1,4 +1,28 @@
-.MuiAccordion-root {
+.patient-info-container {
+    padding: 20px;
+  }
+  
+  .header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .avatar {
+    width: 60px;
+    height: 60px;
+    margin-right: 20px;
+  }
+  
+  .patient-details {
+    flex-grow: 1;
+  }
+  
+  .save-icon {
+    margin-left: auto;
+  }
+  
+  .MuiAccordion-root {
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     margin-bottom: 10px;

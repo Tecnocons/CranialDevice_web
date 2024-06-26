@@ -19,12 +19,13 @@ def create_patient():
     altezza = data.get('altezza')
     peso = data.get('peso')
     nominativo = data.get('nominativo')
-    doctorid = current_user.uuid  # Ottieni l'UUID del dottore dalla sessione
+    sesso = data.get('sesso')
+    doctorid = current_user.uuid
 
-    if not all([eta, altezza, peso, nominativo]):
+    if not all([eta, altezza, peso, nominativo, sesso]):
         return jsonify({"message": "Missing fields in the request data"}), 400
 
-    new_patient = Patients(eta=eta, altezza=altezza, peso=peso, nominativo=nominativo, doctorid=doctorid)
+    new_patient = Patients(eta=eta, altezza=altezza, peso=peso, nominativo=nominativo, sesso=sesso, doctorid=doctorid)
 
     try:
         db.session.add(new_patient)
@@ -42,7 +43,7 @@ def create_patient():
 def get_patients():
     try:
         query = text("""
-            SELECT p.uuid, p.eta, p.altezza, p.peso, p.nominativo, p.doctorid, u.name as doctor_name
+            SELECT p.uuid, p.eta, p.altezza, p.peso, p.nominativo, p.sesso, p.doctorid, u.name as doctor_name
             FROM patients p
             LEFT JOIN users u ON p.doctorid = u.uuid
         """)
@@ -54,11 +55,34 @@ def get_patients():
                 'altezza': row.altezza,
                 'peso': row.peso,
                 'nominativo': row.nominativo,
+                'sesso': row.sesso,
                 'doctorid': row.doctorid,
                 'doctor_name': row.doctor_name
             } for row in result
         ]
         return jsonify(patients), 200
+    except Exception as e:
+        return jsonify({"message": "An error occurred", "error": str(e)}), 500
+
+@patients_bp.route('/patients/<uuid>', methods=['GET'])
+@login_required
+def get_patient(uuid):
+    try:
+        patient = Patients.query.filter_by(uuid=uuid).first()
+        if not patient:
+            return jsonify({"message": "Patient not found"}), 404
+
+        patient_data = {
+            'uuid': patient.uuid,
+            'eta': patient.eta,
+            'altezza': patient.altezza,
+            'peso': patient.peso,
+            'nominativo': patient.nominativo,
+            'sesso': patient.sesso,
+            'doctorid': patient.doctorid,
+            'doctor_name': Users.query.filter_by(uuid=patient.doctorid).first().name
+        }
+        return jsonify(patient_data), 200
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
@@ -75,7 +99,7 @@ def get_assigned_patients():
             return jsonify({"message": "Doctor not found"}), 404
 
         query = text("""
-            SELECT p.uuid, p.eta, p.altezza, p.peso, p.nominativo, p.doctorid, u.name as doctor_name
+            SELECT p.uuid, p.eta, p.altezza, p.peso, p.nominativo, p.sesso, p.doctorid, u.name as doctor_name
             FROM patients p
             LEFT JOIN users u ON p.doctorid = u.uuid
             WHERE p.doctorid = :doctorid
@@ -88,6 +112,7 @@ def get_assigned_patients():
                 'altezza': row.altezza,
                 'peso': row.peso,
                 'nominativo': row.nominativo,
+                'sesso': row.sesso,
                 'doctorid': row.doctorid,
                 'doctor_name': row.doctor_name
             } for row in result
@@ -113,6 +138,7 @@ def update_patient():
         patient.altezza = data.get('altezza', patient.altezza)
         patient.peso = data.get('peso', patient.peso)
         patient.nominativo = data.get('nominativo', patient.nominativo)
+        patient.sesso = data.get('sesso', patient.sesso)
         patient.doctorid = data.get('doctorid', patient.doctorid)
         db.session.commit()
         return jsonify({"message": "Patient updated successfully"}), 200
@@ -137,7 +163,6 @@ def delete_patient(uuid):
     except Exception as e:
         db.session.rollback()
         return jsonify({"message": "An error occurred"}), 500
-
 
 @patients_bp.route('/patients/bulk_delete', methods=['DELETE'])
 @login_required
