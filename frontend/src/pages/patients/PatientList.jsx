@@ -17,11 +17,13 @@ import {
   DialogContentText,
   DialogTitle,
   Checkbox,
+  Link,
 } from '@mui/material';
 import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
 import AddPatientDialog from './AddPatientDialog';
 import EditPatientDialog from './EditPatientDialog';
+import PatientInfo from './PatientInfo'; // Importa il nuovo componente
 import './PatientList.css';
 import HamburgerMenu from '../../components/HamburgerMenu';
 
@@ -37,6 +39,7 @@ function PatientList() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [selectedPatients, setSelectedPatients] = useState([]);
+  const [patientInfoOpen, setPatientInfoOpen] = useState(false); // Stato per la scheda "Cartella Clinica"
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -205,6 +208,16 @@ function PatientList() {
     setSelectedPatient(null);
   };
 
+  const handlePatientInfoOpen = (patient) => {
+    setSelectedPatient(patient);
+    setPatientInfoOpen(true);
+  };
+
+  const handlePatientInfoClose = () => {
+    setPatientInfoOpen(false);
+    setSelectedPatient(null);
+  };
+
   if (loading) {
     return (
       <div className="root">
@@ -278,7 +291,11 @@ function PatientList() {
                       />
                     </TableCell>
                   )}
-                  <TableCell>{patient.nominativo}</TableCell>
+                  <TableCell>
+                    <Link component="button" onClick={() => handlePatientInfoOpen(patient)}>
+                      {patient.nominativo}
+                    </Link>
+                  </TableCell>
                   <TableCell>{patient.eta}</TableCell>
                   <TableCell>{patient.altezza}</TableCell>
                   <TableCell>{patient.peso}</TableCell>
@@ -342,6 +359,9 @@ function PatientList() {
           </Button>
         </DialogActions>
       </Dialog>
+      {user && selectedPatient && (
+        <PatientInfo open={patientInfoOpen} onClose={handlePatientInfoClose} patient={selectedPatient} />
+      )}
     </div>
   );
 }
