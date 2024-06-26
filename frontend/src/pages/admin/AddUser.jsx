@@ -50,12 +50,14 @@ function AddUser() {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',  // Aggiungere questa riga per includere le credenziali
       body: JSON.stringify({ name, password, isadmin: isAdmin }),
     });
-
+  
     const data = await response.json();
     setMessage(data.message);
   };
+  
 
   const handleClose = () => {
     navigate('/main'); // Navigate back to the main page
