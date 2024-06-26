@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AppBar, Toolbar, IconButton, Typography, Drawer, List, ListItem, ListItemIcon, ListItemText, Divider, Tooltip } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import AddIcon from '@mui/icons-material/Add';
+import HomeIcon from '@mui/icons-material/Home';
 import ListIcon from '@mui/icons-material/List';
 import LogoutIcon from '@mui/icons-material/Logout';
 import CloseIcon from '@mui/icons-material/Close';
@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 
 const HamburgerMenu = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const toggleDrawer = (open) => () => {
@@ -21,16 +21,16 @@ const HamburgerMenu = () => {
   };
 
   const menuItems = [
-    { text: 'Add User', icon: <AddIcon />, onClick: () => navigate('/add-user'), adminOnly: true },
+    { text: 'Home', icon: <HomeIcon />, onClick: () => navigate('/main'), adminOnly: false },
     { text: 'User List', icon: <ListIcon />, onClick: () => navigate('/users'), adminOnly: true },
     { text: 'Lista pazienti', icon: <PeopleIcon />, onClick: () => navigate('/patients'), adminOnly: false }
   ];
 
   const additionalItems = [
-    { text: 'Placeholder 1', icon: <AddIcon />, onClick: () => {}, adminOnly: false },
-    { text: 'Placeholder 2', icon: <AddIcon />, onClick: () => {}, adminOnly: false },
-    { text: 'Placeholder 3', icon: <AddIcon />, onClick: () => {}, adminOnly: false },
-    { text: 'Logout', icon: <LogoutIcon />, onClick: ()=> navigate('/login'), adminOnly: false }
+    { text: 'Placeholder 1', icon: <HomeIcon />, onClick: () => {}, adminOnly: false },
+    { text: 'Placeholder 2', icon: <HomeIcon />, onClick: () => {}, adminOnly: false },
+    { text: 'Placeholder 3', icon: <HomeIcon />, onClick: () => {}, adminOnly: false },
+    { text: 'Logout', icon: <LogoutIcon />, onClick: () => navigate('/login'), adminOnly: false }
   ];
 
   return (

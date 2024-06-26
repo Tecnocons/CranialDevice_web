@@ -19,6 +19,7 @@ import {
   FormControlLabel,
   InputAdornment,
   Button,
+  Box,
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
@@ -26,7 +27,9 @@ import EditIcon from '@mui/icons-material/Edit';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CloseIcon from '@mui/icons-material/Close';
+import AddIcon from '@mui/icons-material/Add';
 import { useAuth } from '../../contexts/AuthContext';
+import { ClipLoader } from 'react-spinners';
 
 const Root = styled('div')({
   display: 'flex',
@@ -38,6 +41,13 @@ const Root = styled('div')({
 
 const StyledTable = styled(Table)({
   minWidth: 650,
+  '& .MuiTableCell-head': {
+    backgroundColor: '#f1f1f1',
+    fontWeight: 'bold',
+  },
+  '& .MuiTableCell-body': {
+    fontSize: 14,
+  },
 });
 
 const Header = styled('div')({
@@ -48,11 +58,20 @@ const Header = styled('div')({
   marginBottom: 16,
 });
 
+const AddButton = styled(Button)({
+  backgroundColor: '#4caf50',
+  color: '#fff',
+  '&:hover': {
+    backgroundColor: '#45a049',
+  },
+});
+
 function UserList() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [open, setOpen] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
+  const [openAdd, setOpenAdd] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
@@ -62,28 +81,30 @@ function UserList() {
   const { user } = useAuth();
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/users', {
-          method: 'GET',
-          credentials: 'include',
-        });
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        if (!Array.isArray(data)) {
-          throw new Error('Data is not an array');
-        }
-        setUsers(data);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchUsers();
   }, []);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('http://localhost:5000/api/users', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      if (!Array.isArray(data)) {
+        throw new Error('Data is not an array');
+      }
+      setUsers(data);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleEditClick = async (user) => {
     setSelectedUser(user);
@@ -99,14 +120,18 @@ function UserList() {
       const data = await response.json();
       setPassword(data.password); // Set the password field with the decrypted password
       setIsAdmin(data.isadmin);
-      setOpen(true);
+      setOpenEdit(true);
     } catch (error) {
       console.error('Error:', error);
     }
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleCloseEdit = () => {
+    setOpenEdit(false);
+  };
+
+  const handleCloseAdd = () => {
+    setOpenAdd(false);
   };
 
   const handleSave = async () => {
@@ -124,7 +149,35 @@ function UserList() {
       }
       const updatedUser = { ...selectedUser, name, isadmin: isAdmin };
       setUsers(users.map((user) => (user.uuid === updatedUser.uuid ? updatedUser : user)));
-      handleClose();
+      handleCloseEdit();
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const handleAddClick = () => {
+    setName('');
+    setPassword('');
+    setIsAdmin(false);
+    setOpenAdd(true);
+  };
+
+  const handleAddUser = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/add-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ name, password, isadmin: isAdmin }),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      await response.json();
+      fetchUsers(); // Fetch users again to update the table
+      handleCloseAdd();
     } catch (error) {
       console.error('Error:', error);
     }
@@ -133,11 +186,25 @@ function UserList() {
   const handleClickShowPassword = () => setShowPassword(!showPassword);
 
   if (loading) {
-    return <Root><Typography>Loading...</Typography></Root>;
+    return (
+      <Root>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <ClipLoader size={50} color={"#123abc"} loading={loading} />
+          <Typography variant="h6" style={{ marginTop: '20px' }}>Loading...</Typography>
+        </Box>
+      </Root>
+    );
   }
 
   if (error) {
-    return <Root><Typography>Error: {error}</Typography></Root>;
+    return (
+      <Root>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <Typography variant="h6" color="error">Error: {error}</Typography>
+          <Button variant="contained" color="primary" onClick={() => window.location.reload()}>Retry</Button>
+        </Box>
+      </Root>
+    );
   }
 
   return (
@@ -150,6 +217,14 @@ function UserList() {
           <Typography variant="h4" component="h1" gutterBottom>
             User List
           </Typography>
+          <AddButton
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
+            onClick={handleAddClick}
+          >
+            Add User
+          </AddButton>
         </Header>
         <StyledTable>
           <TableHead>
@@ -175,7 +250,7 @@ function UserList() {
         </StyledTable>
       </Container>
 
-      <Dialog open={open} onClose={handleClose}>
+      <Dialog open={openEdit} onClose={handleCloseEdit}>
         <DialogTitle>Edit User</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -216,11 +291,61 @@ function UserList() {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleCloseEdit} color="primary">
             Cancel
           </Button>
           <Button onClick={handleSave} color="primary">
             Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={openAdd} onClose={handleCloseAdd}>
+        <DialogTitle>Add New User</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Enter the details of the new user.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Name"
+            type="text"
+            fullWidth
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <TextField
+            margin="dense"
+            label="Password"
+            type={showPassword ? 'text' : 'password'}
+            fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                  >
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
+          <FormControlLabel
+            control={<Checkbox checked={isAdmin} onChange={(e) => setIsAdmin(e.target.checked)} />}
+            label="Admin"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseAdd} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleAddUser} color="primary">
+            Add User
           </Button>
         </DialogActions>
       </Dialog>
