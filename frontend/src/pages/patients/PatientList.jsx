@@ -73,17 +73,20 @@ function PatientList() {
 
   const handleDelete = async (uuids) => {
     try {
+      console.log(`Deleting patients with UUIDs: ${uuids}`); // Log UUIDs being sent for deletion
+
       const response = await fetch(`http://localhost:5000/api/patients/bulk_delete`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ uuids }),
+        body: JSON.stringify({ uuids }),  // Assicurati che i dati siano inviati come JSON
       });
 
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        const errorMessage = await response.json();
+        throw new Error(errorMessage.message);
       }
 
       // Aggiorna la lista dei pazienti dopo la cancellazione
@@ -232,7 +235,7 @@ function PatientList() {
                 Aggiungi
               </Button>
             )}
-            {selectedPatients.length > 0 && (
+            {user && !user.isAdmin && selectedPatients.length > 0 && (
               <Button color="secondary" onClick={handleMultipleDelete}>
                 Elimina Selezionati
               </Button>
@@ -241,13 +244,15 @@ function PatientList() {
           <Table className="styled-table">
             <TableHead>
               <TableRow>
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    indeterminate={selectedPatients.length > 0 && selectedPatients.length < patients.length}
-                    checked={isAllSelected}
-                    onChange={handleSelectAllPatients}
-                  />
-                </TableCell>
+                {user && !user.isAdmin && (
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      indeterminate={selectedPatients.length > 0 && selectedPatients.length < patients.length}
+                      checked={isAllSelected}
+                      onChange={handleSelectAllPatients}
+                    />
+                  </TableCell>
+                )}
                 <TableCell className="table-header">Nominativo</TableCell>
                 <TableCell className="table-header">Età</TableCell>
                 <TableCell className="table-header">Altezza</TableCell>
@@ -265,12 +270,14 @@ function PatientList() {
                   aria-checked={isSelected(patient.uuid)}
                   selected={isSelected(patient.uuid)}
                 >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={isSelected(patient.uuid)}
-                      onChange={() => handleSelectPatient(patient.uuid)}
-                    />
-                  </TableCell>
+                  {user && !user.isAdmin && (
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={isSelected(patient.uuid)}
+                        onChange={() => handleSelectPatient(patient.uuid)}
+                      />
+                    </TableCell>
+                  )}
                   <TableCell>{patient.nominativo}</TableCell>
                   <TableCell>{patient.eta}</TableCell>
                   <TableCell>{patient.altezza}</TableCell>
