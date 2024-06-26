@@ -17,9 +17,10 @@ import {
   DialogContentText,
   DialogTitle,
 } from '@mui/material';
-import { Delete as DeleteIcon } from '@mui/icons-material';
+import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import { useAuth } from '../../contexts/AuthContext';
-import AddPatientDialog from '../../components/AddPatientDialog';
+import AddPatientDialog from './AddPatientDialog';
+import EditPatientDialog from './EditPatientDialog';
 import './PatientList.css';
 import HamburgerMenu from '../../components/HamburgerMenu';
 
@@ -32,6 +33,7 @@ function PatientList() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
 
   useEffect(() => {
@@ -119,6 +121,44 @@ function PatientList() {
     fetchPatients();
   };
 
+  const handleEditDialogOpen = (patient) => {
+    setSelectedPatient(patient);
+    setEditDialogOpen(true);
+  };
+
+  const handleEditDialogClose = () => {
+    setEditDialogOpen(false);
+    setSelectedPatient(null);
+  };
+
+  const handleEditSubmit = async (updatedPatient) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/patients`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(updatedPatient),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      // Aggiorna la lista dei pazienti dopo la modifica
+      setPatients((prevPatients) =>
+        prevPatients.map((patient) =>
+          patient.uuid === updatedPatient.uuid ? { ...patient, ...updatedPatient } : patient
+        )
+      );
+      setEditDialogOpen(false);
+      setSelectedPatient(null);
+    } catch (error) {
+      console.error('Error updating patient:', error.message);
+    }
+  };
+
   const handleDeleteDialogOpen = (patient) => {
     setSelectedPatient(patient);
     setDeleteDialogOpen(true);
@@ -181,6 +221,9 @@ function PatientList() {
                   {user && user.isAdmin && <TableCell>{patient.doctor_name}</TableCell>}
                   {user && !user.isAdmin && (
                     <TableCell>
+                      <IconButton onClick={() => handleEditDialogOpen(patient)} color="primary">
+                        <EditIcon />
+                      </IconButton>
                       <IconButton onClick={() => handleDeleteDialogOpen(patient)} color="secondary">
                         <DeleteIcon />
                       </IconButton>
@@ -204,6 +247,14 @@ function PatientList() {
       </div>
       {user && (
         <AddPatientDialog open={addDialogOpen} onClose={handleAddDialogClose} onPatientAdded={handlePatientAdded} />
+      )}
+      {user && selectedPatient && (
+        <EditPatientDialog
+          open={editDialogOpen}
+          onClose={handleEditDialogClose}
+          onEditSubmit={handleEditSubmit}
+          patient={selectedPatient}
+        />
       )}
       <Dialog open={deleteDialogOpen} onClose={handleDeleteDialogClose}>
         <DialogTitle>Conferma Eliminazione</DialogTitle>
