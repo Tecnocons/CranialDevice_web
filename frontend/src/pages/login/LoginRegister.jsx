@@ -5,19 +5,39 @@ import { styled } from '@mui/system';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import LockIcon from '@mui/icons-material/Lock';
 import { useAuth } from '../../contexts/AuthContext';
+import backgroundImage from '../../assets/background.png';  // Importa l'immagine
+
+const orangeColor = '#EB873F';  // Colore arancione estratto dall'immagine di sfondo
+const darkOrangeColor = '#CF6F2E';  // Colore arancione più scuro per l'effetto hover del pulsante
+
+// Aggiungi questo stile globale per impedire lo scorrimento della pagina
+const GlobalStyle = styled('div')`
+  body {
+    overflow: hidden;
+  }
+`;
 
 const Root = styled('div')({
   display: 'flex',
-  justifyContent: 'center',
+  justifyContent: 'flex-end',  // Cambia 'center' a 'flex-end' per allineare a destra
   alignItems: 'center',
-  height: '100vh',
-  backgroundColor: '#f5f5f5',
+  height: '92vh',
+  width: '210vh',
+  backgroundImage: `url(${backgroundImage})`,
+  backgroundSize: 'cover',
+  backgroundPosition: 'center',
+  padding: '20px',
+  overflow: 'hidden',
 });
 
 const StyledCard = styled(Card)({
-  maxWidth: 400,
-  padding: 16,
+  maxWidth: 350,  // Aumenta la larghezza massima
+  width: '100%',
+  padding: 32,  // Aumenta il padding per più spazio interno
   margin: 16,
+  backgroundColor: 'rgba(255, 255, 255, 0.9)',  // Aggiunge uno sfondo semi-trasparente per il contrasto
+  marginLeft: 'auto',  // Sposta il card verso destra
+  minHeight: 350,  // Aggiunge altezza minima per aumentare l'altezza del form
 });
 
 const Form = styled('form')({
@@ -28,12 +48,27 @@ const Form = styled('form')({
 
 const StyledButton = styled(Button)({
   marginTop: 16,
+  backgroundColor: orangeColor,  // Imposta il colore arancione di sfondo
+  '&:hover': {
+    backgroundColor: darkOrangeColor,  // Colore leggermente più scuro al passaggio del mouse
+  }
+});
+
+const StyledTextField = styled(TextField)({
+  '& .MuiOutlinedInput-root': {
+    '&:hover fieldset': {
+      borderColor: orangeColor,  // Colore arancione al passaggio del mouse
+      borderWidth: 2,  // Bordo più spesso al passaggio del mouse
+    },
+  },
 });
 
 const Title = styled(Typography)({
   fontFamily: 'Roboto, sans-serif',
   fontWeight: 700,
   marginBottom: 16,
+  textAlign: 'center',  // Centra il testo
+  fontSize: '24px',  // Cambia la dimensione del font
 });
 
 function LoginRegister() {
@@ -90,51 +125,56 @@ function LoginRegister() {
   }
 
   return (
-    <Root>
-      <StyledCard>
-        <CardContent>
-          <Title variant="h4" component="h2" gutterBottom>
-            {isFirstUser ? 'Register as Admin' : 'Login'}
-          </Title>
-          <Form onSubmit={handleSubmit}>
-            <TextField
-              label="Name"
-              variant="outlined"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <AccountCircle />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <TextField
-              label="Password"
-              type="password"
-              variant="outlined"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <LockIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <StyledButton type="submit" variant="contained" color="primary">
-              {isFirstUser ? 'Register' : 'Login'}
-            </StyledButton>
-          </Form>
-          {message && <Typography color="error">{message}</Typography>}
-        </CardContent>
-      </StyledCard>
-    </Root>
+    <>
+      <GlobalStyle />
+      <Root>
+        <StyledCard>
+          <CardContent>
+            <Title variant="h4" component="h2" gutterBottom>
+              Accedi / Login
+            </Title>
+            <Form onSubmit={handleSubmit}>
+              <StyledTextField
+                label="Name"
+                variant="outlined"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <AccountCircle />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <StyledTextField
+                label="Password"
+                type="password"
+                variant="outlined"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LockIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <StyledButton type="submit" variant="contained" color="primary">
+                {isFirstUser ? 'Register' : 'Accedi'}
+              </StyledButton>
+            </Form>
+            {message && <Typography color="error">{message}</Typography>}
+          </CardContent>
+        </StyledCard>
+      </Root>
+    </>
   );
 }
 
 export default LoginRegister;
+
+//
