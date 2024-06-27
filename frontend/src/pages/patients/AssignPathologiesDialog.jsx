@@ -6,12 +6,18 @@ import {
   DialogContentText,
   DialogTitle,
   Button,
-  MenuItem,
-  Select,
   Typography,
-  IconButton
+  IconButton,
+  Autocomplete,
+  TextField,
+  Checkbox
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const AssignPathologiesDialog = ({ open, onClose, patient, onAssign }) => {
   const [allPathologies, setAllPathologies] = useState([]);
@@ -58,8 +64,8 @@ const AssignPathologiesDialog = ({ open, onClose, patient, onAssign }) => {
     }
   }, [open, patient.uuid]);
 
-  const handleSelectChange = (event) => {
-    const newSelectedPathologies = event.target.value.filter((id) => {
+  const handleAutocompleteChange = (event, newValue) => {
+    const newSelectedPathologies = newValue.map(p => p.id).filter((id) => {
       return !assignedPathologies.some(p => p.id === id);
     });
     setSelectedPathologies(newSelectedPathologies);
@@ -117,31 +123,28 @@ const AssignPathologiesDialog = ({ open, onClose, patient, onAssign }) => {
         <DialogContentText>
           Seleziona una o più patologie da assegnare a questo paziente.
         </DialogContentText>
-        <Select
+        <Autocomplete
           multiple
-          value={selectedPathologies}
-          onChange={handleSelectChange}
-          fullWidth
-          renderValue={(selected) => (
-            <div>
-              {selected.map((value) => {
-                const pathology = allPathologies.find(p => p.id === value);
-                return pathology ? <span key={value}>{pathology.name} </span> : null;
-              })}
-            </div>
+          options={allPathologies}
+          getOptionLabel={(option) => option.name}
+          value={allPathologies.filter(p => selectedPathologies.includes(p.id) || assignedPathologies.some(ap => ap.id === p.id))}
+          onChange={handleAutocompleteChange}
+          renderInput={(params) => <TextField {...params} label="Patologie" placeholder="Seleziona patologie" />}
+          disableCloseOnSelect
+          renderOption={(props, option, { selected }) => (
+            <li {...props}>
+              <Checkbox
+                icon={icon}
+                checkedIcon={checkedIcon}
+                style={{ marginRight: 8 }}
+                checked={selected}
+                disabled={assignedPathologies.some(p => p.id === option.id)}
+              />
+              {option.name}
+            </li>
           )}
-        >
-          {allPathologies.map((pathology) => (
-            <MenuItem
-              key={pathology.id}
-              value={pathology.id}
-              disabled={assignedPathologies.some(p => p.id === pathology.id)}
-            >
-              {pathology.name}
-            </MenuItem>
-          ))}
-        </Select>
-        <Typography variant="h6">Patologie Assegnate</Typography>
+        />
+        <Typography variant="h6" style={{ marginTop: '16px' }}>Patologie Assegnate</Typography>
         {assignedPathologies.map((pathology) => (
           <div key={pathology.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography>{pathology.name}</Typography>

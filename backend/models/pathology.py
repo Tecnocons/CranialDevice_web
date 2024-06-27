@@ -1,9 +1,7 @@
-
-from sqlalchemy import Column, Integer, String, Text
 from models import db
 
 class Pathologies(db.Model):
     __tablename__ = 'pathologies'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(255), unique=True, nullable=False)
-    description = Column(Text, nullable=True)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128), nullable=False)
+    description = db.Column(db.String(256), nullable=True)
