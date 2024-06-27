@@ -1,41 +1,93 @@
 import React, { useEffect, useState } from 'react';
 import {
   Dialog,
-  DialogTitle,
-  DialogContent,
   DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Button,
-  Typography,
-  FormControl,
-  InputLabel,
-  Select,
   MenuItem,
-  Checkbox,
-  ListItemText,
+  Select,
+  Typography,
+  IconButton
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 const AssignPathologiesDialog = ({ open, onClose, patient, onAssign }) => {
-  const [pathologies, setPathologies] = useState([]);
+  const [allPathologies, setAllPathologies] = useState([]);
   const [selectedPathologies, setSelectedPathologies] = useState([]);
+  const [assignedPathologies, setAssignedPathologies] = useState([]);
 
   useEffect(() => {
-    const fetchPathologies = async () => {
+    const fetchAllPathologies = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/pathologies', {
           method: 'GET',
           credentials: 'include',
         });
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
         const data = await response.json();
-        setPathologies(data);
+        setAllPathologies(data);
       } catch (error) {
         console.error('Error fetching pathologies:', error);
       }
     };
 
-    fetchPathologies();
-  }, []);
+    const fetchAssignedPathologies = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/patient_pathology/${patient.uuid}`, {
+          method: 'GET',
+          credentials: 'include',
+        });
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setAssignedPathologies(data);
+        setSelectedPathologies(data.map(p => p.id));
+      } catch (error) {
+        console.error('Error fetching assigned pathologies:', error);
+      }
+    };
 
-  const handleAssign = async () => {
+    if (open) {
+      fetchAllPathologies();
+      fetchAssignedPathologies();
+    }
+  }, [open, patient.uuid]);
+
+  const handleSelectChange = (event) => {
+    const newSelectedPathologies = event.target.value.filter((id) => {
+      return !assignedPathologies.some(p => p.id === id);
+    });
+    setSelectedPathologies(newSelectedPathologies);
+  };
+
+  const handleRemove = async (pathologyId) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/patient_pathology', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ patient_uuid: patient.uuid, pathology_id: pathologyId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      setAssignedPathologies(prev => prev.filter(p => p.id !== pathologyId));
+      setSelectedPathologies(prev => prev.filter(id => id !== pathologyId));
+    } catch (error) {
+      console.error('Error removing pathology:', error);
+    }
+  };
+
+  const handleConfirm = async () => {
     try {
       const response = await fetch('http://localhost:5000/api/patient_pathology', {
         method: 'POST',
@@ -50,6 +102,7 @@ const AssignPathologiesDialog = ({ open, onClose, patient, onAssign }) => {
         throw new Error('Network response was not ok');
       }
 
+      const data = await response.json();
       onAssign();
       onClose();
     } catch (error) {
@@ -57,38 +110,54 @@ const AssignPathologiesDialog = ({ open, onClose, patient, onAssign }) => {
     }
   };
 
-  const handleChange = (event) => {
-    setSelectedPathologies(event.target.value);
-  };
-
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Assign Pathologies to {patient.nominativo}</DialogTitle>
+      <DialogTitle>Assegna Patologie a {patient.nominativo}</DialogTitle>
       <DialogContent>
-        <Typography>Select one or more pathologies to assign to this patient.</Typography>
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Pathologies</InputLabel>
-          <Select
-            multiple
-            value={selectedPathologies}
-            onChange={handleChange}
-            renderValue={(selected) => selected.map(id => {
-              const pathology = pathologies.find(p => p.id === id);
-              return pathology ? pathology.name : '';
-            }).join(', ')}
-          >
-            {pathologies.map((pathology) => (
-              <MenuItem key={pathology.id} value={pathology.id}>
-                <Checkbox checked={selectedPathologies.indexOf(pathology.id) > -1} />
-                <ListItemText primary={pathology.name} />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <DialogContentText>
+          Seleziona una o più patologie da assegnare a questo paziente.
+        </DialogContentText>
+        <Select
+          multiple
+          value={selectedPathologies}
+          onChange={handleSelectChange}
+          fullWidth
+          renderValue={(selected) => (
+            <div>
+              {selected.map((value) => {
+                const pathology = allPathologies.find(p => p.id === value);
+                return pathology ? <span key={value}>{pathology.name} </span> : null;
+              })}
+            </div>
+          )}
+        >
+          {allPathologies.map((pathology) => (
+            <MenuItem
+              key={pathology.id}
+              value={pathology.id}
+              disabled={assignedPathologies.some(p => p.id === pathology.id)}
+            >
+              {pathology.name}
+            </MenuItem>
+          ))}
+        </Select>
+        <Typography variant="h6">Patologie Assegnate</Typography>
+        {assignedPathologies.map((pathology) => (
+          <div key={pathology.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography>{pathology.name}</Typography>
+            <IconButton onClick={() => handleRemove(pathology.id)} size="small">
+              <CloseIcon />
+            </IconButton>
+          </div>
+        ))}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">Cancel</Button>
-        <Button onClick={handleAssign} color="primary">Assign</Button>
+        <Button onClick={onClose} color="primary">
+          Annulla
+        </Button>
+        <Button onClick={handleConfirm} color="primary">
+          Conferma
+        </Button>
       </DialogActions>
     </Dialog>
   );

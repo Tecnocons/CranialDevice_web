@@ -1,0 +1,21 @@
+.dialog-content {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .assigned-pathologies-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 10px;
+  }
+  
+  .assigned-pathology-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .autocomplete-input {
+    margin-top: 20px;
+  }
+  

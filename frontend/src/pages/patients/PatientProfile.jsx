@@ -14,6 +14,22 @@ const PatientProfile = () => {
   const [pathologies, setPathologies] = useState([]);
   const [assignDialogOpen, setAssignDialogOpen] = useState(false);
 
+  const fetchPatient = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/patients/${uuid}`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setPatient(data);
+    } catch (error) {
+      console.error('Error fetching patient:', error);
+    }
+  };
+
   const fetchPathologies = async () => {
     try {
       const response = await fetch(`http://localhost:5000/api/patient_pathology/${uuid}`, {
@@ -31,22 +47,6 @@ const PatientProfile = () => {
   };
 
   useEffect(() => {
-    const fetchPatient = async () => {
-      try {
-        const response = await fetch(`http://localhost:5000/api/patients/${uuid}`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        setPatient(data);
-      } catch (error) {
-        console.error('Error fetching patient:', error);
-      }
-    };
-
     fetchPatient();
     fetchPathologies();
   }, [uuid]);
