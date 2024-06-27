@@ -2,12 +2,14 @@ import os
 from flask import Flask, jsonify
 from flask_cors import CORS
 from flask_login import LoginManager
-from models import db, Users  # Importa Users dal tuo modello
+from models import db, Users
 from config import Config
 from api.auth import auth_bp
 from api.admin import admin_bp
 from api.users import users_bp
 from api.patients import patients_bp
+from api.pathologies import pathologies_bp
+from api.patient_pathology import patient_pathology_bp
 from werkzeug.exceptions import HTTPException
 
 app = Flask(__name__)
@@ -18,7 +20,7 @@ db.init_app(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = 'auth.login'  # Nome della vista di login
+login_manager.login_view = 'auth.login'
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -26,7 +28,6 @@ def load_user(user_id):
 
 @app.errorhandler(Exception)
 def handle_exception(e):
-    # Passa attraverso le eccezioni HTTP
     if isinstance(e, HTTPException):
         response = e.get_response()
         response.data = jsonify({
@@ -36,7 +37,6 @@ def handle_exception(e):
         }).data
         response.content_type = "application/json"
         return response
-    # Gestisci le eccezioni non-HTTP
     return jsonify({
         "code": 500,
         "name": "Internal Server Error",
@@ -47,6 +47,8 @@ app.register_blueprint(auth_bp, url_prefix='/api')
 app.register_blueprint(admin_bp, url_prefix='/api')
 app.register_blueprint(users_bp, url_prefix='/api')
 app.register_blueprint(patients_bp, url_prefix='/api')
+app.register_blueprint(pathologies_bp, url_prefix='/api')
+app.register_blueprint(patient_pathology_bp, url_prefix='/api')
 
 if __name__ == '__main__':
     with app.app_context():

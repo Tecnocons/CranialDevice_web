@@ -1,15 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Grid, Paper, Typography, IconButton } from '@mui/material';
+import { Container, Grid, Paper, Typography, IconButton, Button } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import jsPDF from 'jspdf';
+import AssignPathologiesDialog from './AssignPathologiesDialog';
 import './PatientProfile.css';
 
 const PatientProfile = () => {
   const { uuid } = useParams(); // Ottieni l'UUID dai parametri della rotta
   const navigate = useNavigate();
   const [patient, setPatient] = useState(null);
+  const [pathologies, setPathologies] = useState([]);
+  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+
+  const fetchPathologies = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/patient_pathology/${uuid}`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setPathologies(data);
+    } catch (error) {
+      console.error('Error fetching pathologies:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchPatient = async () => {
@@ -29,6 +48,7 @@ const PatientProfile = () => {
     };
 
     fetchPatient();
+    fetchPathologies();
   }, [uuid]);
 
   if (!patient) {
@@ -43,11 +63,6 @@ const PatientProfile = () => {
   const treatments = [
     { date: '2024-06-20', description: 'Antibiotics' },
     { date: '2024-06-21', description: 'Physical Therapy' },
-  ];
-
-  const pathologies = [
-    { name: 'Hypertension' },
-    { name: 'Diabetes' },
   ];
 
   const generatePDF = () => {
@@ -97,6 +112,15 @@ const PatientProfile = () => {
       default:
         return '👤'; // Placeholder icon for other/unspecified
     }
+  };
+
+  const handleAssignDialogOpen = () => {
+    setAssignDialogOpen(true);
+  };
+
+  const handleAssignDialogClose = () => {
+    setAssignDialogOpen(false);
+    fetchPathologies(); // Refresh pathologies after assignment
   };
 
   return (
@@ -150,9 +174,18 @@ const PatientProfile = () => {
             {pathologies.map((pathology, index) => (
               <Typography key={index}>{pathology.name}</Typography>
             ))}
+            <Button variant="contained" color="primary" onClick={handleAssignDialogOpen}>
+              Assegna Patologie
+            </Button>
           </Paper>
         </Grid>
       </Grid>
+      <AssignPathologiesDialog
+        open={assignDialogOpen}
+        onClose={handleAssignDialogClose}
+        patient={patient}
+        onAssign={fetchPathologies}
+      />
     </Container>
   );
 };

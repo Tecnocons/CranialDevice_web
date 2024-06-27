@@ -7,6 +7,7 @@ import UserList from './pages/admin/UserList';
 import PatientList from './pages/patients/PatientList';
 import HamburgerMenu from './components/HamburgerMenu';
 import PatientProfile from './pages/patients/PatientProfile';
+import PathologyList from './pages/pathologies/PathologyList'; // Import PathologyList
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/" element={<LoginRegister />} />
         <Route path="/patients" element={<PatientList />} />
         <Route path="/patients/:uuid" element={<PatientProfile />} />
+        <Route path="/pathologies" element={<PathologyList />} /> {/* Add this route */}
       </Routes>
     </Router>
   );
