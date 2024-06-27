@@ -11,6 +11,17 @@ import PersonIcon from '@mui/icons-material/Person';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices'; // Add this import
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { styled } from '@mui/system';
+
+const orangeColor = '#EB873F';  // Colore arancione
+const darkOrangeColor = '#CF6F2E';  // Colore arancione più scuro per l'effetto hover
+
+const StyledIconButton = styled(IconButton)({
+  color: orangeColor,
+  '&:hover': {
+    color: darkOrangeColor,
+  },
+});
 
 const HamburgerMenu = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -25,7 +36,7 @@ const HamburgerMenu = () => {
     { text: 'Home', icon: <HomeIcon />, onClick: () => navigate('/main'), adminOnly: false },
     { text: 'User List', icon: <ListIcon />, onClick: () => navigate('/users'), adminOnly: true },
     { text: 'Lista pazienti', icon: <PeopleIcon />, onClick: () => navigate('/patients'), adminOnly: false },
-    { text: 'Lista patologie', icon: <MedicalServicesIcon />, onClick: () => navigate('/pathologies'), adminOnly: false } // New item
+    { text: 'Lista patologie', icon: <MedicalServicesIcon />, onClick: () => navigate('/pathologies'), adminOnly: false }
   ];
 
   const additionalItems = [
@@ -37,11 +48,11 @@ const HamburgerMenu = () => {
 
   return (
     <div>
-      <AppBar position="static">
+      <AppBar position="static" style={{ backgroundColor: orangeColor }}>
         <Toolbar>
-          <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)}>
+          <StyledIconButton edge="start" aria-label="menu" onClick={toggleDrawer(true)}>
             <MenuIcon />
-          </IconButton>
+          </StyledIconButton>
           <Typography variant="h6" style={{ flexGrow: 1 }}>
             My Web App
           </Typography>
@@ -68,9 +79,9 @@ const HamburgerMenu = () => {
           onClick={toggleDrawer(false)}
           onKeyDown={toggleDrawer(false)}
         >
-          <IconButton onClick={toggleDrawer(false)}>
+          <StyledIconButton onClick={toggleDrawer(false)}>
             <CloseIcon />
-          </IconButton>
+          </StyledIconButton>
           <List>
             {menuItems.map((item, index) => {
               if (item.adminOnly && !user.isAdmin) return null;

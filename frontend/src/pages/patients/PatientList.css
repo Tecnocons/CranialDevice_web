@@ -45,7 +45,7 @@
 }
 
 .styled-table thead tr {
-  background-color: #009879;
+  background-color: #EB873F;
   color: #ffffff;
   text-align: left;
   font-weight: bold;
@@ -65,7 +65,7 @@
 }
 
 .styled-table tbody tr:last-of-type {
-  border-bottom: 2px solid #009879;
+  border-bottom: 2px solid #EB873F;
 }
 
 .add-patient-btn {

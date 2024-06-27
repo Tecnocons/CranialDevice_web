@@ -1,14 +1,30 @@
-// src/pages/main/MainPage.jsx
 import React from 'react';
 import { Container, Typography, Grid, Card, CardContent, CardHeader, Button } from '@mui/material';
 import HamburgerMenu from '../../components/HamburgerMenu';
 import { useAuth } from '../../contexts/AuthContext';
 import { Bar } from 'react-chartjs-2';
+import { styled } from '@mui/system';
+
+const orangeColor = '#EB873F';  // Colore arancione estratto dall'immagine di sfondo
+const darkOrangeColor = '#CF6F2E';  // Colore arancione più scuro per l'effetto hover del pulsante
+
+const StyledButton = styled(Button)({
+  backgroundColor: orangeColor,
+  '&:hover': {
+    backgroundColor: darkOrangeColor,
+  },
+});
+
+const StyledHamburgerMenu = styled(HamburgerMenu)({
+  color: orangeColor,
+  '&:hover': {
+    color: darkOrangeColor,
+  },
+});
 
 const MainPage = () => {
   const { user } = useAuth();
 
-  // Dati fittizi per il grafico
   const data = {
     labels: ['January', 'February', 'March', 'April', 'May', 'June'],
     datasets: [
@@ -30,7 +46,7 @@ const MainPage = () => {
 
   return (
     <>
-      <HamburgerMenu />
+      <StyledHamburgerMenu />
       <Container>
         <Typography variant="h4" component="h1" gutterBottom>
           Main Page
@@ -47,9 +63,9 @@ const MainPage = () => {
                 <Typography variant="body2">
                   List of recent patients treated...
                 </Typography>
-                <Button variant="contained" color="primary" style={{ marginTop: 16 }}>
+                <StyledButton variant="contained" style={{ marginTop: 16 }}>
                   View Details
-                </Button>
+                </StyledButton>
               </CardContent>
             </Card>
           </Grid>
@@ -61,9 +77,9 @@ const MainPage = () => {
                 <Typography variant="body2">
                   List of available treatments...
                 </Typography>
-                <Button variant="contained" color="primary" style={{ marginTop: 16 }}>
+                <StyledButton variant="contained" style={{ marginTop: 16 }}>
                   View Details
-                </Button>
+                </StyledButton>
               </CardContent>
             </Card>
           </Grid>
@@ -99,9 +115,9 @@ const MainPage = () => {
                 <Typography variant="body2">
                   Some placeholder content...
                 </Typography>
-                <Button variant="contained" color="primary" style={{ marginTop: 16 }}>
+                <StyledButton variant="contained" style={{ marginTop: 16 }}>
                   View Details
-                </Button>
+                </StyledButton>
               </CardContent>
             </Card>
           </Grid>
@@ -113,9 +129,9 @@ const MainPage = () => {
                 <Typography variant="body2">
                   Some placeholder content...
                 </Typography>
-                <Button variant="contained" color="primary" style={{ marginTop: 16 }}>
+                <StyledButton variant="contained" style={{ marginTop: 16 }}>
                   View Details
-                </Button>
+                </StyledButton>
               </CardContent>
             </Card>
           </Grid>
@@ -127,9 +143,9 @@ const MainPage = () => {
                 <Typography variant="body2">
                   Some placeholder content...
                 </Typography>
-                <Button variant="contained" color="primary" style={{ marginTop: 16 }}>
+                <StyledButton variant="contained" style={{ marginTop: 16 }}>
                   View Details
-                </Button>
+                </StyledButton>
               </CardContent>
             </Card>
           </Grid>

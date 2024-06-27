@@ -19,25 +19,34 @@ const GlobalStyle = styled('div')`
 
 const Root = styled('div')({
   display: 'flex',
-  justifyContent: 'flex-end',  // Cambia 'center' a 'flex-end' per allineare a destra
+  justifyContent: 'flex-end',  // Allinea a destra
   alignItems: 'center',
-  height: '92vh',
-  width: '210vh',
+  height: '95vh',
+  width: '99vw',
   backgroundImage: `url(${backgroundImage})`,
   backgroundSize: 'cover',
   backgroundPosition: 'center',
   padding: '20px',
   overflow: 'hidden',
+  boxSizing: 'border-box',
+  '@media (max-width: 600px)': {
+    justifyContent: 'center',  // Centra il form su schermi piccoli
+    padding: '10px',
+  },
 });
 
 const StyledCard = styled(Card)({
-  maxWidth: 350,  // Aumenta la larghezza massima
+  maxWidth: 360,
   width: '100%',
-  padding: 32,  // Aumenta il padding per più spazio interno
+  padding: 32,
   margin: 16,
-  backgroundColor: 'rgba(255, 255, 255, 0.9)',  // Aggiunge uno sfondo semi-trasparente per il contrasto
+  backgroundColor: 'rgba(255, 255, 255, 0.9)',
   marginLeft: 'auto',  // Sposta il card verso destra
-  minHeight: 350,  // Aggiunge altezza minima per aumentare l'altezza del form
+  minHeight: 390,
+  '@media (max-width: 600px)': {
+    maxWidth: '100%',
+    padding: 16,
+  },
 });
 
 const Form = styled('form')({
@@ -48,17 +57,21 @@ const Form = styled('form')({
 
 const StyledButton = styled(Button)({
   marginTop: 16,
-  backgroundColor: orangeColor,  // Imposta il colore arancione di sfondo
+  backgroundColor: orangeColor,
   '&:hover': {
-    backgroundColor: darkOrangeColor,  // Colore leggermente più scuro al passaggio del mouse
-  }
+    backgroundColor: darkOrangeColor,
+  },
 });
 
 const StyledTextField = styled(TextField)({
   '& .MuiOutlinedInput-root': {
     '&:hover fieldset': {
-      borderColor: orangeColor,  // Colore arancione al passaggio del mouse
-      borderWidth: 2,  // Bordo più spesso al passaggio del mouse
+      borderColor: orangeColor,
+      borderWidth: 2,
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: darkOrangeColor,
+      borderWidth: 2,
     },
   },
 });
@@ -67,8 +80,8 @@ const Title = styled(Typography)({
   fontFamily: 'Roboto, sans-serif',
   fontWeight: 700,
   marginBottom: 16,
-  textAlign: 'center',  // Centra il testo
-  fontSize: '24px',  // Cambia la dimensione del font
+  textAlign: 'center',
+  fontSize: '24px',
 });
 
 function LoginRegister() {
@@ -176,5 +189,3 @@ function LoginRegister() {
 }
 
 export default LoginRegister;
-
-//
