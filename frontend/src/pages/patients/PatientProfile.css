@@ -1,34 +1,69 @@
 .patient-info-container {
-    margin-top: 20px;
-  }
-  
-  .back-button {
-    margin-bottom: 20px;
-  }
-  
-  .patient-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-  
-  .patient-icon {
-    font-size: 48px;
-    margin-right: 20px;
-  }
-  
-  .patient-details {
-    flex-grow: 1;
-  }
-  
-  .pdf-button {
-    margin-left: auto;
-  }
-  
-  .info-block {
-    padding: 20px;
-    margin-bottom: 20px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-  }
-  
+  margin-top: 20px;
+}
+
+.back-button {
+  margin-bottom: 20px;
+}
+
+.patient-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.patient-icon {
+  font-size: 48px;
+  margin-right: 20px;
+}
+
+.patient-details {
+  flex-grow: 1;
+}
+
+.pdf-button {
+  margin-left: auto;
+}
+
+.info-block {
+  padding: 20px;
+  margin-bottom: 20px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  height: 150px; /* Altezza fissa del box */
+  overflow-y: auto; /* Abilita lo scroll verticale */
+  display: flex;
+  flex-direction: column;
+}
+
+.info-block::-webkit-scrollbar {
+  width: 6px; /* Larghezza della scrollbar */
+}
+
+.info-block::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Colore del tracciato */
+  border-radius: 10px; /* Bordo arrotondato del tracciato */
+}
+
+.info-block::-webkit-scrollbar-thumb {
+  background: #888; /* Colore del pollice */
+  border-radius: 10px; /* Bordo arrotondato del pollice */
+}
+
+.info-block::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Colore del pollice al passaggio del mouse */
+}
+
+.box-title {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.info-content {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.info-content p {
+  margin: 0;
+}

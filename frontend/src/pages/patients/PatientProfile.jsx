@@ -3,8 +3,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Grid, Paper, Typography, IconButton, Button } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import EditIcon from '@mui/icons-material/Edit';
 import jsPDF from 'jspdf';
 import AssignPathologiesDialog from './AssignPathologiesDialog';
+import EditPatientDialog from './EditPatientDialog';
 import './PatientProfile.css';
 
 const PatientProfile = () => {
@@ -13,6 +15,7 @@ const PatientProfile = () => {
   const [patient, setPatient] = useState(null);
   const [pathologies, setPathologies] = useState([]);
   const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const fetchPatient = async () => {
     try {
@@ -123,6 +126,38 @@ const PatientProfile = () => {
     fetchPathologies(); // Refresh pathologies after assignment
   };
 
+  const handleEditDialogOpen = () => {
+    setEditDialogOpen(true);
+  };
+
+  const handleEditDialogClose = () => {
+    setEditDialogOpen(false);
+    fetchPatient(); // Refresh patient data
+  };
+
+  const handleEditSubmit = async (updatedPatient) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/patients`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(updatedPatient),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      // Aggiorna la lista dei pazienti dopo la modifica
+      setPatient(updatedPatient);
+      setEditDialogOpen(false);
+    } catch (error) {
+      console.error('Error updating patient:', error.message);
+    }
+  };
+
   return (
     <Container className="patient-info-container">
       <IconButton onClick={() => navigate(-1)} className="back-button">
@@ -137,6 +172,9 @@ const PatientProfile = () => {
             <Typography variant="body1">Altezza: {patient.altezza}</Typography>
             <Typography variant="body1">Peso: {patient.peso}</Typography>
             <Typography variant="body1">Sesso: {patient.sesso}</Typography>
+            <IconButton onClick={handleEditDialogOpen} className="edit-button">
+              <EditIcon />
+            </IconButton>
           </div>
           <IconButton onClick={generatePDF} className="pdf-button">
             <SaveAltIcon />
@@ -144,36 +182,32 @@ const PatientProfile = () => {
         </Grid>
         <Grid item xs={12} md={6}>
           <Paper className="info-block">
-            <Typography variant="h6">Informazioni del Paziente</Typography>
-            <Typography>Nome: {patient.nominativo}</Typography>
-            <Typography>Età: {patient.eta}</Typography>
-            <Typography>Altezza: {patient.altezza}</Typography>
-            <Typography>Peso: {patient.peso}</Typography>
-            <Typography>Sesso: {patient.sesso}</Typography>
+            <Typography variant="h6" className="box-title">Misurazioni</Typography>
+            <div className="info-content">
+              {measurements.map((measurement, index) => (
+                <Typography key={index}>{`${measurement.date}: ${measurement.value}`}</Typography>
+              ))}
+            </div>
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
           <Paper className="info-block">
-            <Typography variant="h6">Misurazioni</Typography>
-            {measurements.map((measurement, index) => (
-              <Typography key={index}>{`${measurement.date}: ${measurement.value}`}</Typography>
-            ))}
+            <Typography variant="h6" className="box-title">Trattamenti</Typography>
+            <div className="info-content">
+              {treatments.map((treatment, index) => (
+                <Typography key={index}>{`${treatment.date}: ${treatment.description}`}</Typography>
+              ))}
+            </div>
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
           <Paper className="info-block">
-            <Typography variant="h6">Trattamenti</Typography>
-            {treatments.map((treatment, index) => (
-              <Typography key={index}>{`${treatment.date}: ${treatment.description}`}</Typography>
-            ))}
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Paper className="info-block">
-            <Typography variant="h6">Patologie</Typography>
-            {pathologies.map((pathology, index) => (
-              <Typography key={index}>{pathology.name}</Typography>
-            ))}
+            <Typography variant="h6" className="box-title">Patologie</Typography>
+            <div className="info-content">
+              {pathologies.map((pathology, index) => (
+                <Typography key={index}>{pathology.name}</Typography>
+              ))}
+            </div>
             <Button variant="contained" color="primary" onClick={handleAssignDialogOpen}>
               Assegna Patologie
             </Button>
@@ -185,6 +219,12 @@ const PatientProfile = () => {
         onClose={handleAssignDialogClose}
         patient={patient}
         onAssign={fetchPathologies}
+      />
+      <EditPatientDialog
+        open={editDialogOpen}
+        onClose={handleEditDialogClose}
+        onEditSubmit={handleEditSubmit}
+        patient={patient}
       />
     </Container>
   );
