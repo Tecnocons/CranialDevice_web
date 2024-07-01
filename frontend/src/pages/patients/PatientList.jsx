@@ -234,7 +234,7 @@ function PatientList() {
       <div className="content">
         <Container component={Paper} className="table-container">
           <div className="table-header-container">
-            <Typography variant="h4" gutterBottom>
+            <Typography variant="h4" gutterBottom align="center" className="table-title">
               Lista Pazienti
             </Typography>
             {user && !user.isAdmin && (

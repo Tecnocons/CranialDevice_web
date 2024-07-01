@@ -45,7 +45,7 @@
 }
 
 .styled-table thead tr {
-  background-color: #EB873F;
+  background-color: #EB873F;  /* Colore arancione per il tema coerente */
   color: #ffffff;
   text-align: left;
   font-weight: bold;
@@ -65,7 +65,7 @@
 }
 
 .styled-table tbody tr:last-of-type {
-  border-bottom: 2px solid #EB873F;
+  border-bottom: 2px solid #EB873F; /* Colore arancione per il tema coerente */
 }
 
 .add-patient-btn {
