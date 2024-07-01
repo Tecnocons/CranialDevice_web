@@ -16,9 +16,12 @@ const StyledButton = styled(Button)({
 });
 
 const StyledHamburgerMenu = styled(HamburgerMenu)({
-  color: orangeColor,
+  color: '#fff',  // Colore bianco per l'icona
   '&:hover': {
     color: darkOrangeColor,
+  },
+  '& svg': {
+    filter: 'drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.5))',  // Aggiunge un'ombra all'icona
   },
 });
 
