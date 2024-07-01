@@ -14,14 +14,17 @@ const darkOrangeColor = '#CF6F2E';  // Colore arancione più scuro per l'effetto
 const GlobalStyle = styled('div')`
   body {
     overflow: hidden;
+    margin: 0;  // Rimuove i margini predefiniti del corpo
+    padding: 0;  // Rimuove i padding predefiniti del corpo
+    height: 100vh;  // Assicura che il corpo riempia l'altezza della finestra
   }
 `;
 
 const Root = styled('div')({
   display: 'flex',
-  justifyContent: 'flex-end',  // Allinea a destra
+  justifyContent: 'flex-end',  // Align to the right
   alignItems: 'center',
-  height: '95vh',
+  height: '97vh',
   width: '99vw',
   backgroundImage: `url(${backgroundImage})`,
   backgroundSize: 'cover',
@@ -30,7 +33,7 @@ const Root = styled('div')({
   overflow: 'hidden',
   boxSizing: 'border-box',
   '@media (max-width: 600px)': {
-    justifyContent: 'center',  // Centra il form su schermi piccoli
+    justifyContent: 'center',  // Center the form on small screens
     padding: '10px',
   },
 });
@@ -41,8 +44,8 @@ const StyledCard = styled(Card)({
   padding: 32,
   margin: 16,
   backgroundColor: 'rgba(255, 255, 255, 0.9)',
-  marginLeft: 'auto',  // Sposta il card verso destra
-  minHeight: 390,
+  borderRadius: 16,  // Rounded corners
+  boxShadow: '0 8px 16px rgba(0,0,0,0.1)',  // Subtle shadow
   '@media (max-width: 600px)': {
     maxWidth: '100%',
     padding: 16,
@@ -58,13 +61,20 @@ const Form = styled('form')({
 const StyledButton = styled(Button)({
   marginTop: 16,
   backgroundColor: orangeColor,
+  color: '#fff',  // White text color for contrast
+  borderRadius: 8,  // Rounded corners
+  padding: '12px 0',
+  fontSize: '16px',
+  fontWeight: 'bold',
   '&:hover': {
     backgroundColor: darkOrangeColor,
   },
+  transition: 'background-color 0.3s ease',  // Smooth transition
 });
 
 const StyledTextField = styled(TextField)({
   '& .MuiOutlinedInput-root': {
+    borderRadius: 8,  // Rounded corners
     '&:hover fieldset': {
       borderColor: orangeColor,
       borderWidth: 2,
@@ -74,14 +84,20 @@ const StyledTextField = styled(TextField)({
       borderWidth: 2,
     },
   },
+  '& .MuiInputLabel-root': {
+    color: orangeColor,
+    '&.Mui-focused': {
+      color: darkOrangeColor,
+    },
+  },
 });
 
 const Title = styled(Typography)({
   fontFamily: 'Roboto, sans-serif',
   fontWeight: 700,
-  marginBottom: 16,
+  marginBottom: 24,  // Increased margin for better spacing
   textAlign: 'center',
-  fontSize: '24px',
+  fontSize: '28px',  // Increased font size
 });
 
 function LoginRegister() {
