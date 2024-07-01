@@ -6,6 +6,7 @@ import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import EditIcon from '@mui/icons-material/Edit';
 import jsPDF from 'jspdf';
 import AssignPathologiesDialog from './AssignPathologiesDialog';
+import AssignSymptomsDialog from './AssignSymptomsDialog'; // Import the new dialog
 import EditPatientDialog from './EditPatientDialog';
 import './PatientProfile.css';
 
@@ -14,7 +15,9 @@ const PatientProfile = () => {
   const navigate = useNavigate();
   const [patient, setPatient] = useState(null);
   const [pathologies, setPathologies] = useState([]);
-  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
+  const [symptoms, setSymptoms] = useState([]); // Add state for symptoms
+  const [assignPathologiesDialogOpen, setAssignPathologiesDialogOpen] = useState(false);
+  const [assignSymptomsDialogOpen, setAssignSymptomsDialogOpen] = useState(false); // Add state for symptoms dialog
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const fetchPatient = async () => {
@@ -49,9 +52,26 @@ const PatientProfile = () => {
     }
   };
 
+  const fetchSymptoms = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/patient_symptom/${uuid}`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setSymptoms(data);
+    } catch (error) {
+      console.error('Error fetching symptoms:', error);
+    }
+  };
+
   useEffect(() => {
     fetchPatient();
     fetchPathologies();
+    fetchSymptoms(); // Fetch symptoms as well
   }, [uuid]);
 
   if (!patient) {
@@ -103,6 +123,13 @@ const PatientProfile = () => {
       doc.text(pathology.name, 20, 140 + measurements.length * 10 + treatments.length * 10 + index * 10);
     });
 
+    doc.setFontSize(14);
+    doc.text('Sintomi', 20, 150 + measurements.length * 10 + treatments.length * 10 + pathologies.length * 10);
+    doc.setFontSize(12);
+    symptoms.forEach((symptom, index) => {
+      doc.text(symptom.name, 20, 160 + measurements.length * 10 + treatments.length * 10 + pathologies.length * 10 + index * 10);
+    });
+
     doc.save(`Cartella_Clinica_${patient.nominativo}.pdf`);
   };
 
@@ -117,13 +144,22 @@ const PatientProfile = () => {
     }
   };
 
-  const handleAssignDialogOpen = () => {
-    setAssignDialogOpen(true);
+  const handleAssignPathologiesDialogOpen = () => {
+    setAssignPathologiesDialogOpen(true);
   };
 
-  const handleAssignDialogClose = () => {
-    setAssignDialogOpen(false);
+  const handleAssignPathologiesDialogClose = () => {
+    setAssignPathologiesDialogOpen(false);
     fetchPathologies(); // Refresh pathologies after assignment
+  };
+
+  const handleAssignSymptomsDialogOpen = () => {
+    setAssignSymptomsDialogOpen(true);
+  };
+
+  const handleAssignSymptomsDialogClose = () => {
+    setAssignSymptomsDialogOpen(false);
+    fetchSymptoms(); // Refresh symptoms after assignment
   };
 
   const handleEditDialogOpen = () => {
@@ -208,17 +244,36 @@ const PatientProfile = () => {
                 <Typography key={index}>{pathology.name}</Typography>
               ))}
             </div>
-            <Button variant="contained" color="primary" onClick={handleAssignDialogOpen}>
+            <Button variant="contained" color="primary" onClick={handleAssignPathologiesDialogOpen}>
               Assegna Patologie
+            </Button>
+          </Paper>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper className="info-block">
+            <Typography variant="h6" className="box-title">Sintomi</Typography>
+            <div className="info-content">
+              {symptoms.map((symptom, index) => (
+                <Typography key={index}>{symptom.name}</Typography>
+              ))}
+            </div>
+            <Button variant="contained" color="primary" onClick={handleAssignSymptomsDialogOpen}>
+              Assegna Sintomi
             </Button>
           </Paper>
         </Grid>
       </Grid>
       <AssignPathologiesDialog
-        open={assignDialogOpen}
-        onClose={handleAssignDialogClose}
+        open={assignPathologiesDialogOpen}
+        onClose={handleAssignPathologiesDialogClose}
         patient={patient}
         onAssign={fetchPathologies}
+      />
+      <AssignSymptomsDialog
+        open={assignSymptomsDialogOpen}
+        onClose={handleAssignSymptomsDialogClose}
+        patient={patient}
+        onAssign={fetchSymptoms}
       />
       <EditPatientDialog
         open={editDialogOpen}

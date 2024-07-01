@@ -1,0 +1,75 @@
+.root {
+    margin-top: 20px;
+  }
+  
+  .table-container {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f9f9f9;
+  }
+  
+  .table-header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .add-symptom-btn {
+    background-color: #EB873F;
+    color: white;
+    &:hover {
+      background-color: #CF6F2E;
+    }
+  }
+  
+  .styled-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .styled-table thead {
+    background-color: #EB873F;
+    color: white;
+  }
+  
+  .styled-table thead th {
+    padding: 10px;
+  }
+  
+  .styled-table tbody td {
+    padding: 10px;
+  }
+  
+  .pagination {
+    margin-top: 20px;
+  }
+  
+  .info-block {
+    padding: 20px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    height: 150px; /* Altezza fissa del box */
+    overflow-y: auto; /* Abilita lo scroll verticale */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .info-block::-webkit-scrollbar {
+    width: 0;
+    background: transparent; /* Nascondi la scrollbar */
+  }
+  
+  .box-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+  
+  .info-content {
+    flex-grow: 1;
+    overflow-y: auto;
+  }
+  
+  .table-header {
+    font-weight: bold;
+  }

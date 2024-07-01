@@ -1,3 +1,4 @@
+// components/HamburgerMenu.jsx
 import React, { useState } from 'react';
 import { AppBar, Toolbar, IconButton, Typography, Drawer, List, ListItem, ListItemIcon, ListItemText, Divider, Tooltip } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -8,7 +9,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import PeopleIcon from '@mui/icons-material/People';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import PersonIcon from '@mui/icons-material/Person';
-import MedicalServicesIcon from '@mui/icons-material/MedicalServices'; // Add this import
+import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
+import SymptomsIcon from '@mui/icons-material/Sick'; // Add this import for symptoms icon
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { styled } from '@mui/system';
@@ -36,7 +38,8 @@ const HamburgerMenu = () => {
     { text: 'Home', icon: <HomeIcon />, onClick: () => navigate('/main'), adminOnly: false },
     { text: 'User List', icon: <ListIcon />, onClick: () => navigate('/users'), adminOnly: true },
     { text: 'Lista pazienti', icon: <PeopleIcon />, onClick: () => navigate('/patients'), adminOnly: false },
-    { text: 'Lista patologie', icon: <MedicalServicesIcon />, onClick: () => navigate('/pathologies'), adminOnly: false }
+    { text: 'Lista patologie', icon: <MedicalServicesIcon />, onClick: () => navigate('/pathologies'), adminOnly: false },
+    { text: 'Lista sintomi', icon: <SymptomsIcon />, onClick: () => navigate('/symptoms'), adminOnly: false } // Added this line
   ];
 
   const additionalItems = [
