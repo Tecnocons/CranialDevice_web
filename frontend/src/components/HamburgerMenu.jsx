@@ -17,9 +17,9 @@ const orangeColor = '#EB873F';  // Colore arancione
 const darkOrangeColor = '#CF6F2E';  // Colore arancione più scuro per l'effetto hover
 
 const StyledIconButton = styled(IconButton)({
-  color: '#fff',
+  color: orangeColor,
   '&:hover': {
-    color: '#fff',
+    color: darkOrangeColor,
   },
 });
 
@@ -54,7 +54,7 @@ const HamburgerMenu = () => {
             <MenuIcon />
           </StyledIconButton>
           <Typography variant="h6" style={{ flexGrow: 1 }}>
-            CranialDevice Web APP
+            My Web App
           </Typography>
           {user && (
             <Tooltip title={user.isAdmin ? 'Admin' : 'User'}>
