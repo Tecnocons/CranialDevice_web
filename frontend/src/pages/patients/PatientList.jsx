@@ -8,24 +8,62 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Button,
-  TablePagination,
   IconButton,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Checkbox,
+  Button,
+  Box,
   Link,
+  TablePagination,
 } from '@mui/material';
-import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
+import { styled } from '@mui/system';
+import { useNavigate } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
 import { useAuth } from '../../contexts/AuthContext';
+import { ClipLoader } from 'react-spinners';
 import AddPatientDialog from './AddPatientDialog';
 import EditPatientDialog from './EditPatientDialog';
-import { useNavigate } from 'react-router-dom';
-import './PatientList.css';
-import HamburgerMenu from '../../components/HamburgerMenu';
+
+const Root = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: '62vm',
+  backgroundColor: '#f5f5f5',
+})
+
+const StyledTable = styled(Table)({
+  minWidth: 650,
+  '& .MuiTableCell-head': {
+    backgroundColor: '#f1f1f1',
+    fontWeight: 'bold',
+  },
+  '& .MuiTableCell-body': {
+    fontSize: 14,
+  },
+});
+
+const Header = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
+  marginBottom: 16,
+});
+
+const AddButton = styled(Button)({
+  backgroundColor: '#4caf50',
+  color: '#fff',
+  '&:hover': {
+    backgroundColor: '#45a049',
+  },
+});
 
 function PatientList() {
   const { user } = useAuth();
@@ -34,7 +72,7 @@ function PatientList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -76,15 +114,13 @@ function PatientList() {
 
   const handleDelete = async (uuids) => {
     try {
-      console.log(`Deleting patients with UUIDs: ${uuids}`); // Log UUIDs being sent for deletion
-
       const response = await fetch(`http://localhost:5000/api/patients/bulk_delete`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ uuids }),  // Assicurati che i dati siano inviati come JSON
+        body: JSON.stringify({ uuids }),
       });
 
       if (!response.ok) {
@@ -92,7 +128,6 @@ function PatientList() {
         throw new Error(errorMessage.message);
       }
 
-      // Aggiorna la lista dei pazienti dopo la cancellazione
       setPatients((prevPatients) => prevPatients.filter((patient) => !uuids.includes(patient.uuid)));
       setDeleteDialogOpen(false);
       setSelectedPatients([]);
@@ -112,7 +147,6 @@ function PatientList() {
 
   const handlePatientAdded = () => {
     setAddDialogOpen(false);
-    // Ricarica i pazienti dopo aver aggiunto un nuovo paziente
     const fetchPatients = async () => {
       try {
         const endpoint = user.isAdmin ? '/api/patients' : `/api/patients/assigned?doctor_name=${user.name}`;
@@ -159,7 +193,6 @@ function PatientList() {
         throw new Error('Network response was not ok');
       }
 
-      // Aggiorna la lista dei pazienti dopo la modifica
       setPatients((prevPatients) =>
         prevPatients.map((patient) =>
           patient.uuid === updatedPatient.uuid ? { ...patient, ...updatedPatient } : patient
@@ -214,77 +247,62 @@ function PatientList() {
 
   if (loading) {
     return (
-      <div className="root">
-        <Typography>Loading...</Typography>
-      </div>
+      <Root>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <ClipLoader size={50} color={"#123abc"} loading={loading} />
+          <Typography variant="h6" style={{ marginTop: '20px' }}>Loading...</Typography>
+        </Box>
+      </Root>
     );
   }
 
   if (error) {
     return (
-      <div className="root">
-        <Typography>Error: {error}</Typography>
-      </div>
+      <Root>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <Typography variant="h6" color="error">Error: {error}</Typography>
+          <Button variant="contained" color="primary" onClick={() => window.location.reload()}>Retry</Button>
+        </Box>
+      </Root>
     );
   }
 
   return (
-    <div className="root">
-      <HamburgerMenu />
+    <Root>
       <div className="content">
         <Container component={Paper} className="table-container">
-          <div className="table-header-container">
-            <Typography variant="h4" gutterBottom align="center" className="table-title">
+          <Header>
+            <IconButton onClick={() => navigate('/main')}>
+              <CloseIcon />
+            </IconButton>
+            <Typography variant="h4" component="h1" gutterBottom>
               Lista Pazienti
             </Typography>
-            {user && !user.isAdmin && (
-              <Button className="add-patient-btn" onClick={handleAddDialogOpen}>
-                Aggiungi
-              </Button>
+            {user && (
+              <AddButton
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={handleAddDialogOpen}
+              >
+                Aggiungi Paziente
+              </AddButton>
             )}
-            {user && !user.isAdmin && selectedPatients.length > 0 && (
-              <Button color="secondary" onClick={handleMultipleDelete}>
-                Elimina Selezionati
-              </Button>
-            )}
-          </div>
-          <Table className="styled-table">
+          </Header>
+          <StyledTable>
             <TableHead>
               <TableRow>
-                {user && !user.isAdmin && (
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      indeterminate={selectedPatients.length > 0 && selectedPatients.length < patients.length}
-                      checked={isAllSelected}
-                      onChange={handleSelectAllPatients}
-                    />
-                  </TableCell>
-                )}
-                <TableCell className="table-header">Nominativo</TableCell>
-                <TableCell className="table-header">Età</TableCell>
-                <TableCell className="table-header">Altezza</TableCell>
-                <TableCell className="table-header">Peso</TableCell>
-                {user && user.isAdmin && <TableCell className="table-header">Dottore</TableCell>}
-                {user && !user.isAdmin && <TableCell className="table-header">Azioni</TableCell>}
+                <TableCell>Nominativo</TableCell>
+                <TableCell>Età</TableCell>
+                <TableCell>Altezza</TableCell>
+                <TableCell>Peso</TableCell>
+                <TableCell>Dottore</TableCell>
+                <TableCell>Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {patients.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((patient) => (
-                <TableRow
-                  key={patient.uuid}
-                  hover
-                  role="checkbox"
-                  aria-checked={isSelected(patient.uuid)}
-                  selected={isSelected(patient.uuid)}
-                >
-                  {user && !user.isAdmin && (
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={isSelected(patient.uuid)}
-                        onChange={() => handleSelectPatient(patient.uuid)}
-                      />
-                    </TableCell>
-                  )}
+                <TableRow key={patient.uuid}>
                   <TableCell>
                     <Link component="button" onClick={() => handlePatientInfoOpen(patient)}>
                       {patient.nominativo}
@@ -293,37 +311,32 @@ function PatientList() {
                   <TableCell>{patient.eta}</TableCell>
                   <TableCell>{patient.altezza}</TableCell>
                   <TableCell>{patient.peso}</TableCell>
-                  {user && user.isAdmin && <TableCell>{patient.doctor_name}</TableCell>}
-                  {user && !user.isAdmin && (
-                    <TableCell>
-                      <IconButton onClick={() => handleEditDialogOpen(patient)} color="primary" disabled={selectedPatients.length > 0}>
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton onClick={() => handleDeleteDialogOpen(patient)} color="secondary">
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
-                  )}
+                  <TableCell>{patient.doctor_name}</TableCell>
+                  <TableCell>
+                    <IconButton onClick={() => handleEditDialogOpen(patient)}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton onClick={() => handleDeleteDialogOpen(patient)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
+          </StyledTable>
           <TablePagination
-            rowsPerPageOptions={[10, 25, 50]}
+            rowsPerPageOptions={[5, 10]}
             component="div"
             count={patients.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
-            className="pagination"
           />
         </Container>
       </div>
-      {user && (
-        <AddPatientDialog open={addDialogOpen} onClose={handleAddDialogClose} onPatientAdded={handlePatientAdded} />
-      )}
-      {user && selectedPatient && (
+      <AddPatientDialog open={addDialogOpen} onClose={handleAddDialogClose} onPatientAdded={handlePatientAdded} />
+      {selectedPatient && (
         <EditPatientDialog
           open={editDialogOpen}
           onClose={handleEditDialogClose}
@@ -344,16 +357,12 @@ function PatientList() {
           <Button onClick={handleDeleteDialogClose} color="primary">
             Annulla
           </Button>
-          <Button
-            onClick={() => handleDelete(selectedPatient ? [selectedPatient.uuid] : selectedPatients)}
-            color="primary"
-            autoFocus
-          >
+          <Button onClick={() => handleDelete(selectedPatient ? [selectedPatient.uuid] : selectedPatients)} color="primary">
             Elimina
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </Root>
   );
 }
 

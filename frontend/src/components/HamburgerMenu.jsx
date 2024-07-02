@@ -8,13 +8,13 @@ import CloseIcon from '@mui/icons-material/Close';
 import PeopleIcon from '@mui/icons-material/People';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import PersonIcon from '@mui/icons-material/Person';
-import MedicalServicesIcon from '@mui/icons-material/MedicalServices'; // Add this import
+import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { styled } from '@mui/system';
 
-const orangeColor = '#EB873F';  // Colore arancione
-const darkOrangeColor = '#CF6F2E';  // Colore arancione più scuro per l'effetto hover
+const orangeColor = '#EB873F';  
+const darkOrangeColor = '#CF6F2E';  
 
 const StyledIconButton = styled(IconButton)({
   color: '#FFFFFF',
@@ -27,10 +27,15 @@ const HamburgerMenu = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const toggleDrawer = (open) => () => {
     setDrawerOpen(open);
   };
+
+  if (location.pathname === '/login') {
+    return null;
+  }
 
   const menuItems = [
     { text: 'Home', icon: <HomeIcon />, onClick: () => navigate('/main'), adminOnly: false },
@@ -75,7 +80,7 @@ const HamburgerMenu = () => {
       <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
         <div
           role="presentation"
-          style={{ width: '300px' }} // Aumenta la larghezza del menu
+          style={{ width: '300px' }}
           onClick={toggleDrawer(false)}
           onKeyDown={toggleDrawer(false)}
         >
@@ -84,7 +89,7 @@ const HamburgerMenu = () => {
           </StyledIconButton>
           <List>
             {menuItems.map((item, index) => {
-              if (item.adminOnly && !user.isAdmin) return null;
+              if (item.adminOnly && !(user && user.isAdmin)) return null;
               return (
                 <ListItem button key={index} onClick={item.onClick}>
                   <ListItemIcon>{item.icon}</ListItemIcon>

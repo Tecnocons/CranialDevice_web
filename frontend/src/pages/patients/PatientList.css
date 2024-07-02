@@ -1,12 +1,7 @@
-.table-header {
-  font-size: 1rem; /* Font size leggermente aumentato */
-  font-weight: bold;
-  padding: 6px 10px; /* Ridotto il padding */
-}
-
 .root {
   display: flex;
   flex-direction: column;
+  align-items: center;
   height: 100vh;
   background-color: #f5f5f5;
 }
@@ -18,14 +13,9 @@
   align-items: center;
   flex-grow: 1;
   padding: 10px;
-}
-
-.table-container {
-  width: 100%;
-  max-width: 1000px; /* Ridotto il max-width */
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1;
+  width: 80%; 
+  max-width: 1150px; 
+  margin: 0 auto; 
 }
 
 .table-header-container {
@@ -36,7 +26,7 @@
 
 .styled-table {
   width: 100%;
-  margin: 5px 0; /* Ridotto il margine */
+  margin: 5px 0; 
   border-collapse: collapse;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   background-color: #fff;
@@ -45,15 +35,16 @@
 }
 
 .styled-table thead tr {
-  background-color: #EB873F;  /* Colore arancione per il tema coerente */
+  background-color: #009879;
   color: #ffffff;
   text-align: left;
   font-weight: bold;
 }
 
-.styled-table th, .styled-table td {
-  padding: 6px 10px; /* Ridotto il padding */
-  font-size: 0.875rem; /* Font size leggermente aumentato */
+.styled-table th,
+.styled-table td {
+  padding: 6px 10px; 
+  font-size: 0.875rem; 
 }
 
 .styled-table tbody tr {
@@ -65,52 +56,42 @@
 }
 
 .styled-table tbody tr:last-of-type {
-  border-bottom: 2px solid #EB873F; /* Colore arancione per il tema coerente */
+  border-bottom: 2px solid #009879;
 }
 
 .add-patient-btn {
-  --color: #4d39b1;
-  font-family: inherit;
-  display: inline-block;
-  width: 6em;
-  height: 2.5em;
-  line-height: 2.5em;
-  overflow: hidden;
+  padding: 10px 20px; 
+  border-radius: 50px;
   cursor: pointer;
-  margin: 0;
-  font-size: 20px; /* Ridotto il font size */
-  z-index: 1;
-  color: var(--color);
-  border: 2px solid var(--color);
-  border-radius: 50%;
-  position: relative;
-  background-color: transparent;
-  transition: color 0.3s ease;
-  text-align: center;
-  border-color: black;
-}
-
-.add-patient-btn::before {
-  position: absolute;
-  content: "";
-  background: var(--color);
-  width: 150px;
-  height: 200px;
-  z-index: -1;
-  border-radius: 50%;
-  top: 100%;
-  left: 100%;
-  transition: 0.3s all;
-  border-color: black;
+  border: 0;
+  background-color: white;
+  box-shadow: rgb(0 0 0 / 5%) 0 0 8px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-size: 12px; 
+  transition: all 0.5s ease;
+  display: flex; 
+  align-items: center;
 }
 
 .add-patient-btn:hover {
-  color: white;
+  letter-spacing: 3px;
+  background-color: hsl(261deg 80% 48%);
+  color: hsl(0, 0%, 100%);
+  box-shadow: rgb(93 24 220) 0px 7px 29px 0px;
 }
 
-.add-patient-btn:hover::before {
-  top: -30px;
-  left: -30px;
+.add-patient-btn:active {
+  letter-spacing: 3px;
+  background-color: hsl(261deg 80% 48%);
+  color: hsl(0, 0%, 100%);
+  box-shadow: rgb(93 24 220) 0px 0px 0px 0px;
+  transform: translateY(10px);
+  transition: 100ms;
+}
+
+.add-patient-btn-icon {
+  margin-right: 8px; 
 }
 
 .pagination {

@@ -287,7 +287,7 @@ function SymptomList() {
             </TableBody>
           </Table>
           <TablePagination
-            rowsPerPageOptions={[10, 25, 50]}
+            rowsPerPageOptions={[5, 10]}
             component="div"
             count={symptoms.length}
             rowsPerPage={rowsPerPage}

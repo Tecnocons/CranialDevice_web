@@ -17,17 +17,66 @@ import {
   DialogContentText,
   DialogTitle,
   Checkbox,
-  TextField,
+  Box,
+  Link,
 } from '@mui/material';
-import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
+import { styled } from '@mui/system';
+import { useNavigate } from 'react-router-dom';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
 import { useAuth } from '../../contexts/AuthContext';
 import AddPathologyDialog from './AddPathologyDialog';
 import EditPathologyDialog from './EditPathologyDialog';
-import './PathologyList.css';
+import { ClipLoader } from 'react-spinners';
 import HamburgerMenu from '../../components/HamburgerMenu';
+
+const Root = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: '62vm',
+  backgroundColor: '#f5f5f5',
+});
+
+const StyledTable = styled(Table)({
+  minWidth: 650,
+  '& .MuiTableCell-head': {
+    backgroundColor: '#f1f1f1',
+    fontWeight: 'bold',
+  },
+  '& .MuiTableCell-body': {
+    fontSize: 14,
+  },
+});
+
+const Header = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
+  marginBottom: 16,
+});
+
+const AddButton = styled(Button)({
+  backgroundColor: '#4caf50',
+  color: '#fff',
+  '&:hover': {
+    backgroundColor: '#45a049',
+  },
+});
+
+const HamburgerMenuWrapper = styled('div')({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  zIndex: 2,
+});
 
 function PathologyList() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [pathologies, setPathologies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -198,41 +247,49 @@ function PathologyList() {
 
   if (loading) {
     return (
-      <div className="root">
-        <Typography>Loading...</Typography>
-      </div>
+      <Root>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <ClipLoader size={50} color={"#123abc"} loading={loading} />
+          <Typography variant="h6" style={{ marginTop: '20px' }}>Loading...</Typography>
+        </Box>
+      </Root>
     );
   }
 
   if (error) {
     return (
-      <div className="root">
-        <Typography>Error: {error}</Typography>
-      </div>
+      <Root>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <Typography variant="h6" color="error">Error: {error}</Typography>
+          <Button variant="contained" color="primary" onClick={() => window.location.reload()}>Retry</Button>
+        </Box>
+      </Root>
     );
   }
 
   return (
-    <div className="root">
-      <HamburgerMenu />
+    <Root>
       <div className="content">
         <Container component={Paper} className="table-container">
-          <div className="table-header-container">
-            <Typography variant="h4" gutterBottom>
+          <Header>
+            <IconButton onClick={() => navigate('/main')}>
+              <CloseIcon />
+            </IconButton>
+            <Typography variant="h4" component="h1" gutterBottom>
               Lista Patologie
             </Typography>
-            {user && user.isAdmin && (
-              <Button className="add-pathology-btn" onClick={handleAddDialogOpen}>
+            {user && (
+              <AddButton
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={handleAddDialogOpen}
+              >
                 Aggiungi Patologia
-              </Button>
+              </AddButton>
             )}
-            {user && user.isAdmin && selectedPathologies.length > 0 && (
-              <Button color="secondary" onClick={handleMultipleDelete}>
-                Elimina Selezionati
-              </Button>
-            )}
-          </div>
-          <Table className="styled-table">
+          </Header>
+          <StyledTable className="styled-table">
             <TableHead>
               <TableRow>
                 {user && user.isAdmin && (
@@ -281,9 +338,9 @@ function PathologyList() {
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
+          </StyledTable>
           <TablePagination
-            rowsPerPageOptions={[10, 25, 50]}
+            rowsPerPageOptions={[5, 10]}
             component="div"
             count={pathologies.length}
             rowsPerPage={rowsPerPage}
@@ -294,7 +351,7 @@ function PathologyList() {
           />
         </Container>
       </div>
-      {user && user.isAdmin && (
+      {user && (
         <AddPathologyDialog open={addDialogOpen} onClose={handleAddDialogClose} onPathologyAdded={handlePathologyAdded} />
       )}
       {user && selectedPathology && (
@@ -327,7 +384,7 @@ function PathologyList() {
           </Button>
         </DialogActions>
       </Dialog>
-    </div>
+    </Root>
   );
 }
 

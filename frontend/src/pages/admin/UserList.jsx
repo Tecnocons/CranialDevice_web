@@ -20,6 +20,7 @@ import {
   InputAdornment,
   Button,
   Box,
+  TablePagination,
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
@@ -35,9 +36,9 @@ const Root = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  height: '100vh',
+  height: '62vm',
   backgroundColor: '#f5f5f5',
-});
+})
 
 const StyledTable = styled(Table)({
   minWidth: 650,
@@ -66,6 +67,13 @@ const AddButton = styled(Button)({
   },
 });
 
+const HamburgerMenuWrapper = styled('div')({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  zIndex: 2,
+});
+
 function UserList() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -77,6 +85,8 @@ function UserList() {
   const [password, setPassword] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -185,6 +195,15 @@ function UserList() {
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   if (loading) {
     return (
       <Root>
@@ -209,47 +228,61 @@ function UserList() {
 
   return (
     <Root>
-      <Container component={Paper} style={{ padding: 16 }}>
-        <Header>
-          <IconButton onClick={() => navigate('/main')}>
-            <CloseIcon />
-          </IconButton>
-          <Typography variant="h4" component="h1" gutterBottom>
-            User List
-          </Typography>
-          <AddButton
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={handleAddClick}
-          >
-            Add User
-          </AddButton>
-        </Header>
-        <StyledTable>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Admin</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.uuid}>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.isadmin ? 'Yes' : 'No'}</TableCell>
-                <TableCell>
-                  <IconButton onClick={() => handleEditClick(user)}>
-                    <EditIcon />
-                  </IconButton>
-                </TableCell>
+      <HamburgerMenuWrapper>
+        {/* Inserisci qui il componente HamburgerMenu */}
+      </HamburgerMenuWrapper>
+      <div className="content">
+        <Container component={Paper} className="table-container">
+          <Header>
+            <IconButton onClick={() => navigate('/main')}>
+              <CloseIcon />
+            </IconButton>
+            <Typography variant="h4" component="h1" gutterBottom>
+              User List
+            </Typography>
+            <AddButton
+              variant="contained"
+              color="primary"
+              startIcon={<AddIcon />}
+              onClick={handleAddClick}
+            >
+              Add User
+            </AddButton>
+          </Header>
+          <StyledTable className="styled-table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Name</TableCell>
+                <TableCell>Admin</TableCell>
+                <TableCell>Actions</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </StyledTable>
-      </Container>
-
+            </TableHead>
+            <TableBody>
+              {users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user) => (
+                <TableRow key={user.uuid}>
+                  <TableCell>{user.name}</TableCell>
+                  <TableCell>{user.isadmin ? 'Yes' : 'No'}</TableCell>
+                  <TableCell>
+                    <IconButton onClick={() => handleEditClick(user)}>
+                      <EditIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </StyledTable>
+          <TablePagination
+            rowsPerPageOptions={[5, 10]}
+            component="div"
+            count={users.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            className="pagination"
+          />
+        </Container>
+      </div>
       <Dialog open={openEdit} onClose={handleCloseEdit}>
         <DialogTitle>Edit User</DialogTitle>
         <DialogContent>
