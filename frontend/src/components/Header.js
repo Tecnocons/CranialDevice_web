@@ -7,6 +7,8 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import CloseIcon from '@mui/icons-material/Close';
 import { useNavigate } from 'react-router-dom';
 
+const primaryColor = '#EB873F';
+
 const Header = () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const navigate = useNavigate();
@@ -23,7 +25,7 @@ const Header = () => {
 
     return (
         <div>
-            <AppBar position="static">
+            <AppBar position="static" style={{ backgroundColor: primaryColor }}>
                 <Toolbar>
                     <IconButton edge="start" color="inherit" aria-label="menu" onClick={toggleDrawer(true)}>
                         <MenuIcon />

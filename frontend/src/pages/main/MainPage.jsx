@@ -3,14 +3,15 @@ import { Container, Typography, Grid, Card, CardContent, CardHeader, Button } fr
 import { useAuth } from '../../contexts/AuthContext';
 import { Bar } from 'react-chartjs-2';
 import { styled } from '@mui/system';
+import './MainPage.css';
 
-const orangeColor = '#EB873F';  // Colore arancione estratto dall'immagine di sfondo
-const darkOrangeColor = '#CF6F2E';  // Colore arancione più scuro per l'effetto hover del pulsante
+const primaryColor = '#EB873F';  
+const darkPrimaryColor = '#CF6F2E';  
 
 const StyledButton = styled(Button)({
-  backgroundColor: orangeColor,
+  backgroundColor: primaryColor,
   '&:hover': {
-    backgroundColor: darkOrangeColor,
+    backgroundColor: darkPrimaryColor,
   },
 });
 
@@ -38,45 +39,46 @@ const MainPage = () => {
 
   return (
     <Container>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Main Page
-      </Typography>
-      <Typography>
-        {user.isAdmin ? 'Welcome, Admin! You have full access.' : 'Welcome, User! Your access is limited.'}
-      </Typography>
-
-      <Grid container spacing={3} style={{ marginTop: 16 }}>
-        <Grid item xs={12} sm={6} md={4}>
-          <Card>
-            <CardHeader title="Recent Treatments" />
+      <div className="header">
+        <Typography variant="h4" component="h1" className="header-title">
+          Main Page
+        </Typography>
+        <Typography className="header-subtitle">
+          {user.isAdmin ? 'Welcome, Admin! You have full access.' : 'Welcome, User! Your access is limited.'}
+        </Typography>
+      </div>
+      <Grid container spacing={3} className="grid">
+        <Grid item xs={12} sm={6} md={4} className="grid-item">
+          <Card className="card">
+            <CardHeader title="Recent Treatments" className="card-title" />
             <CardContent>
-              <Typography variant="body2">
+              <Typography variant="body2" className="card-text">
                 List of recent patients treated...
               </Typography>
-              <StyledButton variant="contained" style={{ marginTop: 16 }}>
+              <StyledButton variant="contained" className="btn">
                 View Details
               </StyledButton>
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={4}>
-          <Card>
-            <CardHeader title="Treatment List" />
+        <Grid item xs={12} sm={6} md={4} className="grid-item">
+          <Card className="card">
+            <CardHeader title="Treatment List" className="card-title" />
             <CardContent>
-              <Typography variant="body2">
+              <Typography variant="body2" className="card-text">
                 List of available treatments...
               </Typography>
-              <StyledButton variant="contained" style={{ marginTop: 16 }}>
+              <StyledButton variant="contained" className="btn">
                 View Details
               </StyledButton>
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={4}>
-          <Card>
-            <CardHeader title="Treatment Chart" />
+        <Grid item xs={12} sm={12} md={8} className="grid-item">
+          <Card className="card">
+            <CardHeader title="Treatment Chart" className="card-title" />
             <CardContent>
               <Bar
                 data={data}
@@ -98,42 +100,42 @@ const MainPage = () => {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={4}>
-          <Card>
-            <CardHeader title="Placeholder 1" />
+        <Grid item xs={12} sm={6} md={4} className="grid-item">
+          <Card className="card">
+            <CardHeader title="Placeholder 1" className="card-title" />
             <CardContent>
-              <Typography variant="body2">
-                Some placeholder content...
+              <Typography variant="body2" className="card-text">
+                davide non sei buono
               </Typography>
-              <StyledButton variant="contained" style={{ marginTop: 16 }}>
+              <StyledButton variant="contained" className="btn">
                 View Details
               </StyledButton>
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={4}>
-          <Card>
-            <CardHeader title="Placeholder 2" />
+        <Grid item xs={12} sm={6} md={4} className="grid-item">
+          <Card className="card">
+            <CardHeader title="Placeholder 2" className="card-title" />
             <CardContent>
-              <Typography variant="body2">
+              <Typography variant="body2" className="card-text">
                 Some placeholder content...
               </Typography>
-              <StyledButton variant="contained" style={{ marginTop: 16 }}>
+              <StyledButton variant="contained" className="btn">
                 View Details
               </StyledButton>
             </CardContent>
           </Card>
         </Grid>
 
-        <Grid item xs={12} sm={6} md={4}>
-          <Card>
-            <CardHeader title="Placeholder 3" />
+        <Grid item xs={12} sm={6} md={4} className="grid-item">
+          <Card className="card">
+            <CardHeader title="Placeholder 3" className="card-title" />
             <CardContent>
-              <Typography variant="body2">
+              <Typography variant="body2" className="card-text">
                 Some placeholder content...
               </Typography>
-              <StyledButton variant="contained" style={{ marginTop: 16 }}>
+              <StyledButton variant="contained" className="btn">
                 View Details
               </StyledButton>
             </CardContent>

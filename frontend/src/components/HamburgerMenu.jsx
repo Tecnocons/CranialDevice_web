@@ -12,6 +12,7 @@ import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { styled } from '@mui/system';
+import logoImage from '../assets/logo_craniotech.jpg';
 
 const orangeColor = '#EB873F';  
 const darkOrangeColor = '#CF6F2E';  
@@ -53,7 +54,7 @@ const HamburgerMenu = () => {
 
   return (
     <div>
-      <AppBar position="static" style={{ backgroundColor: orangeColor }}>
+      <AppBar position="static" style={{ backgroundColor: orangeColor, height: '64px' }}>
         <Toolbar>
           <StyledIconButton edge="start" aria-label="menu" onClick={toggleDrawer(true)}>
             <MenuIcon />
@@ -80,13 +81,15 @@ const HamburgerMenu = () => {
       <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
         <div
           role="presentation"
-          style={{ width: '300px' }}
+          style={{ width: '300px', display: 'flex', flexDirection: 'column', height: '100%' }}
           onClick={toggleDrawer(false)}
           onKeyDown={toggleDrawer(false)}
         >
-          <StyledIconButton onClick={toggleDrawer(false)}>
-            <CloseIcon />
-          </StyledIconButton>
+          <div style={{ backgroundColor: orangeColor, height: '64px', display: 'flex', alignItems: 'center', padding: '0 16px' }}>
+            <StyledIconButton onClick={toggleDrawer(false)}>
+              <CloseIcon style={{ color: '#FFFFFF' }} />
+            </StyledIconButton>
+          </div>
           <List>
             {menuItems.map((item, index) => {
               if (item.adminOnly && !(user && user.isAdmin)) return null;
@@ -110,12 +113,16 @@ const HamburgerMenu = () => {
           <Divider />
           <List>
             {additionalItems.slice(-1).map((item, index) => (
-              <ListItem button key={index} onClick={item.onClick}>
+              <ListItem button key={index} onClick={item.onClick} style={{ justifyContent: 'flex-start' }}>
                 <ListItemIcon>{item.icon}</ListItemIcon>
                 <ListItemText primary={item.text} />
               </ListItem>
             ))}
           </List>
+          <div style={{ flexGrow: 1 }} />
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingBottom: '16px' }}>
+            <img src={logoImage} alt="Logo" style={{ width: '300px', marginTop: '16px' }} />
+          </div>
         </div>
       </Drawer>
     </div>
