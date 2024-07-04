@@ -46,7 +46,7 @@ const AddSymptomDialog = ({ open, onClose, onSymptomAdded }) => {
         <TextField
           autoFocus
           margin="dense"
-          label="Nome"
+          label="Nome sintomo"
           type="text"
           fullWidth
           value={name}
@@ -54,7 +54,7 @@ const AddSymptomDialog = ({ open, onClose, onSymptomAdded }) => {
         />
         <TextField
           margin="dense"
-          label="Descrizione"
+          label="Descrizione sintomo"
           type="text"
           fullWidth
           value={description}

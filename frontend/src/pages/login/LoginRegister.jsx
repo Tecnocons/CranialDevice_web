@@ -5,7 +5,7 @@ import { styled } from '@mui/system';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import LockIcon from '@mui/icons-material/Lock';
 import { useAuth } from '../../contexts/AuthContext';
-import backgroundImage from '../../assets/background.png';  // Importa l'immagine
+import backgroundImage from '../../assets/background_login.png';  // Importa l'immagine
 
 const orangeColor = '#EB873F';  // Colore arancione estratto dall'immagine di sfondo
 const darkOrangeColor = '#CF6F2E';  // Colore arancione più scuro per l'effetto hover del pulsante

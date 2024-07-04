@@ -12,7 +12,8 @@ import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { styled } from '@mui/system';
-import logoImage from '../assets/logo_craniotech.jpg';
+import logoImage from '../assets/logo-Craniotech.png';
+import '../components/HamburgerMenu.css'; // Importa il file CSS
 
 const orangeColor = '#EB873F';  
 const darkOrangeColor = '#CF6F2E';  
@@ -42,7 +43,8 @@ const HamburgerMenu = () => {
     { text: 'Home', icon: <HomeIcon />, onClick: () => navigate('/main'), adminOnly: false },
     { text: 'User List', icon: <ListIcon />, onClick: () => navigate('/users'), adminOnly: true },
     { text: 'Lista pazienti', icon: <PeopleIcon />, onClick: () => navigate('/patients'), adminOnly: false },
-    { text: 'Lista patologie', icon: <MedicalServicesIcon />, onClick: () => navigate('/pathologies'), adminOnly: false }
+    { text: 'Lista patologie', icon: <MedicalServicesIcon />, onClick: () => navigate('/pathologies'), adminOnly: false },
+    { text: 'Lista sintomi', icon: <MedicalServicesIcon />, onClick: () => navigate('/symptoms'), adminOnly: false }
   ];
 
   const additionalItems = [
@@ -59,13 +61,13 @@ const HamburgerMenu = () => {
           <StyledIconButton edge="start" aria-label="menu" onClick={toggleDrawer(true)}>
             <MenuIcon />
           </StyledIconButton>
-          <Typography variant="h6" style={{ flexGrow: 1 }}>
+          <Typography variant="h6" className="title-HamburgerMenu" style={{ flexGrow: 1, color: 'white' }}>
             CranialDevice Web APP
           </Typography>
           {user && (
             <Tooltip title={user.isAdmin ? 'Admin' : 'User'}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="body1" style={{ marginRight: '8px' }}>
+                <Typography variant="body1" style={{ marginRight: '8px', color: 'white' }}>
                   {user.name || 'No name'}
                 </Typography>
                 {user.isAdmin ? (
@@ -81,22 +83,25 @@ const HamburgerMenu = () => {
       <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
         <div
           role="presentation"
-          style={{ width: '300px', display: 'flex', flexDirection: 'column', height: '100%' }}
+          className="drawer-container"
           onClick={toggleDrawer(false)}
           onKeyDown={toggleDrawer(false)}
         >
-          <div style={{ backgroundColor: orangeColor, height: '64px', display: 'flex', alignItems: 'center', padding: '0 16px' }}>
+          <div className="drawer-header">
             <StyledIconButton onClick={toggleDrawer(false)}>
-              <CloseIcon style={{ color: '#FFFFFF' }} />
+              <CloseIcon style={{ color: '#FFFFFF', marginLeft: '-17px' }} />
             </StyledIconButton>
+            <Typography variant="h6" className="drawer-title">
+              CranialDevice Web APP
+            </Typography>
           </div>
           <List>
             {menuItems.map((item, index) => {
               if (item.adminOnly && !(user && user.isAdmin)) return null;
               return (
-                <ListItem button key={index} onClick={item.onClick}>
+                <ListItem button key={index} onClick={item.onClick} className="list-item">
                   <ListItemIcon>{item.icon}</ListItemIcon>
-                  <ListItemText primary={item.text} />
+                  <ListItemText primary={item.text} className="list-item-text" />
                 </ListItem>
               );
             })}
@@ -104,24 +109,24 @@ const HamburgerMenu = () => {
           <Divider />
           <List>
             {additionalItems.slice(0, -1).map((item, index) => (
-              <ListItem button key={index} onClick={item.onClick}>
+              <ListItem button key={index} onClick={item.onClick} className="list-item">
                 <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.text} />
+                <ListItemText primary={item.text} className="list-item-text" />
               </ListItem>
             ))}
           </List>
           <Divider />
           <List>
             {additionalItems.slice(-1).map((item, index) => (
-              <ListItem button key={index} onClick={item.onClick} style={{ justifyContent: 'flex-start' }}>
+              <ListItem button key={index} onClick={item.onClick} className="logout-button list-item">
                 <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.text} />
+                <ListItemText primary={item.text} className="list-item-text" />
               </ListItem>
             ))}
           </List>
-          <div style={{ flexGrow: 1 }} />
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', paddingBottom: '16px' }}>
-            <img src={logoImage} alt="Logo" style={{ width: '300px', marginTop: '16px' }} />
+          <div className="spacer"></div>
+          <div className="logo-container">
+            <img src={logoImage} alt="Logo" className="logo-image" />
           </div>
         </div>
       </Drawer>

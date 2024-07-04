@@ -1,75 +1,144 @@
 .root {
-    margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #ffffff;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  flex-grow: 1;
+  padding: 10px;
+}
+
+.table-container {
+  width: 80%;
+  max-width: 1150px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  margin: 0 auto;
+  opacity: 0.9;
+}
+
+.table-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.styled-table {
+  width: 100%;
+  margin: 5px 0;
+  border-collapse: collapse;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.styled-table thead tr {
+  background-color: #009879;
+  color: #ffffff;
+  text-align: left;
+  font-weight: bold;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: 6px 10px;
+  font-size: 0.875rem;
+}
+
+.styled-table tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+  background-color: #ffffff;
+}
+
+.styled-table tbody tr:last-of-type {
+  border-bottom: 2px solid #009879;
+}
+
+.add-symptom-btn {
+  padding: 10px 20px;
+  border-radius: 50px;
+  cursor: pointer;
+  border: 0;
+  background-color: white;
+  box-shadow: rgb(0 0 0 / 5%) 0 0 8px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-size: 12px;
+  transition: all 0.5s ease;
+  display: flex;
+  align-items: center;
+}
+
+.add-symptom-btn:hover {
+  letter-spacing: 3px;
+  background-color: hsl(261deg 80% 48%);
+  color: hsl(0, 0%, 100%);
+  box-shadow: rgb(93 24 220) 0px 7px 29px 0px;
+}
+
+.add-symptom-btn:active {
+  letter-spacing: 3px;
+  background-color: hsl(261deg 80% 48%);
+  color: hsl(0, 0%, 100%);
+  box-shadow: rgb(93 24 220) 0px 0px 0px 0px;
+  transform: translateY(10px);
+  transition: 100ms;
+}
+
+.pagination {
+  margin-top: auto;
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.loading-spinner {
+  border: 16px solid #f3f3f3;
+  border-top: 16px solid #3498db;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
   }
-  
-  .table-container {
-    margin-top: 20px;
-    padding: 20px;
-    background-color: #f9f9f9;
+  100% {
+    transform: rotate(360deg);
   }
-  
-  .table-header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .add-symptom-btn {
-    background-color: #EB873F;
-    color: white;
-    &:hover {
-      background-color: #CF6F2E;
-    }
-  }
-  
-  .styled-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .styled-table thead {
-    background-color: #EB873F;
-    color: white;
-  }
-  
-  .styled-table thead th {
-    padding: 10px;
-  }
-  
-  .styled-table tbody td {
-    padding: 10px;
-  }
-  
-  .pagination {
-    margin-top: 20px;
-  }
-  
-  .info-block {
-    padding: 20px;
-    margin-bottom: 20px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    height: 150px; /* Altezza fissa del box */
-    overflow-y: auto; /* Abilita lo scroll verticale */
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .info-block::-webkit-scrollbar {
-    width: 0;
-    background: transparent; /* Nascondi la scrollbar */
-  }
-  
-  .box-title {
-    font-weight: bold;
-    margin-bottom: 8px;
-  }
-  
-  .info-content {
-    flex-grow: 1;
-    overflow-y: auto;
-  }
-  
-  .table-header {
-    font-weight: bold;
-  }
+}
+
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: red;
+}
+
+.title {
+  font-weight: bold;
+  font-size: 3rem;
+  text-align: center;
+  width: 100%;
+  margin-bottom: 16px;
+}

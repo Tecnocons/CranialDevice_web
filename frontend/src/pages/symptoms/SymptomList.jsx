@@ -8,33 +8,71 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Button,
-  TablePagination,
   IconButton,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
-  Checkbox,
-  Link,
+  Button,
+  Box,
+  TablePagination,
 } from '@mui/material';
-import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
+import { styled } from '@mui/system';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
 import { useAuth } from '../../contexts/AuthContext';
+import { ClipLoader } from 'react-spinners';
 import AddSymptomDialog from './AddSymptomDialog';
 import EditSymptomDialog from './EditSymptomDialog';
-import { useNavigate } from 'react-router-dom';
+import BackgroundWrapper from '../../components/BackgroundWrapper'; // Importa BackgroundWrapper
 import './SymptomList.css';
-import HamburgerMenu from '../../components/HamburgerMenu';
+
+const Root = styled('div')({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  height: '62vm',
+  backgroundColor: '#ffffff',
+  opacity:0.9,
+});
+
+const StyledTable = styled(Table)({
+  minWidth: 650,
+  '& .MuiTableCell-head': {
+    backgroundColor: '#f1f1f1',
+    fontWeight: 'bold',
+  },
+  '& .MuiTableCell-body': {
+    fontSize: 14,
+  },
+});
+
+const Header = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
+  marginBottom: 16,
+});
+
+const AddButton = styled(Button)({
+  backgroundColor: '#4caf50',
+  color: '#fff',
+  '&:hover': {
+    backgroundColor: '#45a049',
+  },
+});
 
 function SymptomList() {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [symptoms, setSymptoms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -174,164 +212,119 @@ function SymptomList() {
     setSelectedSymptom(null);
   };
 
-  const handleSelectSymptom = (id) => {
-    if (selectedSymptoms.includes(id)) {
-      setSelectedSymptoms(selectedSymptoms.filter((symptomId) => symptomId !== id));
-    } else {
-      setSelectedSymptoms([...selectedSymptoms, id]);
-    }
-  };
-
-  const isSelected = (id) => selectedSymptoms.includes(id);
-
-  const handleSelectAllSymptoms = (event) => {
-    if (event.target.checked) {
-      const newSelecteds = symptoms.map((symptom) => symptom.id);
-      setSelectedSymptoms(newSelecteds);
-    } else {
-      setSelectedSymptoms([]);
-    }
-  };
-
-  const isAllSelected = selectedSymptoms.length === symptoms.length;
-
-  const handleMultipleDelete = () => {
-    setDeleteDialogOpen(true);
-    setSelectedSymptom(null);
-  };
-
   if (loading) {
     return (
-      <div className="root">
-        <Typography>Loading...</Typography>
-      </div>
+      <Root>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <ClipLoader size={50} color={"#123abc"} loading={loading} />
+          <Typography variant="h6" style={{ marginTop: '20px' }}>Loading...</Typography>
+        </Box>
+      </Root>
     );
   }
 
   if (error) {
     return (
-      <div className="root">
-        <Typography>Error: {error}</Typography>
-      </div>
+      <Root>
+        <Box display="flex" flexDirection="column" alignItems="center">
+          <Typography variant="h6" color="error">Error: {error}</Typography>
+          <Button variant="contained" color="primary" onClick={() => window.location.reload()}>Retry</Button>
+        </Box>
+      </Root>
     );
   }
 
   return (
-    <div className="root">
-      <HamburgerMenu />
-      <div className="content">
-        <Container component={Paper} className="table-container">
-          <div className="table-header-container">
-            <Typography variant="h4" gutterBottom>
-              Lista Sintomi
-            </Typography>
-            {user && user.isAdmin && (
-              <Button className="add-symptom-btn" onClick={handleAddDialogOpen}>
-                Aggiungi Sintomo
-              </Button>
-            )}
-            {user && user.isAdmin && selectedSymptoms.length > 0 && (
-              <Button color="secondary" onClick={handleMultipleDelete}>
-                Elimina Selezionati
-              </Button>
-            )}
-          </div>
-          <Table className="styled-table">
-            <TableHead>
-              <TableRow>
-                {user && user.isAdmin && (
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      indeterminate={selectedSymptoms.length > 0 && selectedSymptoms.length < symptoms.length}
-                      checked={isAllSelected}
-                      onChange={handleSelectAllSymptoms}
-                    />
-                  </TableCell>
-                )}
-                <TableCell className="table-header">Nome</TableCell>
-                <TableCell className="table-header">Descrizione</TableCell>
-                {user && user.isAdmin && <TableCell className="table-header">Azioni</TableCell>}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {symptoms.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((symptom) => (
-                <TableRow
-                  key={symptom.id}
-                  hover
-                  role="checkbox"
-                  aria-checked={isSelected(symptom.id)}
-                  selected={isSelected(symptom.id)}
+    <BackgroundWrapper>
+      <Root>
+        <div className="content">
+          <Container component={Paper} className="table-container">
+            <Header>
+              <IconButton onClick={() => navigate('/main')}>
+                <CloseIcon />
+              </IconButton>
+              <Typography variant="h4" component="h1" gutterBottom>
+                Lista Sintomi
+              </Typography>
+              {user && (
+                <AddButton
+                  variant="contained"
+                  color="primary"
+                  startIcon={<AddIcon />}
+                  onClick={handleAddDialogOpen}
                 >
-                  {user && user.isAdmin && (
-                    <TableCell padding="checkbox">
-                      <Checkbox
-                        checked={isSelected(symptom.id)}
-                        onChange={() => handleSelectSymptom(symptom.id)}
-                      />
-                    </TableCell>
-                  )}
-                  <TableCell>{symptom.name}</TableCell>
-                  <TableCell>{symptom.description}</TableCell>
-                  {user && user.isAdmin && (
+                  Aggiungi Sintomo
+                </AddButton>
+              )}
+            </Header>
+            <StyledTable className="styled-table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Nome</TableCell>
+                  <TableCell>Descrizione</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {symptoms.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((symptom) => (
+                  <TableRow key={symptom.id}>
+                    <TableCell>{symptom.name}</TableCell>
+                    <TableCell>{symptom.description}</TableCell>
                     <TableCell>
-                      <IconButton onClick={() => handleEditDialogOpen(symptom)} color="primary" disabled={selectedSymptoms.length > 0}>
+                      <IconButton onClick={() => handleEditDialogOpen(symptom)}>
                         <EditIcon />
                       </IconButton>
-                      <IconButton onClick={() => handleDeleteDialogOpen(symptom)} color="secondary">
+                      <IconButton onClick={() => handleDeleteDialogOpen(symptom)}>
                         <DeleteIcon />
                       </IconButton>
                     </TableCell>
-                  )}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          <TablePagination
-            rowsPerPageOptions={[5, 10]}
-            component="div"
-            count={symptoms.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            className="pagination"
+                  </TableRow>
+                ))}
+              </TableBody>
+            </StyledTable>
+            <TablePagination
+              rowsPerPageOptions={[5, 10]}
+              component="div"
+              count={symptoms.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              className="pagination"
+            />
+          </Container>
+        </div>
+        {user && (
+          <AddSymptomDialog open={addDialogOpen} onClose={handleAddDialogClose} onSymptomAdded={handleSymptomAdded} />
+        )}
+        {user && selectedSymptom && (
+          <EditSymptomDialog
+            open={editDialogOpen}
+            onClose={handleEditDialogClose}
+            onEditSubmit={handleEditSubmit}
+            symptom={selectedSymptom}
           />
-        </Container>
-      </div>
-      {user && (
-        <AddSymptomDialog open={addDialogOpen} onClose={handleAddDialogClose} onSymptomAdded={handleSymptomAdded} />
-      )}
-      {user && selectedSymptom && (
-        <EditSymptomDialog
-          open={editDialogOpen}
-          onClose={handleEditDialogClose}
-          onEditSubmit={handleEditSubmit}
-          symptom={selectedSymptom}
-        />
-      )}
-      <Dialog open={deleteDialogOpen} onClose={handleDeleteDialogClose}>
-        <DialogTitle>Conferma Eliminazione</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {selectedSymptom
-              ? `Sei sicuro di voler eliminare il sintomo ${selectedSymptom.name}?`
-              : 'Sei sicuro di voler eliminare i sintomi selezionati?'}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDeleteDialogClose} color="primary">
-            Annulla
-          </Button>
-          <Button
-            onClick={() => handleDelete(selectedSymptom ? [selectedSymptom.id] : selectedSymptoms)}
-            color="primary"
-            autoFocus
-          >
-            Elimina
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+        )}
+        <Dialog open={deleteDialogOpen} onClose={handleDeleteDialogClose}>
+          <DialogTitle>Conferma Eliminazione</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {selectedSymptom
+                ? `Sei sicuro di voler eliminare il sintomo ${selectedSymptom.name}?`
+                : 'Sei sicuro di voler eliminare i sintomi selezionati?'}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleDeleteDialogClose} color="primary">
+              Annulla
+            </Button>
+            <Button onClick={() => handleDelete(selectedSymptom ? [selectedSymptom.id] : selectedSymptoms)} color="primary">
+              Elimina
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Root>
+    </BackgroundWrapper>
   );
 }
 

@@ -29,14 +29,17 @@ import { useAuth } from '../../contexts/AuthContext';
 import { ClipLoader } from 'react-spinners';
 import AddPatientDialog from './AddPatientDialog';
 import EditPatientDialog from './EditPatientDialog';
+import BackgroundWrapper from '../../components/BackgroundWrapper'; // Importa BackgroundWrapper
+import './PatientList.css';
 
 const Root = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   height: '62vm',
-  backgroundColor: '#f5f5f5',
-})
+  backgroundColor: '#ffffff',
+  opacity: 0.9,
+});
 
 const StyledTable = styled(Table)({
   minWidth: 650,
@@ -268,101 +271,103 @@ function PatientList() {
   }
 
   return (
-    <Root>
-      <div className="content">
-        <Container component={Paper} className="table-container">
-          <Header>
-            <IconButton onClick={() => navigate('/main')}>
-              <CloseIcon />
-            </IconButton>
-            <Typography variant="h4" component="h1" gutterBottom>
-              Lista Pazienti
-            </Typography>
-            {user && (
-              <AddButton
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={handleAddDialogOpen}
-              >
-                Aggiungi Paziente
-              </AddButton>
-            )}
-          </Header>
-          <StyledTable>
-            <TableHead>
-              <TableRow>
-                <TableCell>Nominativo</TableCell>
-                <TableCell>Età</TableCell>
-                <TableCell>Altezza</TableCell>
-                <TableCell>Peso</TableCell>
-                <TableCell>Dottore</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {patients.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((patient) => (
-                <TableRow key={patient.uuid}>
-                  <TableCell>
-                    <Link component="button" onClick={() => handlePatientInfoOpen(patient)}>
-                      {patient.nominativo}
-                    </Link>
-                  </TableCell>
-                  <TableCell>{patient.eta}</TableCell>
-                  <TableCell>{patient.altezza}</TableCell>
-                  <TableCell>{patient.peso}</TableCell>
-                  <TableCell>{patient.doctor_name}</TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => handleEditDialogOpen(patient)}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton onClick={() => handleDeleteDialogOpen(patient)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
+    <BackgroundWrapper>
+      <Root>
+        <div className="content">
+          <Container component={Paper} className="table-container">
+            <Header>
+              <IconButton onClick={() => navigate('/main')}>
+                <CloseIcon />
+              </IconButton>
+              <Typography variant="h4" component="h1" gutterBottom>
+                Lista Pazienti
+              </Typography>
+              {user && (
+                <AddButton
+                  variant="contained"
+                  color="primary"
+                  startIcon={<AddIcon />}
+                  onClick={handleAddDialogOpen}
+                >
+                  Aggiungi Paziente
+                </AddButton>
+              )}
+            </Header>
+            <StyledTable>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Nominativo</TableCell>
+                  <TableCell>Età</TableCell>
+                  <TableCell>Altezza</TableCell>
+                  <TableCell>Peso</TableCell>
+                  <TableCell>Dottore</TableCell>
+                  <TableCell>Actions</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </StyledTable>
-          <TablePagination
-            rowsPerPageOptions={[5, 10]}
-            component="div"
-            count={patients.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
+              </TableHead>
+              <TableBody>
+                {patients.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((patient) => (
+                  <TableRow key={patient.uuid}>
+                    <TableCell>
+                      <Link component="button" onClick={() => handlePatientInfoOpen(patient)}>
+                        {patient.nominativo}
+                      </Link>
+                    </TableCell>
+                    <TableCell>{patient.eta}</TableCell>
+                    <TableCell>{patient.altezza}</TableCell>
+                    <TableCell>{patient.peso}</TableCell>
+                    <TableCell>{patient.doctor_name}</TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => handleEditDialogOpen(patient)}>
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDeleteDialogOpen(patient)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </StyledTable>
+            <TablePagination
+              rowsPerPageOptions={[5, 10]}
+              component="div"
+              count={patients.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </Container>
+        </div>
+        <AddPatientDialog open={addDialogOpen} onClose={handleAddDialogClose} onPatientAdded={handlePatientAdded} />
+        {selectedPatient && (
+          <EditPatientDialog
+            open={editDialogOpen}
+            onClose={handleEditDialogClose}
+            onEditSubmit={handleEditSubmit}
+            patient={selectedPatient}
           />
-        </Container>
-      </div>
-      <AddPatientDialog open={addDialogOpen} onClose={handleAddDialogClose} onPatientAdded={handlePatientAdded} />
-      {selectedPatient && (
-        <EditPatientDialog
-          open={editDialogOpen}
-          onClose={handleEditDialogClose}
-          onEditSubmit={handleEditSubmit}
-          patient={selectedPatient}
-        />
-      )}
-      <Dialog open={deleteDialogOpen} onClose={handleDeleteDialogClose}>
-        <DialogTitle>Conferma Eliminazione</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {selectedPatient
-              ? `Sei sicuro di voler eliminare il paziente ${selectedPatient.nominativo}?`
-              : 'Sei sicuro di voler eliminare i pazienti selezionati?'}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDeleteDialogClose} color="primary">
-            Annulla
-          </Button>
-          <Button onClick={() => handleDelete(selectedPatient ? [selectedPatient.uuid] : selectedPatients)} color="primary">
-            Elimina
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Root>
+        )}
+        <Dialog open={deleteDialogOpen} onClose={handleDeleteDialogClose}>
+          <DialogTitle>Conferma Eliminazione</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {selectedPatient
+                ? `Sei sicuro di voler eliminare il paziente ${selectedPatient.nominativo}?`
+                : 'Sei sicuro di voler eliminare i pazienti selezionati?'}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleDeleteDialogClose} color="primary">
+              Annulla
+            </Button>
+            <Button onClick={() => handleDelete(selectedPatient ? [selectedPatient.uuid] : selectedPatients)} color="primary">
+              Elimina
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Root>
+    </BackgroundWrapper>
   );
 }
 

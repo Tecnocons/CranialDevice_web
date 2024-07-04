@@ -26,18 +26,21 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
+
 import { useAuth } from '../../contexts/AuthContext';
 import AddPathologyDialog from './AddPathologyDialog';
 import EditPathologyDialog from './EditPathologyDialog';
 import { ClipLoader } from 'react-spinners';
-import HamburgerMenu from '../../components/HamburgerMenu';
+import BackgroundWrapper from '../../components/BackgroundWrapper'; // Importa BackgroundWrapper
+import './PathologyList.css';
 
 const Root = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   height: '62vm',
-  backgroundColor: '#f5f5f5',
+  backgroundColor: '#ffffff',
+  opacity: 0.9,
 });
 
 const StyledTable = styled(Table)({
@@ -268,123 +271,125 @@ function PathologyList() {
   }
 
   return (
-    <Root>
-      <div className="content">
-        <Container component={Paper} className="table-container">
-          <Header>
-            <IconButton onClick={() => navigate('/main')}>
-              <CloseIcon />
-            </IconButton>
-            <Typography variant="h4" component="h1" gutterBottom>
-              Lista Patologie
-            </Typography>
-            {user && (
-              <AddButton
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={handleAddDialogOpen}
-              >
-                Aggiungi Patologia
-              </AddButton>
-            )}
-          </Header>
-          <StyledTable className="styled-table">
-            <TableHead>
-              <TableRow>
-                {user && user.isAdmin && (
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      indeterminate={selectedPathologies.length > 0 && selectedPathologies.length < pathologies.length}
-                      checked={isAllSelected}
-                      onChange={handleSelectAllPathologies}
-                    />
-                  </TableCell>
-                )}
-                <TableCell className="table-header">Nome</TableCell>
-                <TableCell className="table-header">Descrizione</TableCell>
-                {user && user.isAdmin && <TableCell className="table-header">Azioni</TableCell>}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {pathologies.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((pathology) => (
-                <TableRow
-                  key={pathology.id}
-                  hover
-                  role="checkbox"
-                  aria-checked={isSelected(pathology.id)}
-                  selected={isSelected(pathology.id)}
+    <BackgroundWrapper>
+      <Root>
+        <div className="content">
+          <Container component={Paper} className="table-container">
+            <Header>
+              <IconButton onClick={() => navigate('/main')}>
+                <CloseIcon />
+              </IconButton>
+              <Typography variant="h4" component="h1" gutterBottom>
+                Lista Patologie
+              </Typography>
+              {user && (
+                <AddButton
+                  variant="contained"
+                  color="primary"
+                  startIcon={<AddIcon />}
+                  onClick={handleAddDialogOpen}
                 >
+                  Aggiungi Patologia
+                </AddButton>
+              )}
+            </Header>
+            <StyledTable className="styled-table">
+              <TableHead>
+                <TableRow>
                   {user && user.isAdmin && (
                     <TableCell padding="checkbox">
                       <Checkbox
-                        checked={isSelected(pathology.id)}
-                        onChange={() => handleSelectPathology(pathology.id)}
+                        indeterminate={selectedPathologies.length > 0 && selectedPathologies.length < pathologies.length}
+                        checked={isAllSelected}
+                        onChange={handleSelectAllPathologies}
                       />
                     </TableCell>
                   )}
-                  <TableCell>{pathology.name}</TableCell>
-                  <TableCell>{pathology.description}</TableCell>
-                  {user && user.isAdmin && (
-                    <TableCell>
-                      <IconButton onClick={() => handleEditDialogOpen(pathology)} color="primary">
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton onClick={() => handleDeleteDialogOpen(pathology)} color="secondary">
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
-                  )}
+                  <TableCell className="table-header">Nome</TableCell>
+                  <TableCell className="table-header">Descrizione</TableCell>
+                  {user && user.isAdmin && <TableCell className="table-header">Azioni</TableCell>}
                 </TableRow>
-              ))}
-            </TableBody>
-          </StyledTable>
-          <TablePagination
-            rowsPerPageOptions={[5, 10]}
-            component="div"
-            count={pathologies.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            className="pagination"
+              </TableHead>
+              <TableBody>
+                {pathologies.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((pathology) => (
+                  <TableRow
+                    key={pathology.id}
+                    hover
+                    role="checkbox"
+                    aria-checked={isSelected(pathology.id)}
+                    selected={isSelected(pathology.id)}
+                  >
+                    {user && user.isAdmin && (
+                      <TableCell padding="checkbox">
+                        <Checkbox
+                          checked={isSelected(pathology.id)}
+                          onChange={() => handleSelectPathology(pathology.id)}
+                        />
+                      </TableCell>
+                    )}
+                    <TableCell>{pathology.name}</TableCell>
+                    <TableCell>{pathology.description}</TableCell>
+                    {user && user.isAdmin && (
+                      <TableCell>
+                        <IconButton onClick={() => handleEditDialogOpen(pathology)} color="primary">
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton onClick={() => handleDeleteDialogOpen(pathology)} color="secondary">
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </StyledTable>
+            <TablePagination
+              rowsPerPageOptions={[5, 10]}
+              component="div"
+              count={pathologies.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              className="pagination"
+            />
+          </Container>
+        </div>
+        {user && (
+          <AddPathologyDialog open={addDialogOpen} onClose={handleAddDialogClose} onPathologyAdded={handlePathologyAdded} />
+        )}
+        {user && selectedPathology && (
+          <EditPathologyDialog
+            open={editDialogOpen}
+            onClose={handleEditDialogClose}
+            onEditSubmit={handleEditSubmit}
+            pathology={selectedPathology}
           />
-        </Container>
-      </div>
-      {user && (
-        <AddPathologyDialog open={addDialogOpen} onClose={handleAddDialogClose} onPathologyAdded={handlePathologyAdded} />
-      )}
-      {user && selectedPathology && (
-        <EditPathologyDialog
-          open={editDialogOpen}
-          onClose={handleEditDialogClose}
-          onEditSubmit={handleEditSubmit}
-          pathology={selectedPathology}
-        />
-      )}
-      <Dialog open={deleteDialogOpen} onClose={handleDeleteDialogClose}>
-        <DialogTitle>Conferma Eliminazione</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            {selectedPathology
-              ? `Sei sicuro di voler eliminare la patologia ${selectedPathology.name}?`
-              : 'Sei sicuro di voler eliminare le patologie selezionate?'}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDeleteDialogClose} color="primary">
-            Annulla
-          </Button>
-          <Button
-            onClick={() => handleDelete(selectedPathology ? [selectedPathology.id] : selectedPathologies)}
-            color="primary"
-            autoFocus
-          >
-            Elimina
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Root>
+        )}
+        <Dialog open={deleteDialogOpen} onClose={handleDeleteDialogClose}>
+          <DialogTitle>Conferma Eliminazione</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              {selectedPathology
+                ? `Sei sicuro di voler eliminare la patologia ${selectedPathology.name}?`
+                : 'Sei sicuro di voler eliminare le patologie selezionate?'}
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleDeleteDialogClose} color="primary">
+              Annulla
+            </Button>
+            <Button
+              onClick={() => handleDelete(selectedPathology ? [selectedPathology.id] : selectedPathologies)}
+              color="primary"
+              autoFocus
+            >
+              Elimina
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Root>
+    </BackgroundWrapper>
   );
 }
 

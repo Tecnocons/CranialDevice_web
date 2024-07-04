@@ -1,0 +1,9 @@
+.background-wrapper {
+    background-image: url('../assets/background_moduli.png'); /* Sostituisci con il percorso della tua immagine */
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  

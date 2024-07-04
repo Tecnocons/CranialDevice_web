@@ -31,14 +31,17 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import { useAuth } from '../../contexts/AuthContext';
 import { ClipLoader } from 'react-spinners';
+import BackgroundWrapper from '../../components/BackgroundWrapper'; // Importa BackgroundWrapper
+import './UserList.css';
 
 const Root = styled('div')({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   height: '62vm',
-  backgroundColor: '#f5f5f5',
-})
+  backgroundColor: '#ffffff',
+  opacity: 0.9,
+});
 
 const StyledTable = styled(Table)({
   minWidth: 650,
@@ -227,162 +230,164 @@ function UserList() {
   }
 
   return (
-    <Root>
-      <HamburgerMenuWrapper>
-        {/* Inserisci qui il componente HamburgerMenu */}
-      </HamburgerMenuWrapper>
-      <div className="content">
-        <Container component={Paper} className="table-container">
-          <Header>
-            <IconButton onClick={() => navigate('/main')}>
-              <CloseIcon />
-            </IconButton>
-            <Typography variant="h4" component="h1" gutterBottom>
-              User List
-            </Typography>
-            <AddButton
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              onClick={handleAddClick}
-            >
-              Add User
-            </AddButton>
-          </Header>
-          <StyledTable className="styled-table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Admin</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user) => (
-                <TableRow key={user.uuid}>
-                  <TableCell>{user.name}</TableCell>
-                  <TableCell>{user.isadmin ? 'Yes' : 'No'}</TableCell>
-                  <TableCell>
-                    <IconButton onClick={() => handleEditClick(user)}>
-                      <EditIcon />
-                    </IconButton>
-                  </TableCell>
+    <BackgroundWrapper>
+      <Root>
+        <HamburgerMenuWrapper>
+          {/* Inserisci qui il componente HamburgerMenu */}
+        </HamburgerMenuWrapper>
+        <div className="content">
+          <Container component={Paper} className="table-container">
+            <Header>
+              <IconButton onClick={() => navigate('/main')}>
+                <CloseIcon />
+              </IconButton>
+              <Typography variant="h4" component="h1" gutterBottom>
+                User List
+              </Typography>
+              <AddButton
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={handleAddClick}
+              >
+                Add User
+              </AddButton>
+            </Header>
+            <StyledTable className="styled-table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Admin</TableCell>
+                  <TableCell>Actions</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </StyledTable>
-          <TablePagination
-            rowsPerPageOptions={[5, 10]}
-            component="div"
-            count={users.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            className="pagination"
-          />
-        </Container>
-      </div>
-      <Dialog open={openEdit} onClose={handleCloseEdit}>
-        <DialogTitle>Edit User</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Modify the details of the user.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Name"
-            type="text"
-            fullWidth
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <TextField
-            margin="dense"
-            label="Password"
-            type={showPassword ? 'text' : 'password'}
-            fullWidth
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword}
-                  >
-                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-          <FormControlLabel
-            control={<Checkbox checked={isAdmin} onChange={(e) => setIsAdmin(e.target.checked)} />}
-            label="Admin"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseEdit} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleSave} color="primary">
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+              </TableHead>
+              <TableBody>
+                {users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user) => (
+                  <TableRow key={user.uuid}>
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.isadmin ? 'Yes' : 'No'}</TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => handleEditClick(user)}>
+                        <EditIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </StyledTable>
+            <TablePagination
+              rowsPerPageOptions={[5, 10]}
+              component="div"
+              count={users.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              className="pagination"
+            />
+          </Container>
+        </div>
+        <Dialog open={openEdit} onClose={handleCloseEdit}>
+          <DialogTitle>Edit User</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Modify the details of the user.
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              label="Name"
+              type="text"
+              fullWidth
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <TextField
+              margin="dense"
+              label="Password"
+              type={showPassword ? 'text' : 'password'}
+              fullWidth
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                    >
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <FormControlLabel
+              control={<Checkbox checked={isAdmin} onChange={(e) => setIsAdmin(e.target.checked)} />}
+              label="Admin"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseEdit} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handleSave} color="primary">
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
 
-      <Dialog open={openAdd} onClose={handleCloseAdd}>
-        <DialogTitle>Add New User</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Enter the details of the new user.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Name"
-            type="text"
-            fullWidth
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <TextField
-            margin="dense"
-            label="Password"
-            type={showPassword ? 'text' : 'password'}
-            fullWidth
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword}
-                  >
-                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            }}
-          />
-          <FormControlLabel
-            control={<Checkbox checked={isAdmin} onChange={(e) => setIsAdmin(e.target.checked)} />}
-            label="Admin"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseAdd} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleAddUser} color="primary">
-            Add User
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Root>
+        <Dialog open={openAdd} onClose={handleCloseAdd}>
+          <DialogTitle>Add New User</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Enter the details of the new user.
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              label="Name"
+              type="text"
+              fullWidth
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <TextField
+              margin="dense"
+              label="Password"
+              type={showPassword ? 'text' : 'password'}
+              fullWidth
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                    >
+                      {showPassword ? <Visibility /> : <VisibilityOff />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <FormControlLabel
+              control={<Checkbox checked={isAdmin} onChange={(e) => setIsAdmin(e.target.checked)} />}
+              label="Admin"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseAdd} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handleAddUser} color="primary">
+              Add User
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Root>
+    </BackgroundWrapper>
   );
 }
 
