@@ -246,7 +246,7 @@ function SymptomList() {
               <Typography variant="h4" component="h1" gutterBottom>
                 Lista Sintomi
               </Typography>
-              {user && (
+              {user && user.isAdmin && (
                 <AddButton
                   variant="contained"
                   color="primary"
@@ -262,7 +262,7 @@ function SymptomList() {
                 <TableRow>
                   <TableCell>Nome</TableCell>
                   <TableCell>Descrizione</TableCell>
-                  <TableCell>Actions</TableCell>
+                  {user && user.isAdmin && <TableCell>Actions</TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -270,14 +270,16 @@ function SymptomList() {
                   <TableRow key={symptom.id}>
                     <TableCell>{symptom.name}</TableCell>
                     <TableCell>{symptom.description}</TableCell>
-                    <TableCell>
-                      <IconButton onClick={() => handleEditDialogOpen(symptom)}>
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton onClick={() => handleDeleteDialogOpen(symptom)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
+                    {user && user.isAdmin && (
+                      <TableCell>
+                        <IconButton onClick={() => handleEditDialogOpen(symptom)}>
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton onClick={() => handleDeleteDialogOpen(symptom)}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
@@ -294,10 +296,10 @@ function SymptomList() {
             />
           </Container>
         </div>
-        {user && (
+        {user && user.isAdmin && (
           <AddSymptomDialog open={addDialogOpen} onClose={handleAddDialogClose} onSymptomAdded={handleSymptomAdded} />
         )}
-        {user && selectedSymptom && (
+        {user && user.isAdmin && selectedSymptom && (
           <EditSymptomDialog
             open={editDialogOpen}
             onClose={handleEditDialogClose}
