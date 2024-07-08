@@ -10,6 +10,7 @@ import PathologyList from './pages/pathologies/PathologyList';
 import SymptomList from './pages/symptoms/SymptomList';
 import HamburgerMenu from './components/HamburgerMenu';
 import TraumaticEvent from './pages/traumatic_events/TraumaticEventList';
+import SurgeryList from './pages/surgery/SurgeryList';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useAuth } from './contexts/AuthContext';
 import { Outlet } from 'react-router-dom';
@@ -51,6 +52,7 @@ function App() {
           <Route path="/pathologies" element={<PathologyList />} />
           <Route path="/symptoms" element={<SymptomList />} />
           <Route path="/traumatic-events" element={<TraumaticEvent />} />
+          <Route path="/surgeries" element={<SurgeryList />} />
         </Route>
       </Routes>
     </ThemeProvider>
