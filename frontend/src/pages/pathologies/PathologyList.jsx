@@ -282,7 +282,7 @@ function PathologyList() {
               <Typography variant="h4" component="h1" gutterBottom>
                 Lista Patologie
               </Typography>
-              {user && (
+              {user && user.isAdmin && (
                 <AddButton
                   variant="contained"
                   color="primary"
@@ -355,10 +355,10 @@ function PathologyList() {
             />
           </Container>
         </div>
-        {user && (
+        {user && user.isAdmin && (
           <AddPathologyDialog open={addDialogOpen} onClose={handleAddDialogClose} onPathologyAdded={handlePathologyAdded} />
         )}
-        {user && selectedPathology && (
+        {user && user.isAdmin && selectedPathology && (
           <EditPathologyDialog
             open={editDialogOpen}
             onClose={handleEditDialogClose}

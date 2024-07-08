@@ -16,7 +16,6 @@ import {
   DialogTitle,
   Button,
   Box,
-  Link,
   TablePagination,
 } from '@mui/material';
 import { styled } from '@mui/system';
@@ -29,7 +28,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { ClipLoader } from 'react-spinners';
 import AddTraumaticEventDialog from './AddTraumaticEventDialog';
 import EditTraumaticEventDialog from './EditTraumaticEventDialog';
-import BackgroundWrapper from '../../components/BackgroundWrapper'; // Importa BackgroundWrapper
+import BackgroundWrapper from '../../components/BackgroundWrapper';
 import './TraumaticEventList.css';
 
 const Root = styled('div')({
@@ -247,21 +246,23 @@ function TraumaticEventList() {
               <Typography variant="h4" component="h1" gutterBottom>
                 Lista Eventi Traumatici
               </Typography>
-              <AddButton
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={handleAddDialogOpen}
-              >
-                Aggiungi Evento Traumatico
-              </AddButton>
+              {user && user.isAdmin && (
+                <AddButton
+                  variant="contained"
+                  color="primary"
+                  startIcon={<AddIcon />}
+                  onClick={handleAddDialogOpen}
+                >
+                  Aggiungi Evento Traumatico
+                </AddButton>
+              )}
             </Header>
             <StyledTable>
               <TableHead>
                 <TableRow>
                   <TableCell>Nome</TableCell>
                   <TableCell>Descrizione</TableCell>
-                  <TableCell>Azioni</TableCell>
+                  {user && user.isAdmin && <TableCell>Azioni</TableCell>}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -269,14 +270,16 @@ function TraumaticEventList() {
                   <TableRow key={event.id}>
                     <TableCell>{event.name}</TableCell>
                     <TableCell>{event.description}</TableCell>
-                    <TableCell>
-                      <IconButton onClick={() => handleEditDialogOpen(event)}>
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton onClick={() => handleDeleteDialogOpen(event)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
+                    {user && user.isAdmin && (
+                      <TableCell>
+                        <IconButton onClick={() => handleEditDialogOpen(event)}>
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton onClick={() => handleDeleteDialogOpen(event)}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
@@ -292,8 +295,10 @@ function TraumaticEventList() {
             />
           </Container>
         </div>
-        <AddTraumaticEventDialog open={addDialogOpen} onClose={handleAddDialogClose} onEventAdded={handleEventAdded} />
-        {selectedEvent && (
+        {user && user.isAdmin && (
+          <AddTraumaticEventDialog open={addDialogOpen} onClose={handleAddDialogClose} onEventAdded={handleEventAdded} />
+        )}
+        {user && user.isAdmin && selectedEvent && (
           <EditTraumaticEventDialog
             open={editDialogOpen}
             onClose={handleEditDialogClose}
