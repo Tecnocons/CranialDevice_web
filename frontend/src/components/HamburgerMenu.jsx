@@ -9,6 +9,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import PersonIcon from '@mui/icons-material/Person';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
+import EventIcon from '@mui/icons-material/Event';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { styled } from '@mui/system';
@@ -44,7 +45,8 @@ const HamburgerMenu = () => {
     { text: 'User List', icon: <ListIcon />, onClick: () => navigate('/users'), adminOnly: true },
     { text: 'Lista pazienti', icon: <PeopleIcon />, onClick: () => navigate('/patients'), adminOnly: false },
     { text: 'Lista patologie', icon: <MedicalServicesIcon />, onClick: () => navigate('/pathologies'), adminOnly: false },
-    { text: 'Lista sintomi', icon: <MedicalServicesIcon />, onClick: () => navigate('/symptoms'), adminOnly: false }
+    { text: 'Lista sintomi', icon: <MedicalServicesIcon />, onClick: () => navigate('/symptoms'), adminOnly: false },
+    { text: 'Lista eventi traumatici', icon: <EventIcon />, onClick: () => navigate('/traumatic-events'), adminOnly: false } // Aggiunto il nuovo tasto
   ];
 
   const additionalItems = [
