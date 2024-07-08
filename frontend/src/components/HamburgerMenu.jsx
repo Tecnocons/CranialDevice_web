@@ -11,6 +11,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import EventIcon from '@mui/icons-material/Event';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
+import HealingIcon from '@mui/icons-material/Healing'; // Aggiunto per i trattamenti
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { styled } from '@mui/system';
@@ -48,7 +49,8 @@ const HamburgerMenu = () => {
     { text: 'Lista patologie', icon: <MedicalServicesIcon />, onClick: () => navigate('/pathologies'), adminOnly: false },
     { text: 'Lista sintomi', icon: <MedicalServicesIcon />, onClick: () => navigate('/symptoms'), adminOnly: false },
     { text: 'Lista eventi traumatici', icon: <EventIcon />, onClick: () => navigate('/traumatic-events'), adminOnly: false },
-    { text: 'Lista interventi', icon: <LocalHospitalIcon />, onClick: () => navigate('/surgeries'), adminOnly: false }, // Aggiunto il nuovo tasto
+    { text: 'Lista interventi', icon: <LocalHospitalIcon />, onClick: () => navigate('/surgeries'), adminOnly: false },
+    { text: 'Lista trattamenti', icon: <HealingIcon />, onClick: () => navigate('/treatments'), adminOnly: false }, // Aggiunto il nuovo tasto
   ];
 
   const additionalItems = [

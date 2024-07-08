@@ -14,6 +14,7 @@ from werkzeug.exceptions import HTTPException
 from api.symptoms import symptom_bp
 from api.traumatic_event import traumatic_event_bp
 from api.surgery import surgery_bp
+from api.treatment import treatment_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -55,6 +56,7 @@ app.register_blueprint(patient_pathology_bp, url_prefix='/api')
 app.register_blueprint(symptom_bp, url_prefix='/api')
 app.register_blueprint(traumatic_event_bp, url_prefix='/api')
 app.register_blueprint(surgery_bp, url_prefix='/api')
+app.register_blueprint(treatment_bp, url_prefix='/api')
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
