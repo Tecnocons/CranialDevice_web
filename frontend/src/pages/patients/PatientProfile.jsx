@@ -8,7 +8,8 @@ import jsPDF from 'jspdf';
 import AssignPathologiesDialog from './AssignPathologiesDialog';
 import AssignSymptomsDialog from './AssignSymptomsDialog';
 import AssignTraumaticEventsDialog from './AssignTraumaticEventsDialog';
-import AssignSurgeriesDialog from './AssignSurgeriesDialog'; // Import the new dialog
+import AssignSurgeriesDialog from './AssignSurgeriesDialog';
+import AssignTreatmentsDialog from './AssignTreatmentsDialog'; // Import the new dialog
 import EditPatientDialog from './EditPatientDialog';
 import './PatientProfile.css';
 
@@ -19,11 +20,13 @@ const PatientProfile = () => {
   const [pathologies, setPathologies] = useState([]);
   const [symptoms, setSymptoms] = useState([]);
   const [traumaticEvents, setTraumaticEvents] = useState([]);
-  const [surgeries, setSurgeries] = useState([]); // Add state for surgeries
+  const [surgeries, setSurgeries] = useState([]);
+  const [treatments, setTreatments] = useState([]); // Add state for treatments
   const [assignPathologiesDialogOpen, setAssignPathologiesDialogOpen] = useState(false);
   const [assignSymptomsDialogOpen, setAssignSymptomsDialogOpen] = useState(false);
   const [assignTraumaticEventsDialogOpen, setAssignTraumaticEventsDialogOpen] = useState(false);
-  const [assignSurgeriesDialogOpen, setAssignSurgeriesDialogOpen] = useState(false); // Add state for surgeries dialog
+  const [assignSurgeriesDialogOpen, setAssignSurgeriesDialogOpen] = useState(false);
+  const [assignTreatmentsDialogOpen, setAssignTreatmentsDialogOpen] = useState(false); // Add state for treatments dialog
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const fetchPatient = async () => {
@@ -106,12 +109,29 @@ const PatientProfile = () => {
     }
   };
 
+  const fetchTreatments = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/patient_treatment/${uuid}`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setTreatments(data);
+    } catch (error) {
+      console.error('Error fetching treatments:', error);
+    }
+  };
+
   useEffect(() => {
     fetchPatient();
     fetchPathologies();
     fetchSymptoms();
     fetchTraumaticEvents();
-    fetchSurgeries(); // Fetch surgeries as well
+    fetchSurgeries();
+    fetchTreatments(); // Fetch treatments as well
   }, [uuid]);
 
   if (!patient) {
@@ -121,11 +141,6 @@ const PatientProfile = () => {
   const measurements = [
     { date: '2024-06-20', value: '120/80' },
     { date: '2024-06-21', value: '125/85' },
-  ];
-
-  const treatments = [
-    { date: '2024-06-20', description: 'Antibiotics' },
-    { date: '2024-06-21', description: 'Physical Therapy' },
   ];
 
   const generatePDF = () => {
@@ -150,38 +165,38 @@ const PatientProfile = () => {
     });
 
     doc.setFontSize(14);
-    doc.text('Trattamenti', 20, 110 + measurements.length * 10);
-    doc.setFontSize(12);
-    treatments.forEach((treatment, index) => {
-      doc.text(`${treatment.date}: ${treatment.description}`, 20, 120 + measurements.length * 10 + index * 10);
-    });
-
-    doc.setFontSize(14);
-    doc.text('Patologie', 20, 130 + measurements.length * 10 + treatments.length * 10);
+    doc.text('Patologie', 20, 110 + measurements.length * 10);
     doc.setFontSize(12);
     pathologies.forEach((pathology, index) => {
-      doc.text(pathology.name, 20, 140 + measurements.length * 10 + treatments.length * 10 + index * 10);
+      doc.text(pathology.name, 20, 120 + measurements.length * 10 + index * 10);
     });
 
     doc.setFontSize(14);
-    doc.text('Sintomi', 20, 150 + measurements.length * 10 + treatments.length * 10 + pathologies.length * 10);
+    doc.text('Sintomi', 20, 130 + measurements.length * 10 + pathologies.length * 10);
     doc.setFontSize(12);
     symptoms.forEach((symptom, index) => {
-      doc.text(symptom.name, 20, 160 + measurements.length * 10 + treatments.length * 10 + pathologies.length * 10 + index * 10);
+      doc.text(symptom.name, 20, 140 + measurements.length * 10 + pathologies.length * 10 + index * 10);
     });
 
     doc.setFontSize(14);
-    doc.text('Eventi Traumatici', 20, 170 + measurements.length * 10 + treatments.length * 10 + pathologies.length * 10 + symptoms.length * 10);
+    doc.text('Eventi Traumatici', 20, 150 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10);
     doc.setFontSize(12);
     traumaticEvents.forEach((event, index) => {
-      doc.text(event.name, 20, 180 + measurements.length * 10 + treatments.length * 10 + pathologies.length * 10 + symptoms.length * 10 + index * 10);
+      doc.text(event.name, 20, 160 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + index * 10);
     });
 
     doc.setFontSize(14);
-    doc.text('Interventi', 20, 190 + measurements.length * 10 + treatments.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10);
+    doc.text('Interventi', 20, 170 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10);
     doc.setFontSize(12);
     surgeries.forEach((surgery, index) => {
-      doc.text(surgery.name, 20, 200 + measurements.length * 10 + treatments.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10 + index * 10);
+      doc.text(surgery.name, 20, 180 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10 + index * 10);
+    });
+
+    doc.setFontSize(14);
+    doc.text('Trattamenti', 20, 190 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10 + surgeries.length * 10);
+    doc.setFontSize(12);
+    treatments.forEach((treatment, index) => {
+      doc.text(treatment.name, 20, 200 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10 + surgeries.length * 10 + index * 10);
     });
 
     doc.save(`Cartella_Clinica_${patient.nominativo}.pdf`);
@@ -232,6 +247,15 @@ const PatientProfile = () => {
   const handleAssignSurgeriesDialogClose = () => {
     setAssignSurgeriesDialogOpen(false);
     fetchSurgeries(); // Refresh surgeries after assignment
+  };
+
+  const handleAssignTreatmentsDialogOpen = () => {
+    setAssignTreatmentsDialogOpen(true);
+  };
+
+  const handleAssignTreatmentsDialogClose = () => {
+    setAssignTreatmentsDialogOpen(false);
+    fetchTreatments(); // Refresh treatments after assignment
   };
 
   const handleEditDialogOpen = () => {
@@ -299,16 +323,6 @@ const PatientProfile = () => {
         </Grid>
         <Grid item xs={12} md={6}>
           <Paper className="info-block">
-            <Typography variant="h6" className="box-title">Trattamenti</Typography>
-            <div className="info-content">
-              {treatments.map((treatment, index) => (
-                <Typography key={index}>{`${treatment.date}: ${treatment.description}`}</Typography>
-              ))}
-            </div>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Paper className="info-block">
             <Typography variant="h6" className="box-title">Patologie</Typography>
             <div className="info-content">
               {pathologies.map((pathology, index) => (
@@ -359,6 +373,19 @@ const PatientProfile = () => {
             </Button>
           </Paper>
         </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper className="info-block">
+            <Typography variant="h6" className="box-title">Trattamenti</Typography>
+            <div className="info-content">
+              {treatments.map((treatment, index) => (
+                <Typography key={index}>{treatment.name}</Typography>
+              ))}
+            </div>
+            <Button variant="contained" color="primary" onClick={handleAssignTreatmentsDialogOpen}>
+              Assegna Trattamenti
+            </Button>
+          </Paper>
+        </Grid>
       </Grid>
       <AssignPathologiesDialog
         open={assignPathologiesDialogOpen}
@@ -383,6 +410,12 @@ const PatientProfile = () => {
         onClose={handleAssignSurgeriesDialogClose}
         patient={patient}
         onAssign={fetchSurgeries}
+      />
+      <AssignTreatmentsDialog
+        open={assignTreatmentsDialogOpen}
+        onClose={handleAssignTreatmentsDialogClose}
+        patient={patient}
+        onAssign={fetchTreatments}
       />
       <EditPatientDialog
         open={editDialogOpen}
