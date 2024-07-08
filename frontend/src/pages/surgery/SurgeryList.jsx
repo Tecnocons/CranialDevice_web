@@ -19,6 +19,7 @@ import {
   TablePagination,
 } from '@mui/material';
 import { styled } from '@mui/system';
+import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -68,6 +69,7 @@ const AddButton = styled(Button)({
 
 function SurgeryList() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [surgeries, setSurgeries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
