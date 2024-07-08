@@ -16,7 +16,7 @@
 }
 
 .table-container {
-  width: 80%;
+  width: 100%;
   max-width: 1150px;
   display: flex;
   flex-direction: column;

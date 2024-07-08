@@ -18,6 +18,9 @@ import {
   Box,
   Link,
   TablePagination,
+  TextField,
+  Collapse,
+  Grid,
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
@@ -25,18 +28,20 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { useAuth } from '../../contexts/AuthContext';
 import { ClipLoader } from 'react-spinners';
 import AddPatientDialog from './AddPatientDialog';
 import EditPatientDialog from './EditPatientDialog';
-import BackgroundWrapper from '../../components/BackgroundWrapper'; // Importa BackgroundWrapper
+import BackgroundWrapper from '../../components/BackgroundWrapper';
 import './PatientList.css';
 
 const Root = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  alignItems: 'center',
-  height: '62vm',
+  alignItems: 'flex-start',
+  height: '100vh',
   backgroundColor: '#ffffff',
   opacity: 0.9,
 });
@@ -68,6 +73,28 @@ const AddButton = styled(Button)({
   },
 });
 
+const FilterBox = styled(Box)({
+  width: '25%',
+  padding: '16px',
+  borderRadius: '8px',
+  boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+  backgroundColor: '#fff',
+  opacity: 0.9,
+});
+
+const FilterHeader = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: '8px',
+});
+
+const PatientListContainer = styled(Container)({
+  width: '65%',
+  display: 'flex',
+  flexDirection: 'column',
+});
+
 function PatientList() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -81,6 +108,11 @@ function PatientList() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [selectedPatients, setSelectedPatients] = useState([]);
+  const [nameFilter, setNameFilter] = useState('');
+  const [ageRange, setAgeRange] = useState({ min: '', max: '' });
+  const [weightRange, setWeightRange] = useState({ min: '', max: '' });
+  const [heightRange, setHeightRange] = useState({ min: '', max: '' });
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -248,6 +280,35 @@ function PatientList() {
     navigate(`/patients/${patient.uuid}`);
   };
 
+  const handleFilterChange = (e) => {
+    setNameFilter(e.target.value);
+  };
+
+  const handleRangeChange = (e, rangeType) => {
+    const { name, value } = e.target;
+    if (rangeType === 'age') {
+      setAgeRange((prev) => ({ ...prev, [name]: value }));
+    } else if (rangeType === 'weight') {
+      setWeightRange((prev) => ({ ...prev, [name]: value }));
+    } else if (rangeType === 'height') {
+      setHeightRange((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const filteredPatients = patients.filter((patient) => {
+    const matchesName = patient.nominativo.toLowerCase().includes(nameFilter.toLowerCase());
+    const matchesAge =
+      (ageRange.min === '' || patient.eta >= ageRange.min) &&
+      (ageRange.max === '' || patient.eta <= ageRange.max);
+    const matchesWeight =
+      (weightRange.min === '' || patient.peso >= weightRange.min) &&
+      (weightRange.max === '' || patient.peso <= weightRange.max);
+    const matchesHeight =
+      (heightRange.min === '' || patient.altezza >= heightRange.min) &&
+      (heightRange.max === '' || patient.altezza <= heightRange.max);
+    return matchesName && matchesAge && matchesWeight && matchesHeight;
+  });
+
   if (loading) {
     return (
       <Root>
@@ -273,72 +334,158 @@ function PatientList() {
   return (
     <BackgroundWrapper>
       <Root>
-        <div className="content">
-          <Container component={Paper} className="table-container">
-            <Header>
-              <IconButton onClick={() => navigate('/main')}>
-                <CloseIcon />
-              </IconButton>
-              <Typography variant="h4" component="h1" gutterBottom>
-                Lista Pazienti
-              </Typography>
-              {user && (
-                <AddButton
-                  variant="contained"
-                  color="primary"
-                  startIcon={<AddIcon />}
-                  onClick={handleAddDialogOpen}
-                >
-                  Aggiungi Paziente
-                </AddButton>
-              )}
-            </Header>
-            <StyledTable>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Nominativo</TableCell>
-                  <TableCell>Età</TableCell>
-                  <TableCell>Altezza</TableCell>
-                  <TableCell>Peso</TableCell>
-                  <TableCell>Dottore</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {patients.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((patient) => (
-                  <TableRow key={patient.uuid}>
-                    <TableCell>
-                      <Link component="button" onClick={() => handlePatientInfoOpen(patient)}>
-                        {patient.nominativo}
-                      </Link>
-                    </TableCell>
-                    <TableCell>{patient.eta}</TableCell>
-                    <TableCell>{patient.altezza}</TableCell>
-                    <TableCell>{patient.peso}</TableCell>
-                    <TableCell>{patient.doctor_name}</TableCell>
-                    <TableCell>
-                      <IconButton onClick={() => handleEditDialogOpen(patient)}>
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton onClick={() => handleDeleteDialogOpen(patient)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
+        <Box width="100%">
+          <Box height="20px" />
+          <Box display="flex" justifyContent="space-between">
+            <Box width="15px" />
+            <FilterBox>
+              <Typography variant="h6" component="h2">Filtri</Typography>
+              <TextField
+                label="Nome"
+                value={nameFilter}
+                onChange={handleFilterChange}
+                fullWidth
+                margin="normal"
+              />
+              <FilterHeader>
+                <Typography variant="subtitle1">Altri Filtri</Typography>
+                <IconButton onClick={() => setFiltersOpen(!filtersOpen)}>
+                  {filtersOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </IconButton>
+              </FilterHeader>
+              <Collapse in={filtersOpen}>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="Età Minima"
+                      name="min"
+                      value={ageRange.min}
+                      onChange={(e) => handleRangeChange(e, 'age')}
+                      fullWidth
+                      margin="normal"
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="Età Massima"
+                      name="max"
+                      value={ageRange.max}
+                      onChange={(e) => handleRangeChange(e, 'age')}
+                      fullWidth
+                      margin="normal"
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="Peso Minimo"
+                      name="min"
+                      value={weightRange.min}
+                      onChange={(e) => handleRangeChange(e, 'weight')}
+                      fullWidth
+                      margin="normal"
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="Peso Massimo"
+                      name="max"
+                      value={weightRange.max}
+                      onChange={(e) => handleRangeChange(e, 'weight')}
+                      fullWidth
+                      margin="normal"
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="Altezza Minima"
+                      name="min"
+                      value={heightRange.min}
+                      onChange={(e) => handleRangeChange(e, 'height')}
+                      fullWidth
+                      margin="normal"
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="Altezza Massima"
+                      name="max"
+                      value={heightRange.max}
+                      onChange={(e) => handleRangeChange(e, 'height')}
+                      fullWidth
+                      margin="normal"
+                    />
+                  </Grid>
+                </Grid>
+              </Collapse>
+            </FilterBox>
+            <Box width="2%" />
+            <PatientListContainer component={Paper} className="table-container">
+              <Header>
+                <IconButton onClick={() => navigate('/main')}>
+                  <CloseIcon />
+                </IconButton>
+                <Typography variant="h4" component="h1" gutterBottom>
+                  Lista Pazienti
+                </Typography>
+                {user && (
+                  <AddButton
+                    variant="contained"
+                    color="primary"
+                    startIcon={<AddIcon />}
+                    onClick={handleAddDialogOpen}
+                  >
+                    Aggiungi Paziente
+                  </AddButton>
+                )}
+              </Header>
+              <StyledTable>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Nominativo</TableCell>
+                    <TableCell>Età</TableCell>
+                    <TableCell>Altezza</TableCell>
+                    <TableCell>Peso</TableCell>
+                    <TableCell>Dottore</TableCell>
+                    <TableCell>Actions</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </StyledTable>
-            <TablePagination
-              rowsPerPageOptions={[5, 10]}
-              component="div"
-              count={patients.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </Container>
-        </div>
+                </TableHead>
+                <TableBody>
+                  {filteredPatients.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((patient) => (
+                    <TableRow key={patient.uuid}>
+                      <TableCell>
+                        <Link component="button" onClick={() => handlePatientInfoOpen(patient)}>
+                          {patient.nominativo}
+                        </Link>
+                      </TableCell>
+                      <TableCell>{patient.eta}</TableCell>
+                      <TableCell>{patient.altezza}</TableCell>
+                      <TableCell>{patient.peso}</TableCell>
+                      <TableCell>{patient.doctor_name}</TableCell>
+                      <TableCell>
+                        <IconButton onClick={() => handleEditDialogOpen(patient)}>
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton onClick={() => handleDeleteDialogOpen(patient)}>
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </StyledTable>
+              <TablePagination
+                rowsPerPageOptions={[5, 10]}
+                component="div"
+                count={filteredPatients.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </PatientListContainer>
+            <Box width="15px" />
+          </Box>
+        </Box>
         <AddPatientDialog open={addDialogOpen} onClose={handleAddDialogClose} onPatientAdded={handlePatientAdded} />
         {selectedPatient && (
           <EditPatientDialog
