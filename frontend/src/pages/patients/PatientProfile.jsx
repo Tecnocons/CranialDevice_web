@@ -6,18 +6,21 @@ import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import EditIcon from '@mui/icons-material/Edit';
 import jsPDF from 'jspdf';
 import AssignPathologiesDialog from './AssignPathologiesDialog';
-import AssignSymptomsDialog from './AssignSymptomsDialog'; // Import the new dialog
+import AssignSymptomsDialog from './AssignSymptomsDialog';
+import AssignTraumaticEventsDialog from './AssignTraumaticEventsDialog'; // Import the new dialog
 import EditPatientDialog from './EditPatientDialog';
 import './PatientProfile.css';
 
 const PatientProfile = () => {
-  const { uuid } = useParams(); // Ottieni l'UUID dai parametri della rotta
+  const { uuid } = useParams();
   const navigate = useNavigate();
   const [patient, setPatient] = useState(null);
   const [pathologies, setPathologies] = useState([]);
-  const [symptoms, setSymptoms] = useState([]); // Add state for symptoms
+  const [symptoms, setSymptoms] = useState([]);
+  const [traumaticEvents, setTraumaticEvents] = useState([]); // Add state for traumatic events
   const [assignPathologiesDialogOpen, setAssignPathologiesDialogOpen] = useState(false);
-  const [assignSymptomsDialogOpen, setAssignSymptomsDialogOpen] = useState(false); // Add state for symptoms dialog
+  const [assignSymptomsDialogOpen, setAssignSymptomsDialogOpen] = useState(false);
+  const [assignTraumaticEventsDialogOpen, setAssignTraumaticEventsDialogOpen] = useState(false); // Add state for traumatic events dialog
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const fetchPatient = async () => {
@@ -68,10 +71,27 @@ const PatientProfile = () => {
     }
   };
 
+  const fetchTraumaticEvents = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/patient_traumatic_event/${uuid}`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setTraumaticEvents(data);
+    } catch (error) {
+      console.error('Error fetching traumatic events:', error);
+    }
+  };
+
   useEffect(() => {
     fetchPatient();
     fetchPathologies();
-    fetchSymptoms(); // Fetch symptoms as well
+    fetchSymptoms();
+    fetchTraumaticEvents(); // Fetch traumatic events as well
   }, [uuid]);
 
   if (!patient) {
@@ -130,6 +150,13 @@ const PatientProfile = () => {
       doc.text(symptom.name, 20, 160 + measurements.length * 10 + treatments.length * 10 + pathologies.length * 10 + index * 10);
     });
 
+    doc.setFontSize(14);
+    doc.text('Eventi Traumatici', 20, 170 + measurements.length * 10 + treatments.length * 10 + pathologies.length * 10 + symptoms.length * 10);
+    doc.setFontSize(12);
+    traumaticEvents.forEach((event, index) => {
+      doc.text(event.name, 20, 180 + measurements.length * 10 + treatments.length * 10 + pathologies.length * 10 + symptoms.length * 10 + index * 10);
+    });
+
     doc.save(`Cartella_Clinica_${patient.nominativo}.pdf`);
   };
 
@@ -160,6 +187,15 @@ const PatientProfile = () => {
   const handleAssignSymptomsDialogClose = () => {
     setAssignSymptomsDialogOpen(false);
     fetchSymptoms(); // Refresh symptoms after assignment
+  };
+
+  const handleAssignTraumaticEventsDialogOpen = () => {
+    setAssignTraumaticEventsDialogOpen(true);
+  };
+
+  const handleAssignTraumaticEventsDialogClose = () => {
+    setAssignTraumaticEventsDialogOpen(false);
+    fetchTraumaticEvents(); // Refresh traumatic events after assignment
   };
 
   const handleEditDialogOpen = () => {
@@ -262,6 +298,19 @@ const PatientProfile = () => {
             </Button>
           </Paper>
         </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper className="info-block">
+            <Typography variant="h6" className="box-title">Eventi Traumatici</Typography>
+            <div className="info-content">
+              {traumaticEvents.map((event, index) => (
+                <Typography key={index}>{event.name}</Typography>
+              ))}
+            </div>
+            <Button variant="contained" color="primary" onClick={handleAssignTraumaticEventsDialogOpen}>
+              Assegna Eventi Traumatici
+            </Button>
+          </Paper>
+        </Grid>
       </Grid>
       <AssignPathologiesDialog
         open={assignPathologiesDialogOpen}
@@ -274,6 +323,12 @@ const PatientProfile = () => {
         onClose={handleAssignSymptomsDialogClose}
         patient={patient}
         onAssign={fetchSymptoms}
+      />
+      <AssignTraumaticEventsDialog
+        open={assignTraumaticEventsDialogOpen}
+        onClose={handleAssignTraumaticEventsDialogClose}
+        patient={patient}
+        onAssign={fetchTraumaticEvents}
       />
       <EditPatientDialog
         open={editDialogOpen}
