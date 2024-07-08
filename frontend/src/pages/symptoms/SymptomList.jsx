@@ -37,6 +37,7 @@ const Root = styled('div')({
   height: '62vm',
   backgroundColor: '#ffffff',
   opacity:0.9,
+  marginTop: '2%',
 });
 
 const StyledTable = styled(Table)({

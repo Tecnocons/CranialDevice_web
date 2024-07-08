@@ -21,6 +21,8 @@ import {
   Button,
   Box,
   TablePagination,
+  Collapse,
+  Grid,
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
@@ -29,18 +31,22 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { useAuth } from '../../contexts/AuthContext';
 import { ClipLoader } from 'react-spinners';
-import BackgroundWrapper from '../../components/BackgroundWrapper'; // Importa BackgroundWrapper
+import BackgroundWrapper from '../../components/BackgroundWrapper';
 import './UserList.css';
 
 const Root = styled('div')({
   display: 'flex',
   justifyContent: 'center',
-  alignItems: 'center',
-  height: '62vm',
+  alignItems: 'flex-start',
+  height: '100vh',
   backgroundColor: '#ffffff',
   opacity: 0.9,
+  padding: '20px', // Aggiungi un padding per dare spazio
+  marginTop:'2%',
 });
 
 const StyledTable = styled(Table)({
@@ -52,6 +58,7 @@ const StyledTable = styled(Table)({
   '& .MuiTableCell-body': {
     fontSize: 14,
   },
+
 });
 
 const Header = styled('div')({
@@ -70,11 +77,30 @@ const AddButton = styled(Button)({
   },
 });
 
-const HamburgerMenuWrapper = styled('div')({
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  zIndex: 2,
+const FilterBox = styled(Box)({
+  width: '22%',
+  padding: '26px',
+  borderRadius: '18px',
+  boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
+  backgroundColor: '#fff',
+  opacity: 0.9,
+  marginRight: '2%', // Aggiungi un margine a destra
+  marginLeft: '1%',
+});
+
+const FilterHeader = styled('div')({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: '18px',
+});
+
+const UserListContainer = styled(Container)({
+  width: '65%',
+  display: 'flex',
+  flexDirection: 'column',
+  marginLeft: 'auto',
+  marginRight: 'auto', 
 });
 
 function UserList() {
@@ -90,6 +116,8 @@ function UserList() {
   const [showPassword, setShowPassword] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [nameFilter, setNameFilter] = useState('');
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -131,7 +159,7 @@ function UserList() {
         throw new Error('Network response was not ok');
       }
       const data = await response.json();
-      setPassword(data.password); // Set the password field with the decrypted password
+      setPassword(data.password);
       setIsAdmin(data.isadmin);
       setOpenEdit(true);
     } catch (error) {
@@ -148,7 +176,7 @@ function UserList() {
   };
 
   const handleSave = async () => {
-    const updatedPassword = password === '' ? null : password; // If password field is empty, do not update the password
+    const updatedPassword = password === '' ? null : password;
     try {
       const response = await fetch(`http://localhost:5000/api/users/${selectedUser.uuid}`, {
         method: 'PUT',
@@ -189,7 +217,7 @@ function UserList() {
         throw new Error('Network response was not ok');
       }
       await response.json();
-      fetchUsers(); // Fetch users again to update the table
+      fetchUsers();
       handleCloseAdd();
     } catch (error) {
       console.error('Error:', error);
@@ -206,6 +234,14 @@ function UserList() {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  const handleFilterChange = (e) => {
+    setNameFilter(e.target.value);
+  };
+
+  const filteredUsers = users.filter((user) => {
+    return user.name.toLowerCase().includes(nameFilter.toLowerCase());
+  });
 
   if (loading) {
     return (
@@ -232,61 +268,85 @@ function UserList() {
   return (
     <BackgroundWrapper>
       <Root>
-        <HamburgerMenuWrapper>
-          {/* Inserisci qui il componente HamburgerMenu */}
-        </HamburgerMenuWrapper>
-        <div className="content">
-          <Container component={Paper} className="table-container">
-            <Header>
-              <IconButton onClick={() => navigate('/main')}>
-                <CloseIcon />
-              </IconButton>
-              <Typography variant="h4" component="h1" gutterBottom>
-                User List
-              </Typography>
-              <AddButton
-                variant="contained"
-                color="primary"
-                startIcon={<AddIcon />}
-                onClick={handleAddClick}
-              >
-                Add User
-              </AddButton>
-            </Header>
-            <StyledTable className="styled-table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Admin</TableCell>
-                  <TableCell>Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {users.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user) => (
-                  <TableRow key={user.uuid}>
-                    <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.isadmin ? 'Yes' : 'No'}</TableCell>
-                    <TableCell>
-                      <IconButton onClick={() => handleEditClick(user)}>
-                        <EditIcon />
-                      </IconButton>
-                    </TableCell>
+        <Box width="100%">
+          <Box height="20px" />
+          <Box display="flex" justifyContent="space-between">
+            <Box width="15px" />
+            <FilterBox>
+              <Typography variant="h6" component="h2">Filtri</Typography>
+              <TextField
+                label="Nome"
+                value={nameFilter}
+                onChange={handleFilterChange}
+                fullWidth
+                margin="normal"
+              />
+              <FilterHeader>
+                <Typography variant="subtitle1">Altri Filtri</Typography>
+                <IconButton onClick={() => setFiltersOpen(!filtersOpen)}>
+                  {filtersOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </IconButton>
+              </FilterHeader>
+              <Collapse in={filtersOpen}>
+                <Grid container spacing={2}>
+                  {/* Add more filters here if necessary */}
+                </Grid>
+              </Collapse>
+            </FilterBox>
+            <Box width="2%" />
+            <UserListContainer component={Paper} className="table-container">
+              <Header>
+                <IconButton onClick={() => navigate('/main')}>
+                  <CloseIcon />
+                </IconButton>
+                <Typography variant="h4" component="h1" gutterBottom>
+                  User List
+                </Typography>
+                <AddButton
+                  variant="contained"
+                  color="primary"
+                  startIcon={<AddIcon />}
+                  onClick={handleAddClick}
+                >
+                  Add User
+                </AddButton>
+              </Header>
+              <StyledTable className="styled-table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Admin</TableCell>
+                    <TableCell>Actions</TableCell>
                   </TableRow>
-                ))}
-              </TableBody>
-            </StyledTable>
-            <TablePagination
-              rowsPerPageOptions={[5, 10]}
-              component="div"
-              count={users.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              className="pagination"
-            />
-          </Container>
-        </div>
+                </TableHead>
+                <TableBody>
+                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user) => (
+                    <TableRow key={user.uuid}>
+                      <TableCell>{user.name}</TableCell>
+                      <TableCell>{user.isadmin ? 'Yes' : 'No'}</TableCell>
+                      <TableCell>
+                        <IconButton onClick={() => handleEditClick(user)}>
+                          <EditIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </StyledTable>
+              <TablePagination
+                rowsPerPageOptions={[5, 10]}
+                component="div"
+                count={filteredUsers.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                className="pagination"
+              />
+            </UserListContainer>
+            <Box width="15px" />
+          </Box>
+        </Box>
         <Dialog open={openEdit} onClose={handleCloseEdit}>
           <DialogTitle>Edit User</DialogTitle>
           <DialogContent>

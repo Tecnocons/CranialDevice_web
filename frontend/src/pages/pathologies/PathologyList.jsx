@@ -41,6 +41,7 @@ const Root = styled('div')({
   height: '62vm',
   backgroundColor: '#ffffff',
   opacity: 0.9,
+  marginTop: '2%',
 });
 
 const StyledTable = styled(Table)({
@@ -60,6 +61,7 @@ const Header = styled('div')({
   alignItems: 'center',
   width: '100%',
   marginBottom: 16,
+  marginTop:'2%',
 });
 
 const AddButton = styled(Button)({

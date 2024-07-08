@@ -34,7 +34,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { ClipLoader } from 'react-spinners';
 import AddPatientDialog from './AddPatientDialog';
 import EditPatientDialog from './EditPatientDialog';
-import BackgroundWrapper from '../../components/BackgroundWrapper';
+import BackgroundWrapper from '../../components/BackgroundWrapper'; // Importa BackgroundWrapper
 import './PatientList.css';
 
 const Root = styled('div')({
@@ -44,6 +44,8 @@ const Root = styled('div')({
   height: '100vh',
   backgroundColor: '#ffffff',
   opacity: 0.9,
+  padding: '20px', // Aggiungi un padding per dare spazio
+  marginTop:'2%',
 });
 
 const StyledTable = styled(Table)({
@@ -55,6 +57,7 @@ const StyledTable = styled(Table)({
   '& .MuiTableCell-body': {
     fontSize: 14,
   },
+
 });
 
 const Header = styled('div')({
@@ -74,25 +77,29 @@ const AddButton = styled(Button)({
 });
 
 const FilterBox = styled(Box)({
-  width: '25%',
-  padding: '16px',
-  borderRadius: '8px',
+  width: '22%',
+  padding: '26px',
+  borderRadius: '18px',
   boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
   backgroundColor: '#fff',
   opacity: 0.9,
+  marginRight: '2%', // Aggiungi un margine a destra
+  marginLeft: '1%',
 });
 
 const FilterHeader = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-  marginBottom: '8px',
+  marginBottom: '18px',
 });
 
 const PatientListContainer = styled(Container)({
   width: '65%',
   display: 'flex',
   flexDirection: 'column',
+  marginLeft: 'auto', // Centra la tabella
+  marginRight: 'auto', // Centra la tabella
 });
 
 function PatientList() {
