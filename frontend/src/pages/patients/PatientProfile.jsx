@@ -7,7 +7,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import jsPDF from 'jspdf';
 import AssignPathologiesDialog from './AssignPathologiesDialog';
 import AssignSymptomsDialog from './AssignSymptomsDialog';
-import AssignTraumaticEventsDialog from './AssignTraumaticEventsDialog'; // Import the new dialog
+import AssignTraumaticEventsDialog from './AssignTraumaticEventsDialog';
+import AssignSurgeriesDialog from './AssignSurgeriesDialog'; // Import the new dialog
 import EditPatientDialog from './EditPatientDialog';
 import './PatientProfile.css';
 
@@ -17,10 +18,12 @@ const PatientProfile = () => {
   const [patient, setPatient] = useState(null);
   const [pathologies, setPathologies] = useState([]);
   const [symptoms, setSymptoms] = useState([]);
-  const [traumaticEvents, setTraumaticEvents] = useState([]); // Add state for traumatic events
+  const [traumaticEvents, setTraumaticEvents] = useState([]);
+  const [surgeries, setSurgeries] = useState([]); // Add state for surgeries
   const [assignPathologiesDialogOpen, setAssignPathologiesDialogOpen] = useState(false);
   const [assignSymptomsDialogOpen, setAssignSymptomsDialogOpen] = useState(false);
-  const [assignTraumaticEventsDialogOpen, setAssignTraumaticEventsDialogOpen] = useState(false); // Add state for traumatic events dialog
+  const [assignTraumaticEventsDialogOpen, setAssignTraumaticEventsDialogOpen] = useState(false);
+  const [assignSurgeriesDialogOpen, setAssignSurgeriesDialogOpen] = useState(false); // Add state for surgeries dialog
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const fetchPatient = async () => {
@@ -87,11 +90,28 @@ const PatientProfile = () => {
     }
   };
 
+  const fetchSurgeries = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/patient_surgery/${uuid}`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setSurgeries(data);
+    } catch (error) {
+      console.error('Error fetching surgeries:', error);
+    }
+  };
+
   useEffect(() => {
     fetchPatient();
     fetchPathologies();
     fetchSymptoms();
-    fetchTraumaticEvents(); // Fetch traumatic events as well
+    fetchTraumaticEvents();
+    fetchSurgeries(); // Fetch surgeries as well
   }, [uuid]);
 
   if (!patient) {
@@ -157,6 +177,13 @@ const PatientProfile = () => {
       doc.text(event.name, 20, 180 + measurements.length * 10 + treatments.length * 10 + pathologies.length * 10 + symptoms.length * 10 + index * 10);
     });
 
+    doc.setFontSize(14);
+    doc.text('Interventi', 20, 190 + measurements.length * 10 + treatments.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10);
+    doc.setFontSize(12);
+    surgeries.forEach((surgery, index) => {
+      doc.text(surgery.name, 20, 200 + measurements.length * 10 + treatments.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10 + index * 10);
+    });
+
     doc.save(`Cartella_Clinica_${patient.nominativo}.pdf`);
   };
 
@@ -198,6 +225,15 @@ const PatientProfile = () => {
     fetchTraumaticEvents(); // Refresh traumatic events after assignment
   };
 
+  const handleAssignSurgeriesDialogOpen = () => {
+    setAssignSurgeriesDialogOpen(true);
+  };
+
+  const handleAssignSurgeriesDialogClose = () => {
+    setAssignSurgeriesDialogOpen(false);
+    fetchSurgeries(); // Refresh surgeries after assignment
+  };
+
   const handleEditDialogOpen = () => {
     setEditDialogOpen(true);
   };
@@ -222,7 +258,6 @@ const PatientProfile = () => {
         throw new Error('Network response was not ok');
       }
 
-      // Aggiorna la lista dei pazienti dopo la modifica
       setPatient(updatedPatient);
       setEditDialogOpen(false);
     } catch (error) {
@@ -311,6 +346,19 @@ const PatientProfile = () => {
             </Button>
           </Paper>
         </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper className="info-block">
+            <Typography variant="h6" className="box-title">Interventi</Typography>
+            <div className="info-content">
+              {surgeries.map((surgery, index) => (
+                <Typography key={index}>{surgery.name}</Typography>
+              ))}
+            </div>
+            <Button variant="contained" color="primary" onClick={handleAssignSurgeriesDialogOpen}>
+              Assegna Interventi
+            </Button>
+          </Paper>
+        </Grid>
       </Grid>
       <AssignPathologiesDialog
         open={assignPathologiesDialogOpen}
@@ -329,6 +377,12 @@ const PatientProfile = () => {
         onClose={handleAssignTraumaticEventsDialogClose}
         patient={patient}
         onAssign={fetchTraumaticEvents}
+      />
+      <AssignSurgeriesDialog
+        open={assignSurgeriesDialogOpen}
+        onClose={handleAssignSurgeriesDialogClose}
+        patient={patient}
+        onAssign={fetchSurgeries}
       />
       <EditPatientDialog
         open={editDialogOpen}
