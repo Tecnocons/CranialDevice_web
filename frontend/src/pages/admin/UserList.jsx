@@ -54,11 +54,14 @@ const StyledTable = styled(Table)({
   '& .MuiTableCell-head': {
     backgroundColor: '#f1f1f1',
     fontWeight: 'bold',
+    fontSize: 21,
   },
   '& .MuiTableCell-body': {
-    fontSize: 14,
+    fontSize: 16,
   },
-
+  '& .MuiTableRow-root:last-child .MuiTableCell-root': {
+    borderBottom: '2px solid #155677', // Cambia il colore della riga inferiore qui
+  },
 });
 
 const Header = styled('div')({
@@ -70,10 +73,10 @@ const Header = styled('div')({
 });
 
 const AddButton = styled(Button)({
-  backgroundColor: '#4caf50',
+  backgroundColor: '#155677', // Cambia il colore del bottone
   color: '#fff',
   '&:hover': {
-    backgroundColor: '#45a049',
+    backgroundColor: '#0d3e4f', // Cambia il colore al passaggio del mouse
   },
 });
 
@@ -269,11 +272,11 @@ function UserList() {
     <BackgroundWrapper>
       <Root>
         <Box width="100%">
-          <Box height="20px" />
+          <Box height="28px" />
           <Box display="flex" justifyContent="space-between">
-            <Box width="15px" />
+            <Box width="20px" />
             <FilterBox>
-              <Typography variant="h6" component="h2">Filtri</Typography>
+              <Typography variant="h6" component="h2">Ricerca</Typography>
               <TextField
                 label="Nome"
                 value={nameFilter}

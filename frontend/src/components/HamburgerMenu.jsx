@@ -54,9 +54,6 @@ const HamburgerMenu = () => {
   ];
 
   const additionalItems = [
-    { text: 'Placeholder 1', icon: <HomeIcon />, onClick: () => {}, adminOnly: false },
-    { text: 'Placeholder 2', icon: <HomeIcon />, onClick: () => {}, adminOnly: false },
-    { text: 'Placeholder 3', icon: <HomeIcon />, onClick: () => {}, adminOnly: false },
     { text: 'Logout', icon: <LogoutIcon />, onClick: () => navigate('/login'), adminOnly: false }
   ];
 
@@ -112,16 +109,7 @@ const HamburgerMenu = () => {
               );
             })}
           </List>
-          <Divider />
-          <List>
-            {additionalItems.slice(0, -1).map((item, index) => (
-              <ListItem button key={index} onClick={item.onClick} className="list-item">
-                <ListItemIcon>{item.icon}</ListItemIcon>
-                <ListItemText primary={item.text} className="list-item-text" />
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
+          <Divider  style={{borderBottomWidth: 3}}/>
           <List>
             {additionalItems.slice(-1).map((item, index) => (
               <ListItem button key={index} onClick={item.onClick} className="logout-button list-item">

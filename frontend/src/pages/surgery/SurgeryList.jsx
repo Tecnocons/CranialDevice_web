@@ -45,9 +45,13 @@ const StyledTable = styled(Table)({
   '& .MuiTableCell-head': {
     backgroundColor: '#f1f1f1',
     fontWeight: 'bold',
+    fontSize: 21,
   },
   '& .MuiTableCell-body': {
-    fontSize: 14,
+    fontSize: 16,
+  },
+  '& .MuiTableRow-root:last-child .MuiTableCell-root': {
+    borderBottom: '2px solid #155677', // Cambia il colore della riga inferiore qui
   },
 });
 
@@ -60,10 +64,10 @@ const Header = styled('div')({
 });
 
 const AddButton = styled(Button)({
-  backgroundColor: '#4caf50',
+  backgroundColor: '#155677', 
   color: '#fff',
   '&:hover': {
-    backgroundColor: '#45a049',
+    backgroundColor: '#0d3e4f', 
   },
 });
 
