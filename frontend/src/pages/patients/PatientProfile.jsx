@@ -9,8 +9,9 @@ import AssignPathologiesDialog from './AssignPathologiesDialog';
 import AssignSymptomsDialog from './AssignSymptomsDialog';
 import AssignTraumaticEventsDialog from './AssignTraumaticEventsDialog';
 import AssignSurgeriesDialog from './AssignSurgeriesDialog';
-import AssignTreatmentsDialog from './AssignTreatmentsDialog'; // Import the new dialog
+import AssignTreatmentsDialog from './AssignTreatmentsDialog';
 import EditPatientDialog from './EditPatientDialog';
+import StartMeasurement from './StartMeasurement'; // Import the new component
 import './PatientProfile.css';
 
 const PatientProfile = () => {
@@ -21,12 +22,12 @@ const PatientProfile = () => {
   const [symptoms, setSymptoms] = useState([]);
   const [traumaticEvents, setTraumaticEvents] = useState([]);
   const [surgeries, setSurgeries] = useState([]);
-  const [treatments, setTreatments] = useState([]); // Add state for treatments
+  const [treatments, setTreatments] = useState([]);
   const [assignPathologiesDialogOpen, setAssignPathologiesDialogOpen] = useState(false);
   const [assignSymptomsDialogOpen, setAssignSymptomsDialogOpen] = useState(false);
   const [assignTraumaticEventsDialogOpen, setAssignTraumaticEventsDialogOpen] = useState(false);
   const [assignSurgeriesDialogOpen, setAssignSurgeriesDialogOpen] = useState(false);
-  const [assignTreatmentsDialogOpen, setAssignTreatmentsDialogOpen] = useState(false); // Add state for treatments dialog
+  const [assignTreatmentsDialogOpen, setAssignTreatmentsDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const fetchPatient = async () => {
@@ -131,7 +132,7 @@ const PatientProfile = () => {
     fetchSymptoms();
     fetchTraumaticEvents();
     fetchSurgeries();
-    fetchTreatments(); // Fetch treatments as well
+    fetchTreatments();
   }, [uuid]);
 
   if (!patient) {
@@ -306,6 +307,7 @@ const PatientProfile = () => {
             <IconButton onClick={handleEditDialogOpen} className="edit-button">
               <EditIcon />
             </IconButton>
+            <StartMeasurement deviceId={patient.device_id} /> {/* Add the StartMeasurement component */}
           </div>
           <IconButton onClick={generatePDF} className="pdf-button">
             <SaveAltIcon />
