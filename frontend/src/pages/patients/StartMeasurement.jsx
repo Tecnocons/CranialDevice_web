@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import mqtt from 'mqtt';
 import { Button, Dialog, DialogContent, DialogTitle, MobileStepper, Typography, Box, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import { Line } from 'react-chartjs-2';
 import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement, Legend, Title, Tooltip } from 'chart.js';
+import { useAuth } from '../../contexts/AuthContext'; // Import your Auth context
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Legend, Title, Tooltip);
 
@@ -14,6 +15,7 @@ const instructions = [
 ];
 
 const StartMeasurement = () => {
+  const { user } = useAuth(); // Get the logged-in user data
   const brokerUrl = process.env.REACT_APP_MQTT_BROKER_URL;
   const username = process.env.REACT_APP_MQTT_BROKER_USERNAME;
   const password = process.env.REACT_APP_MQTT_BROKER_PASSWORD;
@@ -48,8 +50,9 @@ const StartMeasurement = () => {
 
       mqttClient.on('connect', () => {
         console.log('Connected to MQTT broker');
-        mqttClient.subscribe('caschetto/data');
-        mqttClient.publish('caschetto/start', 'start'); // Publish start command
+        console.log('user data:', user);
+        mqttClient.subscribe(`caschetto/${user.helmetId}/data`);
+        mqttClient.publish(`caschetto/${user.helmetId}/start`, 'start'); // Publish start command
       });
 
       mqttClient.on('message', (topic, message) => {
@@ -193,57 +196,46 @@ const StartMeasurement = () => {
                 <>
                   <Typography>Spostamento (mm): {data[data.length - 1].spostamento_mm}</Typography>
                   <Typography>Forza (N): {data[data.length - 1].forza_N}</Typography>
-                  <Typography>Pressione (bar): {data[data.length - 1].pressione_bar}</Typography>
-                  <Typography>Contropressione (bar): {data[data.length - 1].contropressione_bar}</Typography>
+                    <Typography>Pressione (bar): {data[data.length - 1].pressione_bar}</Typography>
+                <Typography>Contropressione (bar): {data[data.length - 1].contropressione_bar}</Typography>
                 </>
-              )}
-              <Line data={chartData} />
-              <Box textAlign="center" p={2}>
-                <Button variant="contained" color="primary" onClick={handleMeasurementComplete}>
-                  Stop Measurement
-                </Button>
-              </Box>
+                )}
+            <Line data={chartData} />
+            <Box textAlign="center" p={2}>
+            <Button variant="contained" color="primary" onClick={handleMeasurementComplete}>
+                Stop Measurement
+            </Button>
+            </Box>
             </div>
-          )}
-          {measurementComplete && (
+            )}
+            {measurementComplete && (
             <div>
-              <Typography variant="h6">Measurement Complete</Typography>
-              <FormGroup row>
+                <Typography variant="h6">Measurement Complete</Typography>
+                <FormGroup row>
                 {Object.keys(visibleDatasets).map((key, index) => (
-                  <FormControlLabel
+                <FormControlLabel
                     key={key}
                     control={
-                      <Checkbox
+                    <Checkbox
                         checked={visibleDatasets[key]}
                         onChange={() => toggleDatasetVisibility(index)}
                         name={key}
-                      />
+                    />
                     }
                     label={key.charAt(0).toUpperCase() + key.slice(1)}
-                    />
-                  ))}
-                </FormGroup>
-                <Line
-                  data={{
-                    ...chartData,
-                    datasets: chartData.datasets.map((dataset, index) => ({
-                      ...dataset,
-                      hidden: !visibleDatasets[Object.keys(visibleDatasets)[index]],
-                    })),
-                  }}
                 />
-                <Box textAlign="center" p={2}>
-                  <Button variant="contained" color="primary" onClick={() => setOpen(false)}>
-                    Close
-                  </Button>
-                </Box>
-              </div>
+                ))}
+                </FormGroup>
+                <Line data={{
+                    labels: chartData.labels,
+                    datasets: chartData.datasets.filter((_, i) => visibleDatasets[Object.keys(visibleDatasets)[i]])
+                }} />
+            </div>
             )}
-          </DialogContent>
-        </Dialog>
-      </div>
-    );
-  };
-  
-  export default StartMeasurement;
-  
+            </DialogContent>
+            </Dialog>
+            </div>
+            );
+            };
+
+            export default StartMeasurement;

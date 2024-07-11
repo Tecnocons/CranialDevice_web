@@ -82,6 +82,11 @@ def update_helmet(uuid):
         data = request.get_json()
         helmetId = data.get('helmetId')
 
+        # Check if helmetId already exists
+        existing_user = Users.query.filter_by(helmetId=helmetId).first()
+        if existing_user and existing_user.uuid != uuid:
+            return jsonify({"message": "Helmet ID already exists"}), 400
+
         user = Users.query.filter_by(uuid=uuid).first()
         if not user:
             return jsonify({"message": "User not found"}), 404
