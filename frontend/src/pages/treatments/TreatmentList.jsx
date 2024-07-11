@@ -33,17 +33,20 @@ import './TreatmentList.css';
 
 const Root = styled('div')({
   display: 'flex',
-  justifyContent: 'center',
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
   alignItems: 'center',
-  height: '62vm',
-  backgroundColor: '#ffffff',
+  height: '100vh',
+  backgroundColor: '#f5f5f5', // Cambiato il background del Root
   opacity: 0.9,
+  padding: '20px',
 });
 
 const StyledTable = styled(Table)({
   minWidth: 650,
+  backgroundColor: '#ffffff', // Cambiato il background della tabella
   '& .MuiTableCell-head': {
-    backgroundColor: '#f1f1f1',
+    backgroundColor: '#e0e0e0',
     fontWeight: 'bold',
     fontSize: 21,
   },
@@ -51,7 +54,7 @@ const StyledTable = styled(Table)({
     fontSize: 16,
   },
   '& .MuiTableRow-root:last-child .MuiTableCell-root': {
-    borderBottom: '2px solid #155677', // Cambia il colore della riga inferiore qui
+    borderBottom: '2px solid #155677',
   },
 });
 
@@ -64,10 +67,10 @@ const Header = styled('div')({
 });
 
 const AddButton = styled(Button)({
-  backgroundColor: '#155677', 
+  backgroundColor: '#155677',
   color: '#fff',
   '&:hover': {
-    backgroundColor: '#0d3e4f', 
+    backgroundColor: '#0d3e4f',
   },
 });
 

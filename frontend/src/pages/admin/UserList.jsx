@@ -21,7 +21,6 @@ import {
   Button,
   Box,
   TablePagination,
-  Collapse,
   Grid,
 } from '@mui/material';
 import { styled } from '@mui/system';
@@ -31,8 +30,7 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import SearchIcon from '@mui/icons-material/Search';
 import { useAuth } from '../../contexts/AuthContext';
 import { ClipLoader } from 'react-spinners';
 import BackgroundWrapper from '../../components/BackgroundWrapper';
@@ -40,19 +38,20 @@ import './UserList.css';
 
 const Root = styled('div')({
   display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'flex-start',
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
   height: '100vh',
-  backgroundColor: '#ffffff',
+  backgroundColor: '#f5f5f5', // Cambiato il background del Root
   opacity: 0.9,
-  padding: '20px', // Aggiungi un padding per dare spazio
-  marginTop:'2%',
+  padding: '20px',
 });
 
 const StyledTable = styled(Table)({
   minWidth: 650,
+  backgroundColor: '#ffffff', // Cambiato il background della tabella
   '& .MuiTableCell-head': {
-    backgroundColor: '#f1f1f1',
+    backgroundColor: '#e0e0e0',
     fontWeight: 'bold',
     fontSize: 21,
   },
@@ -60,7 +59,7 @@ const StyledTable = styled(Table)({
     fontSize: 16,
   },
   '& .MuiTableRow-root:last-child .MuiTableCell-root': {
-    borderBottom: '2px solid #155677', // Cambia il colore della riga inferiore qui
+    borderBottom: '2px solid #155677',
   },
 });
 
@@ -73,29 +72,24 @@ const Header = styled('div')({
 });
 
 const AddButton = styled(Button)({
-  backgroundColor: '#155677', // Cambia il colore del bottone
+  backgroundColor: '#155677',
   color: '#fff',
   '&:hover': {
-    backgroundColor: '#0d3e4f', // Cambia il colore al passaggio del mouse
+    backgroundColor: '#0d3e4f',
   },
 });
 
 const FilterBox = styled(Box)({
-  width: '22%',
-  padding: '26px',
+  width: '20%',
+  minHeight: '100px',  // Altezza minima
+  maxHeight: '100px',  // Altezza massima
+  padding: '10px',
   borderRadius: '18px',
-  boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-  backgroundColor: '#fff',
-  opacity: 0.9,
-  marginRight: '2%', // Aggiungi un margine a destra
+  backgroundColor: '#f9f9f9', // Cambiato il background del FilterBox
+  opacity: 0.95, // Meno opaco
+  marginRight: '2%',
   marginLeft: '1%',
-});
-
-const FilterHeader = styled('div')({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: '18px',
+  boxShadow: '0 0 10px rgba(21, 86, 119, 0.5)', // Ridotta l'ombra
 });
 
 const UserListContainer = styled(Container)({
@@ -103,7 +97,26 @@ const UserListContainer = styled(Container)({
   display: 'flex',
   flexDirection: 'column',
   marginLeft: 'auto',
-  marginRight: 'auto', 
+  marginRight: 'auto',
+  marginTop: '20px',
+  backgroundColor: '#ffffff', // Cambiato il background della UserListContainer
+  padding: '20px',
+  borderRadius: '8px',
+  boxShadow: '0 0 10px rgba(21, 86, 119, 0.5)',
+});
+
+const HeaderContainer = styled(Box)({
+  width: '17%',
+  height:'6%',
+  backgroundColor: '#155677',
+  color: '#fff',
+  padding: '10px',
+  borderRadius: '8px',
+  textAlign: 'center',
+  marginBottom: '20px',
+  marginTop: '-5px',
+  opacity: 1, 
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
 });
 
 function UserList() {
@@ -120,7 +133,6 @@ function UserList() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [nameFilter, setNameFilter] = useState('');
-  const [filtersOpen, setFiltersOpen] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -242,8 +254,9 @@ function UserList() {
     setNameFilter(e.target.value);
   };
 
+  // Aggiorna il filtro per utilizzare startsWith
   const filteredUsers = users.filter((user) => {
-    return user.name.toLowerCase().includes(nameFilter.toLowerCase());
+    return user.name.toLowerCase().startsWith(nameFilter.toLowerCase());
   });
 
   if (loading) {
@@ -271,84 +284,98 @@ function UserList() {
   return (
     <BackgroundWrapper>
       <Root>
-        <Box width="100%">
-          <Box height="28px" />
-          <Box display="flex" justifyContent="space-between">
-            <Box width="20px" />
-            <FilterBox>
-              <Typography variant="h6" component="h2">Ricerca</Typography>
-              <TextField
-                label="Nome"
-                value={nameFilter}
-                onChange={handleFilterChange}
-                fullWidth
-                margin="normal"
-              />
-              <FilterHeader>
-                <Typography variant="subtitle1">Altri Filtri</Typography>
-                <IconButton onClick={() => setFiltersOpen(!filtersOpen)}>
-                  {filtersOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                </IconButton>
-              </FilterHeader>
-              <Collapse in={filtersOpen}>
-                <Grid container spacing={2}>
-                  {/* Add more filters here if necessary */}
-                </Grid>
-              </Collapse>
-            </FilterBox>
-            <Box width="2%" />
-            <UserListContainer component={Paper} className="table-container">
-              <Header>
-                <IconButton onClick={() => navigate('/main')}>
-                  <CloseIcon />
-                </IconButton>
-                <Typography variant="h4" component="h1" gutterBottom>
-                  User List
-                </Typography>
-                <AddButton
-                  variant="contained"
-                  color="primary"
-                  startIcon={<AddIcon />}
-                  onClick={handleAddClick}
-                >
-                  Add User
-                </AddButton>
-              </Header>
-              <StyledTable className="styled-table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Admin</TableCell>
-                    <TableCell>Actions</TableCell>
+        <HeaderContainer>
+          <Typography 
+            variant="h4" 
+            component="h1" 
+            gutterBottom
+            style={{ textShadow: '-1px 0 #000000, 0 1px #000000, 1px 0 #000000, 0 -1px #000000' }} // Aggiunta l'ombra del testo
+          >
+            User List
+          </Typography>
+        </HeaderContainer>
+        <Box display="flex" justifyContent="center" width="100%">
+          <FilterBox>
+            <TextField
+              placeholder="Search..."
+              autoComplete='off'
+              value={nameFilter}
+              onChange={handleFilterChange}
+              fullWidth
+              margin="normal"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+                style: {
+                  backgroundColor: '#fff', // Background color of the input field
+                  borderRadius: '18px', // Rounded corners for the input field
+                },
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: '#155677', // Default border color
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#155677', // Border color when hovering
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#155677', // Border color when focused
+                  },
+                },
+              }}
+            />
+          </FilterBox>
+          <UserListContainer component={Paper} className="table-container">
+            <Header>
+              <IconButton onClick={() => navigate('/main')}>
+                <CloseIcon />
+              </IconButton>
+              <AddButton
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={handleAddClick}
+              >
+                Add User
+              </AddButton>
+            </Header>
+            <StyledTable className="styled-table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Name</TableCell>
+                  <TableCell>Admin</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user) => (
+                  <TableRow key={user.uuid}>
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.isadmin ? 'Yes' : 'No'}</TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => handleEditClick(user)}>
+                        <EditIcon />
+                      </IconButton>
+                    </TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((user) => (
-                    <TableRow key={user.uuid}>
-                      <TableCell>{user.name}</TableCell>
-                      <TableCell>{user.isadmin ? 'Yes' : 'No'}</TableCell>
-                      <TableCell>
-                        <IconButton onClick={() => handleEditClick(user)}>
-                          <EditIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </StyledTable>
-              <TablePagination
-                rowsPerPageOptions={[5, 10]}
-                component="div"
-                count={filteredUsers.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                className="pagination"
-              />
-            </UserListContainer>
-            <Box width="15px" />
-          </Box>
+                ))}
+              </TableBody>
+            </StyledTable>
+            <TablePagination
+              rowsPerPageOptions={[5, 10]}
+              component="div"
+              count={filteredUsers.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              className="pagination"
+            />
+          </UserListContainer>
         </Box>
         <Dialog open={openEdit} onClose={handleCloseEdit}>
           <DialogTitle>Edit User</DialogTitle>

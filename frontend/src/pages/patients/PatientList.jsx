@@ -39,19 +39,20 @@ import './PatientList.css';
 
 const Root = styled('div')({
   display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'flex-start',
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
+  alignItems: 'center',
   height: '100vh',
-  backgroundColor: '#ffffff',
+  backgroundColor: '#f5f5f5', // Cambiato il background del Root
   opacity: 0.9,
-  padding: '20px', // Aggiungi un padding per dare spazio
-  marginTop:'2%',
+  padding: '20px',
 });
 
 const StyledTable = styled(Table)({
   minWidth: 650,
+  backgroundColor: '#ffffff', // Cambiato il background della tabella
   '& .MuiTableCell-head': {
-    backgroundColor: '#f1f1f1',
+    backgroundColor: '#e0e0e0',
     fontWeight: 'bold',
     fontSize: 21,
   },
@@ -59,7 +60,7 @@ const StyledTable = styled(Table)({
     fontSize: 16,
   },
   '& .MuiTableRow-root:last-child .MuiTableCell-root': {
-    borderBottom: '2px solid #155677', // Cambia il colore della riga inferiore qui
+    borderBottom: '2px solid #155677',
   },
 });
 
@@ -72,22 +73,24 @@ const Header = styled('div')({
 });
 
 const AddButton = styled(Button)({
-  backgroundColor: '#155677', 
+  backgroundColor: '#155677',
   color: '#fff',
   '&:hover': {
-    backgroundColor: '#0d3e4f', 
+    backgroundColor: '#0d3e4f',
   },
 });
 
 const FilterBox = styled(Box)({
-  width: '22%',
-  padding: '26px',
+  width: '20%',
+  minHeight: '500px',  // Altezza minima
+  maxHeight: '500px',  // Altezza massima
+  padding: '10px',
   borderRadius: '18px',
-  boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
-  backgroundColor: '#fff',
-  opacity: 0.9,
-  marginRight: '2%', // Aggiungi un margine a destra
+  backgroundColor: '#f9f9f9', // Cambiato il background del FilterBox
+  opacity: 0.95, // Meno opaco
+  marginRight: '2%',
   marginLeft: '1%',
+  boxShadow: '0 0 10px rgba(21, 86, 119, 0.5)', // Ridotta l'ombra
 });
 
 const FilterHeader = styled('div')({
