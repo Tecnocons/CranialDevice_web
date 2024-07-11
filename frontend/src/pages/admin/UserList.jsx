@@ -26,6 +26,7 @@ import {
 import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
+import EditIcon2 from '@mui/icons-material/PhonelinkRing';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import CloseIcon from '@mui/icons-material/Close';
@@ -125,10 +126,12 @@ function UserList() {
   const [error, setError] = useState(null);
   const [openEdit, setOpenEdit] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
+  const [openHelmet, setOpenHelmet] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
+  const [helmetId, setHelmetId] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -176,6 +179,7 @@ function UserList() {
       const data = await response.json();
       setPassword(data.password);
       setIsAdmin(data.isadmin);
+      setHelmetId(data.helmetId);
       setOpenEdit(true);
     } catch (error) {
       console.error('Error:', error);
@@ -188,6 +192,10 @@ function UserList() {
 
   const handleCloseAdd = () => {
     setOpenAdd(false);
+  };
+
+  const handleCloseHelmet = () => {
+    setOpenHelmet(false);
   };
 
   const handleSave = async () => {
@@ -225,7 +233,6 @@ function UserList() {
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
         body: JSON.stringify({ name, password, isadmin: isAdmin }),
       });
       if (!response.ok) {
@@ -234,6 +241,33 @@ function UserList() {
       await response.json();
       fetchUsers();
       handleCloseAdd();
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const handleHelmetClick = (user) => {
+    setSelectedUser(user);
+    setHelmetId(user.helmetId || '');
+    setOpenHelmet(true);
+  };
+
+  const handleHelmetSave = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/users/${selectedUser.uuid}/helmet`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ helmetId }),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const updatedUser = { ...selectedUser, helmetId };
+      setUsers(users.map((user) => (user.uuid === updatedUser.uuid ? updatedUser : user)));
+      handleCloseHelmet();
     } catch (error) {
       console.error('Error:', error);
     }
@@ -348,6 +382,7 @@ function UserList() {
                 <TableRow>
                   <TableCell>Name</TableCell>
                   <TableCell>Admin</TableCell>
+                  <TableCell>Helmet ID</TableCell>
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -356,9 +391,13 @@ function UserList() {
                   <TableRow key={user.uuid}>
                     <TableCell>{user.name}</TableCell>
                     <TableCell>{user.isadmin ? 'Yes' : 'No'}</TableCell>
+                    <TableCell>{user.helmetId}</TableCell>
                     <TableCell>
                       <IconButton onClick={() => handleEditClick(user)}>
                         <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleHelmetClick(user)}>
+                        <EditIcon2 />
                       </IconButton>
                     </TableCell>
                   </TableRow>
@@ -476,9 +515,36 @@ function UserList() {
             </Button>
           </DialogActions>
         </Dialog>
-      </Root>
-    </BackgroundWrapper>
-  );
-}
 
-export default UserList;
+        <Dialog open={openHelmet} onClose={handleCloseHelmet}>
+          <DialogTitle>Assign Helmet ID</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Enter the Helmet ID to associate with the user.
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              label="Helmet ID"
+              type="text"
+              fullWidth
+              value={helmetId}
+              onChange={(e) => setHelmetId(e.target.value)}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseHelmet} color="primary">
+                Cancel
+              </Button>
+              <Button onClick={handleHelmetSave} color="primary">
+                Save
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Root>
+        </BackgroundWrapper>
+        );
+        }
+        
+        export default UserList;
+        

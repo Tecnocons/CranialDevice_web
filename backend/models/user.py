@@ -8,6 +8,7 @@ class Users(db.Model, UserMixin):
     name = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
     isadmin = db.Column(db.Boolean, default=False)
+    helmetId= db.Column(db.String, unique=True, nullable=True)
 
     def set_password(self, password):
         self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
