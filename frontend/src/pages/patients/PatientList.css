@@ -52,6 +52,7 @@
 .styled-table td {
   padding: 6px 10px;
   font-size: 0.875rem;
+  border-right: 1px solid #e0e0e0; /* Linea di divisione tra le colonne */
 }
 
 .styled-table tbody tr {
@@ -59,7 +60,7 @@
 }
 
 .styled-table tbody tr:nth-of-type(even) {
-  background-color: #ffffff;
+  background-color: #f3f3f3;
 }
 
 .styled-table tbody tr:last-of-type {
@@ -141,4 +142,8 @@
   text-align: center;
   width: 100%;
   margin-bottom: 16px;
+}
+
+.expanded {
+  max-height: 470px !important;
 }

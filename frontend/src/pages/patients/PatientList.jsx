@@ -21,6 +21,7 @@ import {
   TextField,
   Collapse,
   Grid,
+  InputAdornment,
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
@@ -30,46 +31,65 @@ import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import SearchIcon from '@mui/icons-material/Search';
 import { useAuth } from '../../contexts/AuthContext';
 import { ClipLoader } from 'react-spinners';
 import AddPatientDialog from './AddPatientDialog';
 import EditPatientDialog from './EditPatientDialog';
-import BackgroundWrapper from '../../components/BackgroundWrapper'; // Importa BackgroundWrapper
+import BackgroundWrapper from '../../components/BackgroundWrapper';
 import './PatientList.css';
 
-const Root = styled('div')({
+const Root = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'flex-start',
   alignItems: 'center',
   height: '100vh',
-  backgroundColor: '#f5f5f5', // Cambiato il background del Root
+  backgroundColor: '#f5f5f5',
   opacity: 0.9,
   padding: '20px',
-});
+  [theme.breakpoints.down('sm')]: {
+    padding: '10px',
+  },
+}));
 
-const StyledTable = styled(Table)({
-  minWidth: 650,
-  backgroundColor: '#ffffff', // Cambiato il background della tabella
+const StyledTable = styled(Table)(({ theme }) => ({
+  opacity: 0.9,
+  width: '100%',
+  backgroundColor: '#ffffff',
+  boxShadow: '0 0 10px rgba(21, 86, 119, 0.5)',
   '& .MuiTableCell-head': {
     backgroundColor: '#e0e0e0',
     fontWeight: 'bold',
     fontSize: 21,
   },
   '& .MuiTableCell-body': {
-    fontSize: 16,
+    fontSize: 14, // Adjusted font size for table body
+  },
+  '& .MuiTableRow-root .MuiTableCell-root': {
+    borderBottom: '1px solid #e0e0e0',
+    borderRight: '1px solid #e0e0e0',
+    fontFamily: 'Arial, sans-serif',
   },
   '& .MuiTableRow-root:last-child .MuiTableCell-root': {
     borderBottom: '2px solid #155677',
   },
-});
+  [theme.breakpoints.down('sm')]: {
+    '& .MuiTableCell-head': {
+      fontSize: 16,
+    },
+    '& .MuiTableCell-body': {
+      fontSize: 12,
+    },
+  },
+}));
 
 const Header = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
   width: '100%',
-  marginBottom: 16,
+  marginBottom: 10,
 });
 
 const AddButton = styled(Button)({
@@ -80,33 +100,69 @@ const AddButton = styled(Button)({
   },
 });
 
-const FilterBox = styled(Box)({
-  width: '20%',
-  minHeight: '500px',  // Altezza minima
-  maxHeight: '500px',  // Altezza massima
+const FilterBox = styled(Box)(({ theme }) => ({
+  width: '90%',
+  minHeight: '8vw',
+  maxHeight: '8vw',
   padding: '10px',
   borderRadius: '18px',
-  backgroundColor: '#f9f9f9', // Cambiato il background del FilterBox
-  opacity: 0.95, // Meno opaco
-  marginRight: '2%',
-  marginLeft: '1%',
-  boxShadow: '0 0 10px rgba(21, 86, 119, 0.5)', // Ridotta l'ombra
+  backgroundColor: '#f9f9f9',
+  opacity: 0.95,
+  boxShadow: '0 0 10px rgba(21, 86, 119, 0.5)',
+  overflow: 'hidden',
+  transition: 'max-height 0.3s ease-in-out',
+  [theme.breakpoints.down('sm')]: {
+    width: '100%',
+  },
+}));
+
+const FilterBoxExpanded = styled(FilterBox)({
+  maxHeight: '470px',
+  minHeight: '470px',
 });
 
 const FilterHeader = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-  marginBottom: '18px',
+  marginBottom: 'auto',
 });
 
-const PatientListContainer = styled(Container)({
-  width: '65%',
+const PatientListContainer = styled(Container)(({ theme }) => ({
+  width: '100%',
   display: 'flex',
   flexDirection: 'column',
-  marginLeft: 'auto', // Centra la tabella
-  marginRight: 'auto', // Centra la tabella
-});
+  marginLeft: 'auto',
+  marginRight: 'auto',
+  padding: '20px',
+  backgroundColor: '#ffffff',
+  borderRadius: '8px',
+  boxShadow: '0 0 10px rgba(21, 86, 119, 0.5)',
+  [theme.breakpoints.down('sm')]: {
+    padding: '10px',
+  },
+}));
+
+const HeaderContainer = styled(Box)(({ theme }) => ({
+  width: '90%',
+  height: 'auto',
+  backgroundColor: '#155677',
+  color: '#fff',
+  padding: '10px',
+  borderRadius: '8px',
+  textAlign: 'center',
+  marginBottom: '10px',
+  marginTop: '-13px',
+ // opacity: 1,
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  [theme.breakpoints.down('sm')]: {
+    padding: '5px',
+    fontSize: '1rem',
+  },
+}));
 
 function PatientList() {
   const { user } = useAuth();
@@ -347,18 +403,115 @@ function PatientList() {
   return (
     <BackgroundWrapper>
       <Root>
-        <Box width="100%">
-          <Box height="20px" />
-          <Box display="flex" justifyContent="space-between">
-            <Box width="15px" />
-            <FilterBox>
-              <Typography variant="h6" component="h2">Filtri</Typography>
+        <HeaderContainer>
+          <Typography
+            variant="h4"
+            component="h1"
+            gutterBottom
+            style={{ textShadow: '-1px 0 #000000, 0 1px #000000, 1px 0 #000000, 0 -1px #000000' }}
+          >
+            Lista Pazienti
+          </Typography>
+        </HeaderContainer>
+        <Box display="flex" justifyContent="center" width="100%" flexWrap="wrap">
+          <PatientListContainer component={Paper} className="table-container">
+            <Header>
+              <IconButton onClick={() => navigate('/main')}>
+                <CloseIcon />
+              </IconButton>
+              {user && (
+                <AddButton
+                  variant="contained"
+                  color="primary"
+                  startIcon={<AddIcon />}
+                  onClick={handleAddDialogOpen}
+                >
+                  Aggiungi Paziente
+                </AddButton>
+              )}
+            </Header>
+            <StyledTable>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Nominativo</TableCell>
+                  <TableCell>Età</TableCell>
+                  <TableCell>Altezza</TableCell>
+                  <TableCell>Peso</TableCell>
+                  <TableCell>Dottore</TableCell>
+                  <TableCell>Actions</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {filteredPatients.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((patient) => (
+                  <TableRow key={patient.uuid}>
+                    <TableCell>
+                      <Link
+                        component="button"
+                        onClick={() => handlePatientInfoOpen(patient)}
+                        sx={{ color: 'black', fontSize: '18px', textDecoration: 'underline' }} // Change the color to black, underline and increase font size
+                      >
+                        {patient.nominativo}
+                      </Link>
+                    </TableCell>
+                    <TableCell>{patient.eta}</TableCell>
+                    <TableCell>{patient.altezza}</TableCell>
+                    <TableCell>{patient.peso}</TableCell>
+                    <TableCell>{patient.doctor_name}</TableCell>
+                    <TableCell>
+                      <IconButton onClick={() => handleEditDialogOpen(patient)}>
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDeleteDialogOpen(patient)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </StyledTable>
+            <TablePagination
+              rowsPerPageOptions={[5, 10]}
+              component="div"
+              count={filteredPatients.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </PatientListContainer>
+          <Box width="20%" flexShrink={0}>
+            <FilterBox className={filtersOpen ? 'expanded' : ''}>
               <TextField
-                label="Nome"
+                placeholder="Search..."
+                autoComplete='off'
                 value={nameFilter}
                 onChange={handleFilterChange}
                 fullWidth
                 margin="normal"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                  style: {
+                    backgroundColor: '#fff',
+                    borderRadius: '18px',
+                  },
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: '#155677',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: '#155677',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#155677',
+                    },
+                  },
+                }}
               />
               <FilterHeader>
                 <Typography variant="subtitle1">Altri Filtri</Typography>
@@ -431,72 +584,6 @@ function PatientList() {
                 </Grid>
               </Collapse>
             </FilterBox>
-            <Box width="2%" />
-            <PatientListContainer component={Paper} className="table-container">
-              <Header>
-                <IconButton onClick={() => navigate('/main')}>
-                  <CloseIcon />
-                </IconButton>
-                <Typography variant="h4" component="h1" gutterBottom>
-                  Lista Pazienti
-                </Typography>
-                {user && (
-                  <AddButton
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
-                    onClick={handleAddDialogOpen}
-                  >
-                    Aggiungi Paziente
-                  </AddButton>
-                )}
-              </Header>
-              <StyledTable>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Nominativo</TableCell>
-                    <TableCell>Età</TableCell>
-                    <TableCell>Altezza</TableCell>
-                    <TableCell>Peso</TableCell>
-                    <TableCell>Dottore</TableCell>
-                    <TableCell>Actions</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {filteredPatients.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((patient) => (
-                    <TableRow key={patient.uuid}>
-                      <TableCell>
-                        <Link component="button" onClick={() => handlePatientInfoOpen(patient)}>
-                          {patient.nominativo}
-                        </Link>
-                      </TableCell>
-                      <TableCell>{patient.eta}</TableCell>
-                      <TableCell>{patient.altezza}</TableCell>
-                      <TableCell>{patient.peso}</TableCell>
-                      <TableCell>{patient.doctor_name}</TableCell>
-                      <TableCell>
-                        <IconButton onClick={() => handleEditDialogOpen(patient)}>
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton onClick={() => handleDeleteDialogOpen(patient)}>
-                          <DeleteIcon />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </StyledTable>
-              <TablePagination
-                rowsPerPageOptions={[5, 10]}
-                component="div"
-                count={filteredPatients.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-              />
-            </PatientListContainer>
-            <Box width="15px" />
           </Box>
         </Box>
         <AddPatientDialog open={addDialogOpen} onClose={handleAddDialogClose} onPatientAdded={handlePatientAdded} />
