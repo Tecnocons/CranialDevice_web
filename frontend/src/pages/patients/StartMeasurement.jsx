@@ -14,7 +14,7 @@ const instructions = [
   "Confirm the patient is ready for the measurement."
 ];
 
-const StartMeasurement = () => {
+const StartMeasurement = ({ patientId }) => {
   const { user } = useAuth();
   const brokerUrl = process.env.REACT_APP_MQTT_BROKER_URL;
   const username = process.env.REACT_APP_MQTT_BROKER_USERNAME;
@@ -55,9 +55,8 @@ const StartMeasurement = () => {
         console.log('user data:', user);
         const config = {
           forza: forza,  
-          //durata: 10,  // Default or calculated value
-          //frequenza: 1.0,  // Default or calculated value
-          numero_cicli: numeroCicli
+          numero_cicli: numeroCicli,
+          patient_id: patientId
         };
         mqttClient.publish(`caschetto/${user.helmetId}/config`, JSON.stringify(config), () => {
           mqttClient.publish(`caschetto/${user.helmetId}/start`, 'start'); // Publish start command
@@ -216,52 +215,53 @@ const StartMeasurement = () => {
             </>
           )}
           {measuring && (
-            <div>
-              <Typography variant="h6">Real-Time Data</Typography>
-              {data.length > 0 && (
-                <>
-                  <Typography>Spostamento (mm): {data[data.length - 1].spostamento_mm}</Typography>
-                  <Typography>Forza (N): {data[data.length - 1].forza_N}</Typography>
-                  <Typography>Pressione (bar): {data[data.length - 1].pressione_bar}</Typography>
-                  <Typography>Contropressione (bar): {data[data.length - 1].contropressione_bar}</Typography>
-                </>
-              )}
-              <Line data={chartData} />
-              <Box textAlign="center" p={2}>
-                <Button variant="contained" color="primary" onClick={handleMeasurementComplete}>
-                  Stop Measurement
-                </Button>
-              </Box>
-            </div>
-          )}
-          {measurementComplete && (
-            <div>
-              <Typography variant="h6">Measurement Complete</Typography>
-              <FormGroup row>
-                {Object.keys(visibleDatasets).map((key, index) => (
-                  <FormControlLabel
-                    key={key}
-                    control={
-                      <Checkbox
-                        checked={visibleDatasets[key]}
-                        onChange={() => toggleDatasetVisibility(index)}
-                        name={key}
-                      />
-                    }
-                    label={key.charAt(0).toUpperCase() + key.slice(1)}
-                  />
-                ))}
-              </FormGroup>
-              <Line data={{
-                labels: chartData.labels,
-                datasets: chartData.datasets.filter((_, i) => visibleDatasets[Object.keys(visibleDatasets)[i]])
-              }} />
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
-};
-
-export default StartMeasurement;
+                        <div>
+                        <Typography variant="h6">Real-Time Data</Typography>
+                        {data.length > 0 && (
+                          <>
+                            <Typography>Spostamento (mm): {data[data.length - 1].spostamento_mm}</Typography>
+                            <Typography>Forza (N): {data[data.length - 1].forza_N}</Typography>
+                            <Typography>Pressione (bar): {data[data.length - 1].pressione_bar}</Typography>
+                            <Typography>Contropressione (bar): {data[data.length - 1].contropressione_bar}</Typography>
+                          </>
+                        )}
+                        <Line data={chartData} />
+                        <Box textAlign="center" p={2}>
+                          <Button variant="contained" color="primary" onClick={handleMeasurementComplete}>
+                            Stop Measurement
+                          </Button>
+                        </Box>
+                      </div>
+                    )}
+                    {measurementComplete && (
+                      <div>
+                        <Typography variant="h6">Measurement Complete</Typography>
+                        <FormGroup row>
+                          {Object.keys(visibleDatasets).map((key, index) => (
+                            <FormControlLabel
+                              key={key}
+                              control={
+                                <Checkbox
+                                  checked={visibleDatasets[key]}
+                                  onChange={() => toggleDatasetVisibility(index)}
+                                  name={key}
+                                />
+                              }
+                              label={key.charAt(0).toUpperCase() + key.slice(1)}
+                            />
+                          ))}
+                        </FormGroup>
+                        <Line data={{
+                          labels: chartData.labels,
+                          datasets: chartData.datasets.filter((_, i) => visibleDatasets[Object.keys(visibleDatasets)[i]])
+                        }} />
+                      </div>
+                    )}
+                  </DialogContent>
+                </Dialog>
+              </div>
+            );
+          };
+          
+          export default StartMeasurement;
+          

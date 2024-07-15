@@ -38,6 +38,7 @@ import AddPatientDialog from './AddPatientDialog';
 import EditPatientDialog from './EditPatientDialog';
 import BackgroundWrapper from '../../components/BackgroundWrapper'; // Importa BackgroundWrapper
 import './PatientList.css';
+import {useLoading} from '../../contexts/AuthContext'
 
 const Root = styled('div')(({ theme }) => ({
   display: 'flex',
