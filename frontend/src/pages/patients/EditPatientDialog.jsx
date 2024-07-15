@@ -1,39 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   TextField,
   Button,
   MenuItem
 } from '@mui/material';
 
-const EditPatientDialog = ({ open, onClose, onEditSubmit, patient }) => {
+const EditPatientDialog = ({ open, onClose, patient, onEditSubmit }) => {
   const [editedPatient, setEditedPatient] = useState({
-    nominativo: patient.nominativo,
-    eta: patient.eta,
-    altezza: patient.altezza,
-    peso: patient.peso,
-    sesso: patient.sesso, // Aggiungi questo campo
+    nominativo: '',
+    eta: '',
+    altezza: '',
+    peso: '',
+    sesso: ''
   });
 
-  const handleEditChange = (e) => {
-    setEditedPatient({ ...editedPatient, [e.target.name]: e.target.value });
+  useEffect(() => {
+    if (patient) {
+      setEditedPatient({
+        nominativo: patient.nominativo,
+        eta: patient.eta,
+        altezza: patient.altezza,
+        peso: patient.peso,
+        sesso: patient.sesso
+      });
+    }
+  }, [patient]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEditedPatient((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
-  const handleEditSubmit = () => {
-    onEditSubmit({ ...editedPatient, uuid: patient.uuid });
+  const handleSubmit = () => {
+    onEditSubmit(editedPatient);
+    onClose();
   };
 
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Modifica Paziente</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          Modifica le informazioni del paziente {patient?.nominativo}.
-        </DialogContentText>
         <TextField
           margin="dense"
           name="nominativo"
@@ -41,7 +54,7 @@ const EditPatientDialog = ({ open, onClose, onEditSubmit, patient }) => {
           type="text"
           fullWidth
           value={editedPatient.nominativo}
-          onChange={handleEditChange}
+          onChange={handleChange}
         />
         <TextField
           margin="dense"
@@ -50,25 +63,25 @@ const EditPatientDialog = ({ open, onClose, onEditSubmit, patient }) => {
           type="number"
           fullWidth
           value={editedPatient.eta}
-          onChange={handleEditChange}
+          onChange={handleChange}
         />
         <TextField
           margin="dense"
           name="altezza"
-          label="Altezza"
+          label="Altezza (cm)"
           type="number"
           fullWidth
           value={editedPatient.altezza}
-          onChange={handleEditChange}
+          onChange={handleChange}
         />
         <TextField
           margin="dense"
           name="peso"
-          label="Peso"
+          label="Peso (kg)"
           type="number"
           fullWidth
           value={editedPatient.peso}
-          onChange={handleEditChange}
+          onChange={handleChange}
         />
         <TextField
           margin="dense"
@@ -77,18 +90,17 @@ const EditPatientDialog = ({ open, onClose, onEditSubmit, patient }) => {
           select
           fullWidth
           value={editedPatient.sesso}
-          onChange={handleEditChange}
+          onChange={handleChange}
         >
           <MenuItem value="maschio">Maschio</MenuItem>
           <MenuItem value="femmina">Femmina</MenuItem>
-          <MenuItem value="altro">Altro</MenuItem>
         </TextField>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
           Annulla
         </Button>
-        <Button onClick={handleEditSubmit} color="primary">
+        <Button onClick={handleSubmit} color="primary">
           Salva
         </Button>
       </DialogActions>

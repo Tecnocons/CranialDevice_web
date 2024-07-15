@@ -5,24 +5,23 @@ import { styled } from '@mui/system';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import LockIcon from '@mui/icons-material/Lock';
 import { useAuth } from '../../contexts/AuthContext';
-import backgroundImage from '../../assets/background_login.png';  // Importa l'immagine
+import backgroundImage from '../../assets/background_login.png';
 
-const orangeColor = '#EB873F';  // Colore arancione estratto dall'immagine di sfondo
-const darkOrangeColor = '#CF6F2E';  // Colore arancione più scuro per l'effetto hover del pulsante
+const orangeColor = '#EB873F';
+const darkOrangeColor = '#CF6F2E';
 
-// Aggiungi questo stile globale per impedire lo scorrimento della pagina
 const GlobalStyle = styled('div')`
   body {
     overflow: hidden;
-    margin: 0;  // Rimuove i margini predefiniti del corpo
-    padding: 0;  // Rimuove i padding predefiniti del corpo
-    height: 100vh;  // Assicura che il corpo riempia l'altezza della finestra
+    margin: 0;
+    padding: 0;
+    height: 100vh;
   }
 `;
 
 const Root = styled('div')({
   display: 'flex',
-  justifyContent: 'flex-end',  // Align to the right
+  justifyContent: 'flex-end',
   alignItems: 'center',
   height: '97vh',
   width: '99vw',
@@ -33,7 +32,7 @@ const Root = styled('div')({
   overflow: 'hidden',
   boxSizing: 'border-box',
   '@media (max-width: 600px)': {
-    justifyContent: 'center',  // Center the form on small screens
+    justifyContent: 'center',
     padding: '10px',
   },
 });
@@ -44,8 +43,8 @@ const StyledCard = styled(Card)({
   padding: 32,
   margin: 16,
   backgroundColor: 'rgba(255, 255, 255, 0.9)',
-  borderRadius: 16,  // Rounded corners
-  boxShadow: '0 8px 16px rgba(0,0,0,0.1)',  // Subtle shadow
+  borderRadius: 16,
+  boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
   '@media (max-width: 600px)': {
     maxWidth: '100%',
     padding: 16,
@@ -61,20 +60,20 @@ const Form = styled('form')({
 const StyledButton = styled(Button)({
   marginTop: 16,
   backgroundColor: orangeColor,
-  color: '#fff',  // White text color for contrast
-  borderRadius: 8,  // Rounded corners
+  color: '#fff',
+  borderRadius: 8,
   padding: '12px 0',
   fontSize: '16px',
   fontWeight: 'bold',
   '&:hover': {
     backgroundColor: darkOrangeColor,
   },
-  transition: 'background-color 0.3s ease',  // Smooth transition
+  transition: 'background-color 0.3s ease',
 });
 
 const StyledTextField = styled(TextField)({
   '& .MuiOutlinedInput-root': {
-    borderRadius: 8,  // Rounded corners
+    borderRadius: 8,
     '&:hover fieldset': {
       borderColor: orangeColor,
       borderWidth: 2,
@@ -95,9 +94,9 @@ const StyledTextField = styled(TextField)({
 const Title = styled(Typography)({
   fontFamily: 'Roboto, sans-serif',
   fontWeight: 700,
-  marginBottom: 24,  // Increased margin for better spacing
+  marginBottom: 24,
   textAlign: 'center',
-  fontSize: '28px',  // Increased font size
+  fontSize: '28px',
 });
 
 function LoginRegister() {
@@ -133,14 +132,17 @@ function LoginRegister() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ name, password }),
-      credentials: 'include'  // Includi le credenziali
+      credentials: 'include'
     });
 
     const data = await response.json();
     setMessage(data.message);
 
     if (response.ok) {
-      setUser({ name: data.name, isAdmin: data.isAdmin });
+      if (!data.helmetId) {
+        console.error("helmetId is missing in userData");
+      }
+      setUser({ name: data.name, isAdmin: data.isAdmin, helmetId: data.helmetId });
       navigate(`/main?admin=${data.isAdmin}`);
     }
   };

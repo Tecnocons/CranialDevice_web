@@ -13,10 +13,13 @@ import AssignTreatmentsDialog from './AssignTreatmentsDialog';
 import EditPatientDialog from './EditPatientDialog';
 import StartMeasurement from './StartMeasurement'; // Import the new component
 import './PatientProfile.css';
+import { ClipLoader } from 'react-spinners';
+import { useLoading } from '../../contexts/AuthContext'; // Import the loading context
 
 const PatientProfile = () => {
   const { uuid } = useParams();
   const navigate = useNavigate();
+  const { showLoading, hideLoading, isLoading } = useLoading(); // Use the loading context
   const [patient, setPatient] = useState(null);
   const [pathologies, setPathologies] = useState([]);
   const [symptoms, setSymptoms] = useState([]);
@@ -29,6 +32,21 @@ const PatientProfile = () => {
   const [assignSurgeriesDialogOpen, setAssignSurgeriesDialogOpen] = useState(false);
   const [assignTreatmentsDialogOpen, setAssignTreatmentsDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+
+  useEffect(() => {
+    showLoading(); // Show loading spinner when fetching data
+    const fetchAllData = async () => {
+      await fetchPatient();
+      await fetchPathologies();
+      await fetchSymptoms();
+      await fetchTraumaticEvents();
+      await fetchSurgeries();
+      await fetchTreatments();
+      hideLoading(); // Hide loading spinner when data fetching is complete
+    };
+
+    fetchAllData();
+  }, [uuid]);
 
   const fetchPatient = async () => {
     try {
@@ -126,17 +144,19 @@ const PatientProfile = () => {
     }
   };
 
-  useEffect(() => {
-    fetchPatient();
-    fetchPathologies();
-    fetchSymptoms();
-    fetchTraumaticEvents();
-    fetchSurgeries();
-    fetchTreatments();
-  }, [uuid]);
-
-  if (!patient) {
-    return <div>Loading...</div>;
+  if (isLoading) {
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+        }}
+      >
+        <ClipLoader size={50} color={'#123abc'} loading={isLoading} />
+      </div>
+    );
   }
 
   const measurements = [
@@ -204,6 +224,7 @@ const PatientProfile = () => {
   };
 
   const getIcon = () => {
+    if (!patient) return '👤'; // Placeholder icon if patient is null
     switch (patient.sesso) {
       case 'maschio':
         return '👤'; // Placeholder icon for male
@@ -299,15 +320,21 @@ const PatientProfile = () => {
         <Grid item xs={12} className="patient-header">
           <div className="patient-icon">{getIcon()}</div>
           <div className="patient-details">
-            <Typography variant="h4">{patient.nominativo}</Typography>
-            <Typography variant="body1">Età: {patient.eta}</Typography>
-            <Typography variant="body1">Altezza: {patient.altezza}</Typography>
-            <Typography variant="body1">Peso: {patient.peso}</Typography>
-            <Typography variant="body1">Sesso: {patient.sesso}</Typography>
-            <IconButton onClick={handleEditDialogOpen} className="edit-button">
-              <EditIcon />
-            </IconButton>
-            <StartMeasurement deviceId={patient.device_id} /> {/* Add the StartMeasurement component */}
+            {patient ? (
+              <>
+                <Typography variant="h4">{patient.nominativo}</Typography>
+                <Typography variant="body1">Età: {patient.eta}</Typography>
+                <Typography variant="body1">Altezza: {patient.altezza}</Typography>
+                <Typography variant="body1">Peso: {patient.peso}</Typography>
+                <Typography variant="body1">Sesso: {patient.sesso}</Typography>
+                <IconButton onClick={handleEditDialogOpen} className="edit-button">
+                  <EditIcon />
+                </IconButton>
+                <StartMeasurement deviceId={patient.device_id} /> {/* Add the StartMeasurement component */}
+              </>
+            ) : (
+              <Typography variant="body1">Loading...</Typography>
+            )}
           </div>
           <IconButton onClick={generatePDF} className="pdf-button">
             <SaveAltIcon />

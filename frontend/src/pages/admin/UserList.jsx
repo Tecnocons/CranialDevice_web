@@ -107,8 +107,8 @@ const UserListContainer = styled(Container)({
 });
 
 const HeaderContainer = styled(Box)({
-  width: '17%',
-  height:'6%',
+  width: '60%',
+  height:'7%',
   backgroundColor: '#155677',
   color: '#fff',
   padding: '10px',
@@ -329,40 +329,6 @@ function UserList() {
           </Typography>
         </HeaderContainer>
         <Box display="flex" justifyContent="center" width="100%">
-          <FilterBox>
-            <TextField
-              placeholder="Search..."
-              autoComplete='off'
-              value={nameFilter}
-              onChange={handleFilterChange}
-              fullWidth
-              margin="normal"
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-                style: {
-                  backgroundColor: '#fff', // Background color of the input field
-                  borderRadius: '18px', // Rounded corners for the input field
-                },
-              }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: '#155677', // Default border color
-                  },
-                  '&:hover fieldset': {
-                    borderColor: '#155677', // Border color when hovering
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#155677', // Border color when focused
-                  },
-                },
-              }}
-            />
-          </FilterBox>
           <UserListContainer component={Paper} className="table-container">
             <Header>
               <IconButton onClick={() => navigate('/main')}>
@@ -415,6 +381,40 @@ function UserList() {
               className="pagination"
             />
           </UserListContainer>
+          <FilterBox>
+            <TextField
+              placeholder="Search..."
+              autoComplete='off'
+              value={nameFilter}
+              onChange={handleFilterChange}
+              fullWidth
+              margin="normal"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon />
+                  </InputAdornment>
+                ),
+                style: {
+                  backgroundColor: '#fff', // Background color of the input field
+                  borderRadius: '18px', // Rounded corners for the input field
+                },
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: '#155677', // Default border color
+                  },
+                  '&:hover fieldset': {
+                    borderColor: '#155677', // Border color when hovering
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#155677', // Border color when focused
+                  },
+                },
+              }}
+            />
+          </FilterBox>
         </Box>
         <Dialog open={openEdit} onClose={handleCloseEdit}>
           <DialogTitle>Edit User</DialogTitle>
@@ -547,4 +547,3 @@ function UserList() {
         }
         
         export default UserList;
-        

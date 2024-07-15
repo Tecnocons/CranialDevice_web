@@ -13,7 +13,7 @@ import {
   Checkbox
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBox';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -25,44 +25,44 @@ const AssignPathologiesDialog = ({ open, onClose, patient, onAssign }) => {
   const [assignedPathologies, setAssignedPathologies] = useState([]);
 
   useEffect(() => {
-    const fetchAllPathologies = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/pathologies', {
-          method: 'GET',
-          credentials: 'include',
-        });
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+    if (patient && open) {
+      const fetchAllPathologies = async () => {
+        try {
+          const response = await fetch('http://localhost:5000/api/pathologies', {
+            method: 'GET',
+            credentials: 'include',
+          });
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          setAllPathologies(data);
+        } catch (error) {
+          console.error('Error fetching pathologies:', error);
         }
-        const data = await response.json();
-        setAllPathologies(data);
-      } catch (error) {
-        console.error('Error fetching pathologies:', error);
-      }
-    };
+      };
 
-    const fetchAssignedPathologies = async () => {
-      try {
-        const response = await fetch(`http://localhost:5000/api/patient_pathology/${patient.uuid}`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+      const fetchAssignedPathologies = async () => {
+        try {
+          const response = await fetch(`http://localhost:5000/api/patient_pathology/${patient.uuid}`, {
+            method: 'GET',
+            credentials: 'include',
+          });
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          setAssignedPathologies(data);
+          setSelectedPathologies(data.map(p => p.id));
+        } catch (error) {
+          console.error('Error fetching assigned pathologies:', error);
         }
-        const data = await response.json();
-        setAssignedPathologies(data);
-        setSelectedPathologies(data.map(p => p.id));
-      } catch (error) {
-        console.error('Error fetching assigned pathologies:', error);
-      }
-    };
+      };
 
-    if (open) {
       fetchAllPathologies();
       fetchAssignedPathologies();
     }
-  }, [open, patient.uuid]);
+  }, [open, patient]);
 
   const handleAutocompleteChange = (event, newValue) => {
     const newSelectedPathologies = newValue.map(p => p.id).filter((id) => {
@@ -118,7 +118,7 @@ const AssignPathologiesDialog = ({ open, onClose, patient, onAssign }) => {
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Assegna Patologie a {patient.nominativo}</DialogTitle>
+      <DialogTitle>Assegna Patologie a {patient && patient.nominativo}</DialogTitle>
       <DialogContent>
         <DialogContentText>
           Seleziona una o più patologie da assegnare a questo paziente.

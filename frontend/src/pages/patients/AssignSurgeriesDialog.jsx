@@ -13,7 +13,7 @@ import {
   Checkbox
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBox';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
@@ -25,48 +25,48 @@ const AssignSurgeriesDialog = ({ open, onClose, patient, onAssign }) => {
   const [assignedSurgeries, setAssignedSurgeries] = useState([]);
 
   useEffect(() => {
-    const fetchAllSurgeries = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/api/surgeries', {
-          method: 'GET',
-          credentials: 'include',
-        });
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+    if (patient && open) {
+      const fetchAllSurgeries = async () => {
+        try {
+          const response = await fetch('http://localhost:5000/api/surgeries', {
+            method: 'GET',
+            credentials: 'include',
+          });
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          setAllSurgeries(data);
+        } catch (error) {
+          console.error('Error fetching surgeries:', error);
         }
-        const data = await response.json();
-        setAllSurgeries(data);
-      } catch (error) {
-        console.error('Error fetching surgeries:', error);
-      }
-    };
+      };
 
-    const fetchAssignedSurgeries = async () => {
-      try {
-        const response = await fetch(`http://localhost:5000/api/patient_surgery/${patient.uuid}`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+      const fetchAssignedSurgeries = async () => {
+        try {
+          const response = await fetch(`http://localhost:5000/api/patient_surgery/${patient.uuid}`, {
+            method: 'GET',
+            credentials: 'include',
+          });
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const data = await response.json();
+          setAssignedSurgeries(data);
+          setSelectedSurgeries(data.map(s => s.id));
+        } catch (error) {
+          console.error('Error fetching assigned surgeries:', error);
         }
-        const data = await response.json();
-        setAssignedSurgeries(data);
-        setSelectedSurgeries(data.map(p => p.id));
-      } catch (error) {
-        console.error('Error fetching assigned surgeries:', error);
-      }
-    };
+      };
 
-    if (open) {
       fetchAllSurgeries();
       fetchAssignedSurgeries();
     }
-  }, [open, patient.uuid]);
+  }, [open, patient]);
 
   const handleAutocompleteChange = (event, newValue) => {
-    const newSelectedSurgeries = newValue.map(p => p.id).filter((id) => {
-      return !assignedSurgeries.some(p => p.id === id);
+    const newSelectedSurgeries = newValue.map(s => s.id).filter((id) => {
+      return !assignedSurgeries.some(s => s.id === id);
     });
     setSelectedSurgeries(newSelectedSurgeries);
   };
@@ -86,7 +86,7 @@ const AssignSurgeriesDialog = ({ open, onClose, patient, onAssign }) => {
         throw new Error('Network response was not ok');
       }
 
-      setAssignedSurgeries(prev => prev.filter(p => p.id !== surgeryId));
+      setAssignedSurgeries(prev => prev.filter(s => s.id !== surgeryId));
       setSelectedSurgeries(prev => prev.filter(id => id !== surgeryId));
     } catch (error) {
       console.error('Error removing surgery:', error);
@@ -118,7 +118,7 @@ const AssignSurgeriesDialog = ({ open, onClose, patient, onAssign }) => {
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Assegna Interventi a {patient.nominativo}</DialogTitle>
+      <DialogTitle>Assegna Interventi a {patient && patient.nominativo}</DialogTitle>
       <DialogContent>
         <DialogContentText>
           Seleziona uno o più interventi da assegnare a questo paziente.
@@ -127,7 +127,7 @@ const AssignSurgeriesDialog = ({ open, onClose, patient, onAssign }) => {
           multiple
           options={allSurgeries}
           getOptionLabel={(option) => option.name}
-          value={allSurgeries.filter(p => selectedSurgeries.includes(p.id) || assignedSurgeries.some(ap => ap.id === p.id))}
+          value={allSurgeries.filter(s => selectedSurgeries.includes(s.id) || assignedSurgeries.some(as => as.id === s.id))}
           onChange={handleAutocompleteChange}
           renderInput={(params) => <TextField {...params} label="Interventi" placeholder="Seleziona interventi" />}
           disableCloseOnSelect
@@ -138,7 +138,7 @@ const AssignSurgeriesDialog = ({ open, onClose, patient, onAssign }) => {
                 checkedIcon={checkedIcon}
                 style={{ marginRight: 8 }}
                 checked={selected}
-                disabled={assignedSurgeries.some(p => p.id === option.id)}
+                disabled={assignedSurgeries.some(s => s.id === option.id)}
               />
               {option.name}
             </li>

@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
-import { AuthProvider } from './contexts/AuthContext';
+import RootApp from './App';
 import { createGlobalStyle, ThemeProvider } from 'styled-components';
 import { BrowserRouter as Router } from 'react-router-dom';
 
@@ -119,13 +118,11 @@ const GlobalStyle = createGlobalStyle`
 `;
 
 ReactDOM.render(
-  <AuthProvider>
-    <ThemeProvider theme={{}}>
-      <GlobalStyle />
-      <Router>
-        <App />
-      </Router>
-    </ThemeProvider>
-  </AuthProvider>,
+  <ThemeProvider theme={{}}>
+    <GlobalStyle />
+    <Router>
+      <RootApp />
+    </Router>
+  </ThemeProvider>,
   document.getElementById('root')
 );
