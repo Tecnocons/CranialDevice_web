@@ -31,46 +31,101 @@ import EditTraumaticEventDialog from './EditTraumaticEventDialog';
 import BackgroundWrapper from '../../components/BackgroundWrapper';
 import './TraumaticEventList.css';
 
-const Root = styled('div')({
+const Root = styled('div')(({ theme }) => ({
   display: 'flex',
-  justifyContent: 'center',
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
   alignItems: 'center',
-  height: '62vm',
-  backgroundColor: '#ffffff',
+  height: '100vh',
+  backgroundColor: '#f5f5f5',
   opacity: 0.9,
-  marginTop: '2%',
-});
+  padding: '20px',
+  [theme.breakpoints.down('sm')]: {
+    padding: '10px',
+  },
+}));
 
-const StyledTable = styled(Table)({
-  minWidth: 650,
+const StyledTable = styled(Table)(({ theme }) => ({
+  opacity: 0.9,
+  width: '100%',
+  backgroundColor: '#ffffff',
+  boxShadow: '0 0 10px rgba(21, 86, 119, 0.5)',
   '& .MuiTableCell-head': {
-    backgroundColor: '#f1f1f1',
+    backgroundColor: '#e0e0e0',
     fontWeight: 'bold',
-    fontSize: 21,
+    fontSize: 22,
   },
   '& .MuiTableCell-body': {
-    fontSize: 16,
+    fontSize: 17,
+  },
+  '& .MuiTableRow-root .MuiTableCell-root': {
+    borderBottom: '1px solid #e0e0e0',
+    borderRight: '1px solid #e0e0e0',
+    fontFamily: 'Arial, sans-serif',
   },
   '& .MuiTableRow-root:last-child .MuiTableCell-root': {
-    borderBottom: '2px solid #155677', // Cambia il colore della riga inferiore qui
+    borderBottom: '2px solid #155677',
   },
-});
+  [theme.breakpoints.down('sm')]: {
+    '& .MuiTableCell-head': {
+      fontSize: 16,
+    },
+    '& .MuiTableCell-body': {
+      fontSize: 12,
+    },
+  },
+}));
 
 const Header = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
   width: '100%',
-  marginBottom: 16,
+  marginBottom: 10,
 });
 
 const AddButton = styled(Button)({
-  backgroundColor: '#155677', 
+  backgroundColor: '#155677',
   color: '#fff',
   '&:hover': {
-    backgroundColor: '#0d3e4f', 
+    backgroundColor: '#0d3e4f',
   },
 });
+
+const TraumaticEventListContainer = styled(Container)(({ theme }) => ({
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  marginLeft: 'auto',
+  marginRight: 'auto',
+  padding: '20px',
+  backgroundColor: '#ffffff',
+  borderRadius: '8px',
+  boxShadow: '0 0 10px rgba(21, 86, 119, 0.5)',
+  [theme.breakpoints.down('sm')]: {
+    padding: '10px',
+  },
+}));
+
+const HeaderContainer = styled(Box)(({ theme }) => ({
+  width: '70%',
+  height: 'auto',
+  backgroundColor: '#155677',
+  color: '#fff',
+  padding: '10px',
+  borderRadius: '8px',
+  textAlign: 'center',
+  marginBottom: '10px',
+  marginTop: '-13px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  [theme.breakpoints.down('sm')]: {
+    padding: '5px',
+    fontSize: '1rem',
+  },
+}));
 
 function TraumaticEventList() {
   const { user } = useAuth();
@@ -242,15 +297,17 @@ function TraumaticEventList() {
   return (
     <BackgroundWrapper>
       <Root>
-        <div className="content">
-          <Container component={Paper} className="table-container">
+        <HeaderContainer>
+          <Typography variant="h4" component="h1" gutterBottom>
+            Lista Eventi Traumatici
+          </Typography>
+        </HeaderContainer>
+        <Box display="flex" justifyContent="center" width="100%" flexWrap="wrap">
+          <TraumaticEventListContainer component={Paper} className="table-container">
             <Header>
               <IconButton onClick={() => navigate('/main')}>
                 <CloseIcon />
               </IconButton>
-              <Typography variant="h4" component="h1" gutterBottom>
-                Lista Eventi Traumatici
-              </Typography>
               {user && user.isAdmin && (
                 <AddButton
                   variant="contained"
@@ -298,12 +355,10 @@ function TraumaticEventList() {
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
-          </Container>
-        </div>
-        {user && user.isAdmin && (
-          <AddTraumaticEventDialog open={addDialogOpen} onClose={handleAddDialogClose} onEventAdded={handleEventAdded} />
-        )}
-        {user && user.isAdmin && selectedEvent && (
+          </TraumaticEventListContainer>
+        </Box>
+        <AddTraumaticEventDialog open={addDialogOpen} onClose={handleAddDialogClose} onEventAdded={handleEventAdded} />
+        {selectedEvent && (
           <EditTraumaticEventDialog
             open={editDialogOpen}
             onClose={handleEditDialogClose}

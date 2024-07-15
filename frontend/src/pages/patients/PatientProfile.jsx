@@ -11,15 +11,16 @@ import AssignTraumaticEventsDialog from './AssignTraumaticEventsDialog';
 import AssignSurgeriesDialog from './AssignSurgeriesDialog';
 import AssignTreatmentsDialog from './AssignTreatmentsDialog';
 import EditPatientDialog from './EditPatientDialog';
-import StartMeasurement from './StartMeasurement'; // Import the new component
+import StartMeasurement from './StartMeasurement';
+import MeasurementsTable from './MeasurementsTable'; // Import the new component
 import './PatientProfile.css';
 import { ClipLoader } from 'react-spinners';
-import { useLoading } from '../../contexts/AuthContext'; // Import the loading context
+import { useLoading } from '../../contexts/AuthContext';
 
 const PatientProfile = () => {
   const { uuid } = useParams();
   const navigate = useNavigate();
-  const { showLoading, hideLoading, isLoading } = useLoading(); // Use the loading context
+  const { showLoading, hideLoading, isLoading } = useLoading();
   const [patient, setPatient] = useState(null);
   const [pathologies, setPathologies] = useState([]);
   const [symptoms, setSymptoms] = useState([]);
@@ -32,9 +33,11 @@ const PatientProfile = () => {
   const [assignSurgeriesDialogOpen, setAssignSurgeriesDialogOpen] = useState(false);
   const [assignTreatmentsDialogOpen, setAssignTreatmentsDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [showMeasurements, setShowMeasurements] = useState(false);
+  const [measurements, setMeasurements] = useState([]);
 
   useEffect(() => {
-    showLoading(); // Show loading spinner when fetching data
+    showLoading();
     const fetchAllData = async () => {
       await fetchPatient();
       await fetchPathologies();
@@ -42,11 +45,28 @@ const PatientProfile = () => {
       await fetchTraumaticEvents();
       await fetchSurgeries();
       await fetchTreatments();
-      hideLoading(); // Hide loading spinner when data fetching is complete
+      await fetchMeasurements();
+      hideLoading();
     };
 
     fetchAllData();
   }, [uuid]);
+
+  const fetchMeasurements = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/measurements/${uuid}`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setMeasurements(data);
+    } catch (error) {
+      console.error('Error fetching measurements:', error);
+    }
+  };
 
   const fetchPatient = async () => {
     try {
@@ -159,16 +179,11 @@ const PatientProfile = () => {
     );
   }
 
-  const measurements = [
-    { date: '2024-06-20', value: '120/80' },
-    { date: '2024-06-21', value: '125/85' },
-  ];
-
   const generatePDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(18);
     doc.text(`Cartella Clinica di ${patient.nominativo}`, 20, 20);
-
+  
     doc.setFontSize(14);
     doc.text('Informazioni del Paziente', 20, 30);
     doc.setFontSize(12);
@@ -177,52 +192,52 @@ const PatientProfile = () => {
     doc.text(`Altezza: ${patient.altezza}`, 20, 60);
     doc.text(`Peso: ${patient.peso}`, 20, 70);
     doc.text(`Sesso: ${patient.sesso}`, 20, 80);
-
+  
     doc.setFontSize(14);
     doc.text('Misurazioni', 20, 90);
     doc.setFontSize(12);
     measurements.forEach((measurement, index) => {
-      doc.text(`${measurement.date}: ${measurement.value}`, 20, 100 + index * 10);
+      doc.text(`${measurement.timestamp}: ${measurement.value}`, 20, 100 + index * 10);
     });
-
+  
     doc.setFontSize(14);
     doc.text('Patologie', 20, 110 + measurements.length * 10);
     doc.setFontSize(12);
     pathologies.forEach((pathology, index) => {
       doc.text(pathology.name, 20, 120 + measurements.length * 10 + index * 10);
     });
-
+  
     doc.setFontSize(14);
     doc.text('Sintomi', 20, 130 + measurements.length * 10 + pathologies.length * 10);
     doc.setFontSize(12);
     symptoms.forEach((symptom, index) => {
       doc.text(symptom.name, 20, 140 + measurements.length * 10 + pathologies.length * 10 + index * 10);
     });
-
+  
     doc.setFontSize(14);
     doc.text('Eventi Traumatici', 20, 150 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10);
     doc.setFontSize(12);
     traumaticEvents.forEach((event, index) => {
       doc.text(event.name, 20, 160 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + index * 10);
     });
-
+  
     doc.setFontSize(14);
     doc.text('Interventi', 20, 170 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10);
     doc.setFontSize(12);
     surgeries.forEach((surgery, index) => {
       doc.text(surgery.name, 20, 180 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10 + index * 10);
     });
-
+  
     doc.setFontSize(14);
     doc.text('Trattamenti', 20, 190 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10 + surgeries.length * 10);
     doc.setFontSize(12);
     treatments.forEach((treatment, index) => {
       doc.text(treatment.name, 20, 200 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10 + surgeries.length * 10 + index * 10);
     });
-
+  
     doc.save(`Cartella_Clinica_${patient.nominativo}.pdf`);
   };
-
+  
   const getIcon = () => {
     if (!patient) return '👤'; // Placeholder icon if patient is null
     switch (patient.sesso) {
@@ -291,7 +306,7 @@ const PatientProfile = () => {
 
   const handleEditSubmit = async (updatedPatient) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/patients`, {
+      const response = await fetch('http://localhost:5000/api/patients', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -330,7 +345,7 @@ const PatientProfile = () => {
                 <IconButton onClick={handleEditDialogOpen} className="edit-button">
                   <EditIcon />
                 </IconButton>
-                <StartMeasurement deviceId={patient.device_id} /> {/* Add the StartMeasurement component */}
+                <StartMeasurement patientId={uuid} deviceId={patient.device_id} /> {/* Add the StartMeasurement component */}
               </>
             ) : (
               <Typography variant="body1">Loading...</Typography>
@@ -339,16 +354,6 @@ const PatientProfile = () => {
           <IconButton onClick={generatePDF} className="pdf-button">
             <SaveAltIcon />
           </IconButton>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Paper className="info-block">
-            <Typography variant="h6" className="box-title">Misurazioni</Typography>
-            <div className="info-content">
-              {measurements.map((measurement, index) => (
-                <Typography key={index}>{`${measurement.date}: ${measurement.value}`}</Typography>
-              ))}
-            </div>
-          </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
           <Paper className="info-block">
@@ -415,6 +420,21 @@ const PatientProfile = () => {
             </Button>
           </Paper>
         </Grid>
+        <Grid item xs={12} md={6}>
+          <Paper className="info-block">
+            <Typography variant="h6" className="box-title">Misurazioni</Typography>
+            <Button variant="contained" color="primary" onClick={() => { fetchMeasurements(); setShowMeasurements(true); }}>
+              Visualizza
+            </Button>
+            {showMeasurements && (
+              <MeasurementsTable
+                open={showMeasurements}
+                onClose={() => setShowMeasurements(false)}
+                measurements={measurements}
+              />
+            )}
+          </Paper>
+        </Grid>
       </Grid>
       <AssignPathologiesDialog
         open={assignPathologiesDialogOpen}
@@ -457,3 +477,4 @@ const PatientProfile = () => {
 };
 
 export default PatientProfile;
+

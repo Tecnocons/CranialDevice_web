@@ -27,43 +27,61 @@ import { useAuth } from '../../contexts/AuthContext';
 import { ClipLoader } from 'react-spinners';
 import AddTreatmentDialog from './AddTreatmentDialog';
 import EditTreatmentDialog from './EditTreatmentDialog';
-import BackgroundWrapper from '../../components/BackgroundWrapper'; // Importa BackgroundWrapper
+import BackgroundWrapper from '../../components/BackgroundWrapper';
 import { useNavigate } from 'react-router-dom';
 import './TreatmentList.css';
 
-const Root = styled('div')({
+const Root = styled('div')(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'flex-start',
   alignItems: 'center',
   height: '100vh',
-  backgroundColor: '#f5f5f5', // Cambiato il background del Root
+  backgroundColor: '#f5f5f5',
   opacity: 0.9,
   padding: '20px',
-});
+  [theme.breakpoints.down('sm')]: {
+    padding: '10px',
+  },
+}));
 
-const StyledTable = styled(Table)({
-  minWidth: 650,
-  backgroundColor: '#ffffff', // Cambiato il background della tabella
+const StyledTable = styled(Table)(({ theme }) => ({
+  opacity: 0.9,
+  width: '100%',
+  backgroundColor: '#ffffff',
+  boxShadow: '0 0 10px rgba(21, 86, 119, 0.5)',
   '& .MuiTableCell-head': {
     backgroundColor: '#e0e0e0',
     fontWeight: 'bold',
-    fontSize: 21,
+    fontSize: 22,
   },
   '& .MuiTableCell-body': {
-    fontSize: 16,
+    fontSize: 17,
+  },
+  '& .MuiTableRow-root .MuiTableCell-root': {
+    borderBottom: '1px solid #e0e0e0',
+    borderRight: '1px solid #e0e0e0',
+    fontFamily: 'Arial, sans-serif',
   },
   '& .MuiTableRow-root:last-child .MuiTableCell-root': {
     borderBottom: '2px solid #155677',
   },
-});
+  [theme.breakpoints.down('sm')]: {
+    '& .MuiTableCell-head': {
+      fontSize: 16,
+    },
+    '& .MuiTableCell-body': {
+      fontSize: 12,
+    },
+  },
+}));
 
 const Header = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
   width: '100%',
-  marginBottom: 16,
+  marginBottom: 10,
 });
 
 const AddButton = styled(Button)({
@@ -73,6 +91,41 @@ const AddButton = styled(Button)({
     backgroundColor: '#0d3e4f',
   },
 });
+
+const TreatmentListContainer = styled(Container)(({ theme }) => ({
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  marginLeft: 'auto',
+  marginRight: 'auto',
+  padding: '20px',
+  backgroundColor: '#ffffff',
+  borderRadius: '8px',
+  boxShadow: '0 0 10px rgba(21, 86, 119, 0.5)',
+  [theme.breakpoints.down('sm')]: {
+    padding: '10px',
+  },
+}));
+
+const HeaderContainer = styled(Box)(({ theme }) => ({
+  width: '70%',
+  height: 'auto',
+  backgroundColor: '#155677',
+  color: '#fff',
+  padding: '10px',
+  borderRadius: '8px',
+  textAlign: 'center',
+  marginBottom: '10px',
+  marginTop: '-13px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  [theme.breakpoints.down('sm')]: {
+    padding: '5px',
+    fontSize: '1rem',
+  },
+}));
 
 function TreatmentList() {
   const { user } = useAuth();
@@ -184,7 +237,7 @@ function TreatmentList() {
 
   const handleEditSubmit = async (updatedTreatment) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/treatments`, {
+      const response = await fetch('http://localhost:5000/api/treatments', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -244,15 +297,22 @@ function TreatmentList() {
   return (
     <BackgroundWrapper>
       <Root>
-        <div className="content">
-          <Container component={Paper} className="table-container">
+        <HeaderContainer>
+          <Typography
+            variant="h4"
+            component="h1"
+            gutterBottom
+            style={{ textShadow: '-1px 0 #000000, 0 1px #000000, 1px 0 #000000, 0 -1px #000000' }}
+          >
+            Lista Trattamenti
+          </Typography>
+        </HeaderContainer>
+        <Box display="flex" justifyContent="center" width="100%" flexWrap="wrap">
+          <TreatmentListContainer component={Paper} className="table-container">
             <Header>
               <IconButton onClick={() => navigate('/main')}>
                 <CloseIcon />
               </IconButton>
-              <Typography variant="h4" component="h1" gutterBottom>
-                Lista Trattamenti
-              </Typography>
               {user && user.isAdmin && (
                 <AddButton
                   variant="contained"
@@ -300,8 +360,8 @@ function TreatmentList() {
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
-          </Container>
-        </div>
+          </TreatmentListContainer>
+        </Box>
         <AddTreatmentDialog open={addDialogOpen} onClose={handleAddDialogClose} onTreatmentAdded={handleTreatmentAdded} />
         {selectedTreatment && (
           <EditTreatmentDialog

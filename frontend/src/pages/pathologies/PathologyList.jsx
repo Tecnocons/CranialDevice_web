@@ -18,7 +18,6 @@ import {
   DialogTitle,
   Checkbox,
   Box,
-  Link,
 } from '@mui/material';
 import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
@@ -26,62 +25,108 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
-
 import { useAuth } from '../../contexts/AuthContext';
 import AddPathologyDialog from './AddPathologyDialog';
 import EditPathologyDialog from './EditPathologyDialog';
 import { ClipLoader } from 'react-spinners';
-import BackgroundWrapper from '../../components/BackgroundWrapper'; // Importa BackgroundWrapper
+import BackgroundWrapper from '../../components/BackgroundWrapper';
 import './PathologyList.css';
 
-const Root = styled('div')({
+const Root = styled('div')(({ theme }) => ({
   display: 'flex',
-  justifyContent: 'center',
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
   alignItems: 'center',
-  height: '62vm',
-  backgroundColor: '#ffffff',
+  height: '100vh',
+  backgroundColor: '#f5f5f5',
   opacity: 0.9,
-  marginTop: '2%',
-});
+  padding: '20px',
+  [theme.breakpoints.down('sm')]: {
+    padding: '10px',
+  },
+}));
 
-const StyledTable = styled(Table)({
-  minWidth: 650,
+const StyledTable = styled(Table)(({ theme }) => ({
+  opacity: 0.9,
+  width: '100%',
+  backgroundColor: '#ffffff',
+  boxShadow: '0 0 10px rgba(21, 86, 119, 0.5)',
   '& .MuiTableCell-head': {
-    backgroundColor: '#f1f1f1',
+    backgroundColor: '#e0e0e0',
     fontWeight: 'bold',
-    fontSize: 21,
+    fontSize: 22,
   },
   '& .MuiTableCell-body': {
-    fontSize: 16,
+    fontSize: 17,
+  },
+  '& .MuiTableRow-root .MuiTableCell-root': {
+    borderBottom: '1px solid #e0e0e0',
+    borderRight: '1px solid #e0e0e0',
+    fontFamily: 'Arial, sans-serif',
   },
   '& .MuiTableRow-root:last-child .MuiTableCell-root': {
-    borderBottom: '2px solid #155677', // Cambia il colore della riga inferiore qui
+    borderBottom: '2px solid #155677',
   },
-});
+  [theme.breakpoints.down('sm')]: {
+    '& .MuiTableCell-head': {
+      fontSize: 16,
+    },
+    '& .MuiTableCell-body': {
+      fontSize: 12,
+    },
+  },
+}));
 
 const Header = styled('div')({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
   width: '100%',
-  marginBottom: 16,
-  marginTop:'2%',
+  marginBottom: 10,
 });
 
 const AddButton = styled(Button)({
-  backgroundColor: '#155677', 
+  backgroundColor: '#155677',
   color: '#fff',
   '&:hover': {
-    backgroundColor: '#0d3e4f', 
+    backgroundColor: '#0d3e4f',
   },
 });
 
-const HamburgerMenuWrapper = styled('div')({
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  zIndex: 2,
-});
+const PathologyListContainer = styled(Container)(({ theme }) => ({
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  marginLeft: 'auto',
+  marginRight: 'auto',
+  padding: '20px',
+  backgroundColor: '#ffffff',
+  borderRadius: '8px',
+  boxShadow: '0 0 10px rgba(21, 86, 119, 0.5)',
+  [theme.breakpoints.down('sm')]: {
+    padding: '10px',
+  },
+}));
+
+const HeaderContainer = styled(Box)(({ theme }) => ({
+  width: '90%',
+  height: 'auto',
+  backgroundColor: '#155677',
+  color: '#fff',
+  padding: '10px',
+  borderRadius: '8px',
+  textAlign: 'center',
+  marginBottom: '10px',
+  marginTop: '-13px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  [theme.breakpoints.down('sm')]: {
+    padding: '5px',
+    fontSize: '1rem',
+  },
+}));
 
 function PathologyList() {
   const { user } = useAuth();
@@ -90,7 +135,7 @@ function PathologyList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -279,88 +324,88 @@ function PathologyList() {
   return (
     <BackgroundWrapper>
       <Root>
-        <div className="content">
-          <Container component={Paper} className="table-container">
-            <Header>
-              <IconButton onClick={() => navigate('/main')}>
-                <CloseIcon />
-              </IconButton>
-              <Typography variant="h4" component="h1" gutterBottom>
-                Lista Patologie
-              </Typography>
-              {user && user.isAdmin && (
-                <AddButton
-                  variant="contained"
-                  color="primary"
-                  startIcon={<AddIcon />}
-                  onClick={handleAddDialogOpen}
+        <HeaderContainer>
+          <Typography variant="h4" component="h1" gutterBottom>
+            Lista Patologie
+          </Typography>
+        </HeaderContainer>
+        <PathologyListContainer component={Paper} className="table-container">
+          <Header>
+            <IconButton onClick={() => navigate('/main')}>
+              <CloseIcon />
+            </IconButton>
+            {user && user.isAdmin && (
+              <AddButton
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={handleAddDialogOpen}
+              >
+                Aggiungi Patologia
+              </AddButton>
+            )}
+          </Header>
+          <StyledTable className="styled-table">
+            <TableHead>
+              <TableRow>
+                {user && user.isAdmin && (
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      indeterminate={selectedPathologies.length > 0 && selectedPathologies.length < pathologies.length}
+                      checked={isAllSelected}
+                      onChange={handleSelectAllPathologies}
+                    />
+                  </TableCell>
+                )}
+                <TableCell className="table-header">Nome</TableCell>
+                <TableCell className="table-header">Descrizione</TableCell>
+                {user && user.isAdmin && <TableCell className="table-header">Azioni</TableCell>}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {pathologies.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((pathology) => (
+                <TableRow
+                  key={pathology.id}
+                  hover
+                  role="checkbox"
+                  aria-checked={isSelected(pathology.id)}
+                  selected={isSelected(pathology.id)}
                 >
-                  Aggiungi Patologia
-                </AddButton>
-              )}
-            </Header>
-            <StyledTable className="styled-table">
-              <TableHead>
-                <TableRow>
                   {user && user.isAdmin && (
                     <TableCell padding="checkbox">
                       <Checkbox
-                        indeterminate={selectedPathologies.length > 0 && selectedPathologies.length < pathologies.length}
-                        checked={isAllSelected}
-                        onChange={handleSelectAllPathologies}
+                        checked={isSelected(pathology.id)}
+                        onChange={() => handleSelectPathology(pathology.id)}
                       />
                     </TableCell>
                   )}
-                  <TableCell className="table-header">Nome</TableCell>
-                  <TableCell className="table-header">Descrizione</TableCell>
-                  {user && user.isAdmin && <TableCell className="table-header">Azioni</TableCell>}
+                  <TableCell>{pathology.name}</TableCell>
+                  <TableCell>{pathology.description}</TableCell>
+                  {user && user.isAdmin && (
+                    <TableCell>
+                      <IconButton onClick={() => handleEditDialogOpen(pathology)} color="primary">
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton onClick={() => handleDeleteDialogOpen(pathology)} color="secondary">
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  )}
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {pathologies.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((pathology) => (
-                  <TableRow
-                    key={pathology.id}
-                    hover
-                    role="checkbox"
-                    aria-checked={isSelected(pathology.id)}
-                    selected={isSelected(pathology.id)}
-                  >
-                    {user && user.isAdmin && (
-                      <TableCell padding="checkbox">
-                        <Checkbox
-                          checked={isSelected(pathology.id)}
-                          onChange={() => handleSelectPathology(pathology.id)}
-                        />
-                      </TableCell>
-                    )}
-                    <TableCell>{pathology.name}</TableCell>
-                    <TableCell>{pathology.description}</TableCell>
-                    {user && user.isAdmin && (
-                      <TableCell>
-                        <IconButton onClick={() => handleEditDialogOpen(pathology)} color="primary">
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton onClick={() => handleDeleteDialogOpen(pathology)} color="secondary">
-                          <DeleteIcon />
-                        </IconButton>
-                      </TableCell>
-                    )}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </StyledTable>
-            <TablePagination
-              rowsPerPageOptions={[5, 10]}
-              component="div"
-              count={pathologies.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              className="pagination"
-            />
-          </Container>
-        </div>
+              ))}
+            </TableBody>
+          </StyledTable>
+          <TablePagination
+            rowsPerPageOptions={[5, 10]}
+            component="div"
+            count={pathologies.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            className="pagination"
+          />
+        </PathologyListContainer>
         {user && user.isAdmin && (
           <AddPathologyDialog open={addDialogOpen} onClose={handleAddDialogClose} onPathologyAdded={handlePathologyAdded} />
         )}

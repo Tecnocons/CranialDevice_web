@@ -36,8 +36,9 @@ import { useAuth } from '../../contexts/AuthContext';
 import { ClipLoader } from 'react-spinners';
 import AddPatientDialog from './AddPatientDialog';
 import EditPatientDialog from './EditPatientDialog';
-import BackgroundWrapper from '../../components/BackgroundWrapper'; // Importa BackgroundWrapper
+import BackgroundWrapper from '../../components/BackgroundWrapper';
 import './PatientList.css';
+import {useLoading} from '../../contexts/AuthContext'
 
 const Root = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -61,10 +62,10 @@ const StyledTable = styled(Table)(({ theme }) => ({
   '& .MuiTableCell-head': {
     backgroundColor: '#e0e0e0',
     fontWeight: 'bold',
-    fontSize: 21,
+    fontSize: 22,
   },
   '& .MuiTableCell-body': {
-    fontSize: 14, // Adjusted font size for table body
+    fontSize: 17,
   },
   '& .MuiTableRow-root .MuiTableCell-root': {
     borderBottom: '1px solid #e0e0e0',
@@ -167,8 +168,8 @@ const HeaderContainer = styled(Box)(({ theme }) => ({
 function PatientList() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { showLoading, hideLoading, isLoading } = useLoading(); // Use the loading context
   const [patients, setPatients] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -184,7 +185,6 @@ function PatientList() {
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
-    showLoading();
     const fetchPatients = async () => {
       if (!user) return;
 
@@ -202,11 +202,11 @@ function PatientList() {
       } catch (error) {
         setError(error.message);
       } finally {
-        hideLoading();
+        setLoading(false);
       }
     };
     fetchPatients();
-  }, [user, showLoading, hideLoading]);
+  }, [user]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -253,7 +253,6 @@ function PatientList() {
   const handlePatientAdded = () => {
     setAddDialogOpen(false);
     const fetchPatients = async () => {
-      showLoading();
       try {
         const endpoint = user.isAdmin ? '/api/patients' : `/api/patients/assigned?doctor_name=${user.name}`;
         const response = await fetch(`http://localhost:5000${endpoint}`, {
@@ -268,7 +267,7 @@ function PatientList() {
       } catch (error) {
         setError(error.message);
       } finally {
-        hideLoading();
+        setLoading(false);
       }
     };
     fetchPatients();
@@ -380,11 +379,11 @@ function PatientList() {
     return matchesName && matchesAge && matchesWeight && matchesHeight;
   });
 
-  if (isLoading) {
+  if (loading) {
     return (
       <Root>
         <Box display="flex" flexDirection="column" alignItems="center">
-          <ClipLoader size={50} color={"#123abc"} loading={isLoading} />
+          <ClipLoader size={50} color={"#123abc"} loading={loading} />
           <Typography variant="h6" style={{ marginTop: '20px' }}>Loading...</Typography>
         </Box>
       </Root>

@@ -54,10 +54,10 @@ const StyledTable = styled(Table)({
   '& .MuiTableCell-head': {
     backgroundColor: '#e0e0e0',
     fontWeight: 'bold',
-    fontSize: 21,
+    fontSize: 22,
   },
   '& .MuiTableCell-body': {
-    fontSize: 16,
+    fontSize: 17,
   },
   '& .MuiTableRow-root:last-child .MuiTableCell-root': {
     borderBottom: '2px solid #155677',
