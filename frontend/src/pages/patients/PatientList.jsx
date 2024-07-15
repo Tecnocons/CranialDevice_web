@@ -36,8 +36,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { ClipLoader } from 'react-spinners';
 import AddPatientDialog from './AddPatientDialog';
 import EditPatientDialog from './EditPatientDialog';
-import BackgroundWrapper from '../../components/BackgroundWrapper';
-import { useLoading } from '../../contexts/AuthContext'; // Import the loading context
+import BackgroundWrapper from '../../components/BackgroundWrapper'; // Importa BackgroundWrapper
 import './PatientList.css';
 
 const Root = styled('div')(({ theme }) => ({
