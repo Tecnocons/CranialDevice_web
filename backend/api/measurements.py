@@ -10,18 +10,20 @@ measurement_bp = Blueprint('measurement', __name__)
 def add_measurement():
     data = request.get_json()
     patient_id = data.get('patient_id')
+    measurement_id = data.get('measurement_id')  # Aggiunto measurement_id
     timestamp = data.get('timestamp')
     spostamento_mm = data.get('spostamento_mm')
     forza_n = data.get('forza_n')
     pressione_bar = data.get('pressione_bar')
     contropressione_bar = data.get('contropressione_bar')
 
-    if not all([patient_id, timestamp, spostamento_mm, forza_n, pressione_bar, contropressione_bar]):
+    if not all([patient_id, measurement_id, timestamp, spostamento_mm, forza_n, pressione_bar, contropressione_bar]):
         return jsonify({"message": "Missing fields in the request data"}), 400
 
     try:
         new_measurement = Measurement(
             patient_id=patient_id,
+            measurement_id=measurement_id,  # Aggiunto measurement_id
             timestamp=timestamp,
             spostamento_mm=spostamento_mm,
             forza_n=forza_n,
@@ -44,6 +46,7 @@ def get_measurements(patient_id):
         for measurement in measurements:
             results.append({
                 "id": measurement.id,
+                "measurement_id": measurement.measurement_id,  # Aggiunto measurement_id
                 "timestamp": measurement.timestamp,
                 "spostamento_mm": measurement.spostamento_mm,
                 "forza_n": measurement.forza_n,
@@ -64,7 +67,7 @@ def delete_measurement():
         return jsonify({"message": "Measurement ID is required"}), 400
 
     try:
-        measurement = Measurement.query.get(measurement_id)
+        measurement = Measurement.query.filter_by(measurement_id=measurement_id).first()  # Modificato per utilizzare measurement_id
         if measurement:
             db.session.delete(measurement)
             db.session.commit()
