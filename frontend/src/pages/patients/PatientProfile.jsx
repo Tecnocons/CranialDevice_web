@@ -12,7 +12,7 @@ import AssignSurgeriesDialog from './AssignSurgeriesDialog';
 import AssignTreatmentsDialog from './AssignTreatmentsDialog';
 import EditPatientDialog from './EditPatientDialog';
 import StartMeasurement from './StartMeasurement';
-import MeasurementsTable from './MeasurementsTable';
+import ControlPanel from './ControlPanel';
 import './PatientProfile.css';
 import { ClipLoader } from 'react-spinners';
 import { useLoading } from '../../contexts/AuthContext';
@@ -161,6 +161,11 @@ const PatientProfile = () => {
     );
   }
 
+  const measurements = [
+    { date: '2024-06-20', value: '120/80' },
+    { date: '2024-06-21', value: '125/85' },
+  ];
+
   const generatePDF = () => {
     const doc = new jsPDF();
     doc.setFontSize(18);
@@ -178,9 +183,45 @@ const PatientProfile = () => {
     doc.setFontSize(14);
     doc.text('Misurazioni', 20, 90);
     doc.setFontSize(12);
-    // Example of adding measurement data
-    doc.text('Lista Misurazioni:', 20, 100);
-    // Add other data in similar fashion
+    measurements.forEach((measurement, index) => {
+      doc.text(`${measurement.date}: ${measurement.value}`, 20, 100 + index * 10);
+    });
+
+    doc.setFontSize(14);
+    doc.text('Patologie', 20, 110 + measurements.length * 10);
+    doc.setFontSize(12);
+    pathologies.forEach((pathology, index) => {
+      doc.text(pathology.name, 20, 120 + measurements.length * 10 + index * 10);
+    });
+
+    doc.setFontSize(14);
+    doc.text('Sintomi', 20, 130 + measurements.length * 10 + pathologies.length * 10);
+    doc.setFontSize(12);
+    symptoms.forEach((symptom, index) => {
+      doc.text(symptom.name, 20, 140 + measurements.length * 10 + pathologies.length * 10 + index * 10);
+    });
+
+    doc.setFontSize(14);
+    doc.text('Eventi Traumatici', 20, 150 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10);
+    doc.setFontSize(12);
+    traumaticEvents.forEach((event, index) => {
+      doc.text(event.name, 20, 160 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + index * 10);
+    });
+
+    doc.setFontSize(14);
+    doc.text('Interventi', 20, 170 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10);
+    doc.setFontSize(12);
+    surgeries.forEach((surgery, index) => {
+      doc.text(surgery.name, 20, 180 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10 + index * 10);
+    });
+
+    doc.setFontSize(14);
+    doc.text('Trattamenti', 20, 190 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10 + surgeries.length * 10);
+    doc.setFontSize(12);
+    treatments.forEach((treatment, index) => {
+      doc.text(treatment.name, 20, 200 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10 + surgeries.length * 10 + index * 10);
+    });
+
     doc.save(`Cartella_Clinica_${patient.nominativo}.pdf`);
   };
 
@@ -292,7 +333,7 @@ const PatientProfile = () => {
                   <EditIcon />
                 </IconButton>
                 <StartMeasurement patientId={uuid} deviceId={patient.device_id} />
-                <Button variant="contained" color="primary" onClick={() => setShowMeasurements(true)} style={{ marginLeft: 10 }}>
+                <Button variant="contained" color="primary" onClick={() => setShowMeasurements(true)}>
                   Vedi Misurazioni
                 </Button>
               </>
@@ -306,136 +347,81 @@ const PatientProfile = () => {
         </Grid>
         <Grid item xs={12} md={6}>
           <Paper className="info-block">
-            <Typography variant="h6" className="box-title enlarged">Patologie</Typography>
+            <Typography variant="h6" className="box-title">Patologie</Typography>
             <div className="info-content">
               {pathologies.map((pathology, index) => (
                 <Typography key={index}>{pathology.name}</Typography>
               ))}
             </div>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAssignPathologiesDialogOpen}
-              style={{ color: 'white', textShadow: '-0.5px 0 #000000, 0 0.4px #000000, 0.5px 0 #000000, 0 -0.4px #000000' }}
-            >
+            <Button variant="contained" color="primary" onClick={handleAssignPathologiesDialogOpen}>
               Assegna Patologie
             </Button>
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
           <Paper className="info-block">
-            <Typography variant="h6" className="box-title enlarged">Sintomi</Typography>
+            <Typography variant="h6" className="box-title">Sintomi</Typography>
             <div className="info-content">
               {symptoms.map((symptom, index) => (
                 <Typography key={index}>{symptom.name}</Typography>
               ))}
             </div>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAssignSymptomsDialogOpen}
-              style={{ color: 'white', textShadow: '-0.5px 0 #000000, 0 0.4px #000000, 0.5px 0 #000000, 0 -0.4px #000000' }}
-            >
+            <Button variant="contained" color="primary" onClick={handleAssignSymptomsDialogOpen}>
               Assegna Sintomi
             </Button>
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
           <Paper className="info-block">
-            <Typography variant="h6" className="box-title enlarged">Eventi Traumatici</Typography>
+            <Typography variant="h6" className="box-title">Eventi Traumatici</Typography>
             <div className="info-content">
               {traumaticEvents.map((event, index) => (
                 <Typography key={index}>{event.name}</Typography>
               ))}
             </div>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAssignTraumaticEventsDialogOpen}
-              style={{ color: 'white', textShadow: '-0.5px 0 #000000, 0 0.4px #000000, 0.5px 0 #000000, 0 -0.4px #000000' }}
-            >
+            <Button variant="contained" color="primary" onClick={handleAssignTraumaticEventsDialogOpen}>
               Assegna Eventi Traumatici
             </Button>
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
           <Paper className="info-block">
-            <Typography variant="h6" className="box-title enlarged">Interventi</Typography>
+            <Typography variant="h6" className="box-title">Interventi</Typography>
             <div className="info-content">
               {surgeries.map((surgery, index) => (
                 <Typography key={index}>{surgery.name}</Typography>
               ))}
             </div>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAssignSurgeriesDialogOpen}
-              style={{ color: 'white', textShadow: '-0.5px 0 #000000, 0 0.4px #000000, 0.5px 0 #000000, 0 -0.4px #000000' }}
-            >
+            <Button variant="contained" color="primary" onClick={handleAssignSurgeriesDialogOpen}>
               Assegna Interventi
             </Button>
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
           <Paper className="info-block">
-            <Typography variant="h6" className="box-title enlarged">Trattamenti</Typography>
+            <Typography variant="h6" className="box-title">Trattamenti</Typography>
             <div className="info-content">
               {treatments.map((treatment, index) => (
                 <Typography key={index}>{treatment.name}</Typography>
               ))}
             </div>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleAssignTreatmentsDialogOpen}
-              style={{ color: 'white', textShadow: '-0.5px 0 #000000, 0 0.4px #000000, 0.5px 0 #000000, 0 -0.4px #000000' }}
-            >
+            <Button variant="contained" color="primary" onClick={handleAssignTreatmentsDialogOpen}>
               Assegna Trattamenti
             </Button>
           </Paper>
         </Grid>
       </Grid>
       {showMeasurements && (
-        <MeasurementsTable
-          open={showMeasurements}
-          onClose={() => setShowMeasurements(false)}
-          patientId={uuid}
-        />
+        <ControlPanel open={showMeasurements} onClose={() => setShowMeasurements(false)} patientId={uuid} />
       )}
-      <AssignPathologiesDialog
-        open={assignPathologiesDialogOpen}
-        onClose={handleAssignPathologiesDialogClose}
-        patientId={uuid}
-      />
-      <AssignSymptomsDialog
-        open={assignSymptomsDialogOpen}
-        onClose={handleAssignSymptomsDialogClose}
-        patientId={uuid}
-      />
-      <AssignTraumaticEventsDialog
-        open={assignTraumaticEventsDialogOpen}
-        onClose={handleAssignTraumaticEventsDialogClose}
-        patientId={uuid}
-      />
-      <AssignSurgeriesDialog
-        open={assignSurgeriesDialogOpen}
-        onClose={handleAssignSurgeriesDialogClose}
-        patientId={uuid}
-      />
-      <AssignTreatmentsDialog
-        open={assignTreatmentsDialogOpen}
-        onClose={handleAssignTreatmentsDialogClose}
-        patientId={uuid}
-      />
-      <EditPatientDialog
-        open={editDialogOpen}
-        onClose={handleEditDialogClose}
-        onSubmit={handleEditSubmit}
-        patient={patient}
-      />
+      <AssignPathologiesDialog open={assignPathologiesDialogOpen} onClose={handleAssignPathologiesDialogClose} />
+      <AssignSymptomsDialog open={assignSymptomsDialogOpen} onClose={handleAssignSymptomsDialogClose} />
+      <AssignTraumaticEventsDialog open={assignTraumaticEventsDialogOpen} onClose={handleAssignTraumaticEventsDialogClose} />
+      <AssignSurgeriesDialog open={assignSurgeriesDialogOpen} onClose={handleAssignSurgeriesDialogClose} />
+      <AssignTreatmentsDialog open={assignTreatmentsDialogOpen} onClose={handleAssignTreatmentsDialogClose} />
+      <EditPatientDialog open={editDialogOpen} onClose={handleEditDialogClose} onSubmit={handleEditSubmit} patient={patient} />
     </Container>
   );
 };
 
 export default PatientProfile;
-
