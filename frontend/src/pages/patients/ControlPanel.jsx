@@ -10,27 +10,12 @@ import LatestMeasurementChart from './LatestMeasurementChart';
 import './ControlPanel.css';
 
 const ControlPanel = ({ open, onClose, patientId }) => {
-  const [showMeasurementsTable, setShowMeasurementsTable] = useState(false);
-  const [showMobilityIndexChart, setShowMobilityIndexChart] = useState(false);
-  const [showLatestMeasurementChart, setShowLatestMeasurementChart] = useState(false);
+  const [activeDialog, setActiveDialog] = useState(null);
 
-  const handleOpenMeasurementsTable = () => {
-    setShowMeasurementsTable(true);
-    setShowMobilityIndexChart(false);
-    setShowLatestMeasurementChart(false);
-  };
-
-  const handleOpenMobilityIndexChart = () => {
-    setShowMeasurementsTable(false);
-    setShowMobilityIndexChart(true);
-    setShowLatestMeasurementChart(false);
-  };
-
-  const handleOpenLatestMeasurementChart = () => {
-    setShowMeasurementsTable(false);
-    setShowMobilityIndexChart(false);
-    setShowLatestMeasurementChart(true);
-  };
+  const handleOpenMeasurementsTable = () => setActiveDialog('measurementsTable');
+  const handleOpenMobilityIndexChart = () => setActiveDialog('mobilityIndexChart');
+  const handleOpenLatestMeasurementChart = () => setActiveDialog('latestMeasurementChart');
+  const handleCloseDialog = () => setActiveDialog(null);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -59,9 +44,15 @@ const ControlPanel = ({ open, onClose, patientId }) => {
           </Grid>
         </Grid>
 
-        {showMeasurementsTable && <MeasurementsTable patientId={patientId} />}
-        {showMobilityIndexChart && <MobilityIndexChart patientId={patientId} />}
-        {showLatestMeasurementChart && <LatestMeasurementChart patientId={patientId} />}
+        {activeDialog === 'measurementsTable' && (
+          <MeasurementsTable open={true} onClose={handleCloseDialog} patientId={patientId} />
+        )}
+        {activeDialog === 'mobilityIndexChart' && (
+          <MobilityIndexChart open={true} onClose={handleCloseDialog} patientId={patientId} />
+        )}
+        {activeDialog === 'latestMeasurementChart' && (
+          <LatestMeasurementChart open={true} onClose={handleCloseDialog} patientId={patientId} />
+        )}
       </DialogContent>
     </Dialog>
   );
