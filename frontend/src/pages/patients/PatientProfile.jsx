@@ -357,73 +357,108 @@ const PatientProfile = () => {
         </Grid>
         <Grid item xs={12} md={6}>
           <Paper className="info-block">
-            <Typography variant="h6" className="box-title">Patologie</Typography>
+            <Typography variant="h6" className="box-title enlarged">Patologie</Typography>
             <div className="info-content">
               {pathologies.map((pathology, index) => (
                 <Typography key={index}>{pathology.name}</Typography>
               ))}
             </div>
-            <Button variant="contained" color="primary" onClick={handleAssignPathologiesDialogOpen}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              onClick={handleAssignPathologiesDialogOpen} 
+              style={{ color: 'white', textShadow: '-0.5px 0 #000000, 0 0.4px #000000, 0.5px 0 #000000, 0 -0.4px #000000' }}
+            >
               Assegna Patologie
             </Button>
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
           <Paper className="info-block">
-            <Typography variant="h6" className="box-title">Sintomi</Typography>
+            <Typography variant="h6" className="box-title enlarged">Sintomi</Typography>
             <div className="info-content">
               {symptoms.map((symptom, index) => (
                 <Typography key={index}>{symptom.name}</Typography>
               ))}
             </div>
-            <Button variant="contained" color="primary" onClick={handleAssignSymptomsDialogOpen}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              onClick={handleAssignSymptomsDialogOpen} 
+              style={{ color: 'white', textShadow: '-0.5px 0 #000000, 0 0.4px #000000, 0.5px 0 #000000, 0 -0.4px #000000' }}
+            >
               Assegna Sintomi
             </Button>
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
           <Paper className="info-block">
-            <Typography variant="h6" className="box-title">Eventi Traumatici</Typography>
+            <Typography variant="h6" className="box-title enlarged">Eventi Traumatici</Typography>
             <div className="info-content">
               {traumaticEvents.map((event, index) => (
                 <Typography key={index}>{event.name}</Typography>
               ))}
             </div>
-            <Button variant="contained" color="primary" onClick={handleAssignTraumaticEventsDialogOpen}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              onClick={handleAssignTraumaticEventsDialogOpen} 
+              style={{ color: 'white', textShadow: '-0.5px 0 #000000, 0 0.4px #000000, 0.5px 0 #000000, 0 -0.4px #000000' }}
+            >
               Assegna Eventi Traumatici
             </Button>
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
           <Paper className="info-block">
-            <Typography variant="h6" className="box-title">Interventi</Typography>
+            <Typography variant="h6" className="box-title enlarged">Interventi</Typography>
             <div className="info-content">
               {surgeries.map((surgery, index) => (
                 <Typography key={index}>{surgery.name}</Typography>
               ))}
             </div>
-            <Button variant="contained" color="primary" onClick={handleAssignSurgeriesDialogOpen}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              onClick={handleAssignSurgeriesDialogOpen} 
+              style={{ color: 'white', textShadow: '-0.5px 0 #000000, 0 0.4px #000000, 0.5px 0 #000000, 0 -0.4px #000000' }}
+            >
               Assegna Interventi
             </Button>
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
           <Paper className="info-block">
-            <Typography variant="h6" className="box-title">Trattamenti</Typography>
+            <Typography variant="h6" className="box-title enlarged">Trattamenti</Typography>
             <div className="info-content">
               {treatments.map((treatment, index) => (
                 <Typography key={index}>{treatment.name}</Typography>
               ))}
             </div>
-            <Button variant="contained" color="primary" onClick={handleAssignTreatmentsDialogOpen}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              onClick={handleAssignTreatmentsDialogOpen} 
+              style={{ color: 'white', textShadow: '-0.5px 0 #000000, 0 0.4px #000000, 0.5px 0 #000000, 0 -0.4px #000000' }}
+            >
               Assegna Trattamenti
             </Button>
           </Paper>
         </Grid>
         <Grid item xs={12} md={6}>
           <Paper className="info-block">
-            <Typography variant="h6" className="box-title">Misurazioni</Typography>
-            <Button variant="contained" color="primary" onClick={() => { fetchMeasurements(); setShowMeasurements(true); }}>
+            <Typography variant="h6" className="box-title enlarged">Misurazioni</Typography>
+            <div className="info-content">
+              {measurements.map((measurement, index) => (
+                <Typography key={index}>{measurement.timestamp}: {measurement.value}</Typography>
+              ))}
+            </div>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              onClick={() => { fetchMeasurements(); setShowMeasurements(true); }} 
+              style={{ color: 'white', textShadow: '-0.5px 0 #000000, 0 0.4px #000000, 0.5px 0 #000000, 0 -0.4px #000000' }}
+            >
               Visualizza
             </Button>
             {showMeasurements && (
@@ -477,4 +512,3 @@ const PatientProfile = () => {
 };
 
 export default PatientProfile;
-
