@@ -9,11 +9,11 @@
 .patient-header {
   display: flex;
   align-items: center;
-  margin-bottom: 20px;
+  justify-content: space-between;
 }
 
 .patient-icon {
-  font-size: 48px;
+  font-size: 50px;
   margin-right: 20px;
 }
 
@@ -21,54 +21,52 @@
   flex-grow: 1;
 }
 
+.edit-button,
 .pdf-button {
-  margin-left: auto;
+  margin-left: 10px;
 }
 
 .info-block {
-  padding: 20px;
-  margin-bottom: 20px;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  height: 150px; /* Altezza fissa del box */
-  overflow-y: auto; /* Abilita lo scroll verticale */
+  cursor: pointer;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.info-block:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.info-block-content {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Assicura che i bottoni siano in fondo */
+  align-items: center;
+  padding: 20px;
 }
 
-.info-block::-webkit-scrollbar {
-  width: 6px; /* Larghezza della scrollbar */
-}
-
-.info-block::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Colore del tracciato */
-  border-radius: 10px; /* Bordo arrotondato del tracciato */
-}
-
-.info-block::-webkit-scrollbar-thumb {
-  background: #888; /* Colore del pollice */
-  border-radius: 10px; /* Bordo arrotondato del pollice */
-}
-
-.info-block::-webkit-scrollbar-thumb:hover {
-  background: #555; /* Colore del pollice al passaggio del mouse */
+.info-block-icon {
+  margin-right: 20px;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .box-title {
   font-weight: bold;
-  margin-bottom: 8px;
+  flex: 1;
 }
 
-.enlarged {
-  font-size: 1.5em; /* Dimensione ingrandita delle scritte */
+.info-block-arrow {
+  color: #1976d2;
 }
 
-.info-content {
-  flex-grow: 1;
-  overflow-y: auto;
+.info-block button {
+  align-self: flex-end;
 }
 
-.info-content p {
+.patient-details h4 {
   margin: 0;
+}
+
+.patient-details .MuiTypography-body1 {
+  margin: 4px 0;
 }

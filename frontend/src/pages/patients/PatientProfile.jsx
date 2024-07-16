@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Grid, Paper, Typography, IconButton, Button } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import EditIcon from '@mui/icons-material/Edit';
 import jsPDF from 'jspdf';
@@ -13,20 +15,35 @@ import AssignTreatmentsDialog from './AssignTreatmentsDialog';
 import EditPatientDialog from './EditPatientDialog';
 import StartMeasurement from './StartMeasurement';
 import ControlPanel from './ControlPanel';
+import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
+import HealingIcon from '@mui/icons-material/Healing';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import BuildIcon from '@mui/icons-material/Build';
+import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 import './PatientProfile.css';
 import { ClipLoader } from 'react-spinners';
 import { useLoading } from '../../contexts/AuthContext';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+      dark: '#004ba0',
+      light: '#63a4ff',
+    },
+    secondary: {
+      main: '#dc004e',
+      dark: '#9a0036',
+      light: '#ff616f',
+    },
+  },
+});
 
 const PatientProfile = () => {
   const { uuid } = useParams();
   const navigate = useNavigate();
   const { showLoading, hideLoading, isLoading } = useLoading();
   const [patient, setPatient] = useState(null);
-  const [pathologies, setPathologies] = useState([]);
-  const [symptoms, setSymptoms] = useState([]);
-  const [traumaticEvents, setTraumaticEvents] = useState([]);
-  const [surgeries, setSurgeries] = useState([]);
-  const [treatments, setTreatments] = useState([]);
   const [assignPathologiesDialogOpen, setAssignPathologiesDialogOpen] = useState(false);
   const [assignSymptomsDialogOpen, setAssignSymptomsDialogOpen] = useState(false);
   const [assignTraumaticEventsDialogOpen, setAssignTraumaticEventsDialogOpen] = useState(false);
@@ -39,11 +56,6 @@ const PatientProfile = () => {
     showLoading();
     const fetchAllData = async () => {
       await fetchPatient();
-      await fetchPathologies();
-      await fetchSymptoms();
-      await fetchTraumaticEvents();
-      await fetchSurgeries();
-      await fetchTreatments();
       hideLoading();
     };
 
@@ -65,106 +77,6 @@ const PatientProfile = () => {
       console.error('Error fetching patient:', error);
     }
   };
-
-  const fetchPathologies = async () => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/patient_pathology/${uuid}`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      setPathologies(data);
-    } catch (error) {
-      console.error('Error fetching pathologies:', error);
-    }
-  };
-
-  const fetchSymptoms = async () => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/patient_symptom/${uuid}`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      setSymptoms(data);
-    } catch (error) {
-      console.error('Error fetching symptoms:', error);
-    }
-  };
-
-  const fetchTraumaticEvents = async () => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/patient_traumatic_event/${uuid}`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      setTraumaticEvents(data);
-    } catch (error) {
-      console.error('Error fetching traumatic events:', error);
-    }
-  };
-
-  const fetchSurgeries = async () => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/patient_surgery/${uuid}`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      setSurgeries(data);
-    } catch (error) {
-      console.error('Error fetching surgeries:', error);
-    }
-  };
-
-  const fetchTreatments = async () => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/patient_treatment/${uuid}`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      setTreatments(data);
-    } catch (error) {
-      console.error('Error fetching treatments:', error);
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div
-        style={{
-          position: 'fixed',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-        }}
-      >
-        <ClipLoader size={50} color={'#123abc'} loading={isLoading} />
-      </div>
-    );
-  }
-
-  const measurements = [
-    { date: '2024-06-20', value: '120/80' },
-    { date: '2024-06-21', value: '125/85' },
-  ];
 
   const generatePDF = () => {
     const doc = new jsPDF();
@@ -243,7 +155,7 @@ const PatientProfile = () => {
 
   const handleAssignPathologiesDialogClose = () => {
     setAssignPathologiesDialogOpen(false);
-    fetchPathologies(); // Refresh pathologies after assignment
+    fetchPatient(); // Refresh patient data after assignment
   };
 
   const handleAssignSymptomsDialogOpen = () => {
@@ -252,7 +164,7 @@ const PatientProfile = () => {
 
   const handleAssignSymptomsDialogClose = () => {
     setAssignSymptomsDialogOpen(false);
-    fetchSymptoms(); // Refresh symptoms after assignment
+    fetchPatient(); // Refresh patient data after assignment
   };
 
   const handleAssignTraumaticEventsDialogOpen = () => {
@@ -261,7 +173,7 @@ const PatientProfile = () => {
 
   const handleAssignTraumaticEventsDialogClose = () => {
     setAssignTraumaticEventsDialogOpen(false);
-    fetchTraumaticEvents(); // Refresh traumatic events after assignment
+    fetchPatient(); // Refresh patient data after assignment
   };
 
   const handleAssignSurgeriesDialogOpen = () => {
@@ -270,7 +182,7 @@ const PatientProfile = () => {
 
   const handleAssignSurgeriesDialogClose = () => {
     setAssignSurgeriesDialogOpen(false);
-    fetchSurgeries(); // Refresh surgeries after assignment
+    fetchPatient(); // Refresh patient data after assignment
   };
 
   const handleAssignTreatmentsDialogOpen = () => {
@@ -279,7 +191,7 @@ const PatientProfile = () => {
 
   const handleAssignTreatmentsDialogClose = () => {
     setAssignTreatmentsDialogOpen(false);
-    fetchTreatments(); // Refresh treatments after assignment
+    fetchPatient(); // Refresh patient data after assignment
   };
 
   const handleEditDialogOpen = () => {
@@ -314,114 +226,107 @@ const PatientProfile = () => {
   };
 
   return (
-    <Container className="patient-info-container">
-      <IconButton onClick={() => navigate(-1)} className="back-button">
-        <ArrowBackIcon />
-      </IconButton>
-      <Grid container spacing={3}>
-        <Grid item xs={12} className="patient-header">
-          <div className="patient-icon">{getIcon()}</div>
-          <div className="patient-details">
-            {patient ? (
-              <>
-                <Typography variant="h4">{patient.nominativo}</Typography>
-                <Typography variant="body1">Età: {patient.eta}</Typography>
-                <Typography variant="body1">Altezza: {patient.altezza}</Typography>
-                <Typography variant="body1">Peso: {patient.peso}</Typography>
-                <Typography variant="body1">Sesso: {patient.sesso}</Typography>
-                <IconButton onClick={handleEditDialogOpen} className="edit-button">
-                  <EditIcon />
-                </IconButton>
-                <StartMeasurement patientId={uuid} deviceId={patient.device_id} />
-                <Button variant="contained" color="primary" onClick={() => setShowMeasurements(true)}>
-                  Vedi Misurazioni
-                </Button>
-              </>
-            ) : (
-              <Typography variant="body1">Loading...</Typography>
-            )}
-          </div>
-          <IconButton onClick={generatePDF} className="pdf-button">
-            <SaveAltIcon />
-          </IconButton>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Paper className="info-block">
-            <Typography variant="h6" className="box-title">Patologie</Typography>
-            <div className="info-content">
-              {pathologies.map((pathology, index) => (
-                <Typography key={index}>{pathology.name}</Typography>
-              ))}
+    <ThemeProvider theme={theme}>
+      <Container className="patient-info-container">
+        <IconButton onClick={() => navigate(-1)} className="back-button">
+          <ArrowBackIcon />
+        </IconButton>
+        <Grid container spacing={3}>
+          <Grid item xs={12} className="patient-header">
+            <div className="patient-icon">{getIcon()}</div>
+            <div className="patient-details">
+              {patient ? (
+                <>
+                  <Typography variant="h4">{patient.nominativo}</Typography>
+                  <Typography variant="body1">Età: {patient.eta}</Typography>
+                  <Typography variant="body1">Altezza: {patient.altezza}</Typography>
+                  <Typography variant="body1">Peso: {patient.peso}</Typography>
+                  <Typography variant="body1">Sesso: {patient.sesso}</Typography>
+                  <IconButton onClick={handleEditDialogOpen} className="edit-button">
+                    <EditIcon />
+                  </IconButton>
+                  <StartMeasurement patientId={uuid} deviceId={patient.device_id} />
+                  <Button variant="contained" color="primary" onClick={() => setShowMeasurements(true)}>
+                    Vedi Misurazioni
+                  </Button>
+                </>
+              ) : (
+                <Typography variant="body1">Loading...</Typography>
+              )}
             </div>
-            <Button variant="contained" color="primary" onClick={handleAssignPathologiesDialogOpen}>
-              Assegna Patologie
-            </Button>
-          </Paper>
+            <IconButton onClick={generatePDF} className="pdf-button">
+              <SaveAltIcon />
+            </IconButton>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Paper className="info-block" onClick={handleAssignPathologiesDialogOpen}>
+              <div className="info-block-content">
+                <div className="info-block-icon" style={{ backgroundColor: '#FFCDD2' }}>
+                  <MedicalServicesIcon />
+                </div>
+                <Typography variant="h6" className="box-title">Patologie</Typography>
+                <ArrowForwardIosIcon className="info-block-arrow" />
+              </div>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Paper className="info-block" onClick={handleAssignSymptomsDialogOpen}>
+              <div className="info-block-content">
+                <div className="info-block-icon" style={{ backgroundColor: '#C8E6C9' }}>
+                  <HealingIcon />
+                </div>
+                <Typography variant="h6" className="box-title">Sintomi</Typography>
+                <ArrowForwardIosIcon className="info-block-arrow" />
+              </div>
+            </Paper>
+            </Grid>
+          <Grid item xs={12} md={6}>
+            <Paper className="info-block" onClick={handleAssignTraumaticEventsDialogOpen}>
+              <div className="info-block-content">
+                <div className="info-block-icon" style={{ backgroundColor: '#FFE082' }}>
+                  <ReportProblemIcon />
+                </div>
+                <Typography variant="h6" className="box-title">Eventi Traumatici</Typography>
+                <ArrowForwardIosIcon className="info-block-arrow" />
+              </div>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Paper className="info-block" onClick={handleAssignSurgeriesDialogOpen}>
+              <div className="info-block-content">
+                <div className="info-block-icon" style={{ backgroundColor: '#FFAB91' }}>
+                  <BuildIcon />
+                </div>
+                <Typography variant="h6" className="box-title">Interventi</Typography>
+                <ArrowForwardIosIcon className="info-block-arrow" />
+              </div>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <Paper className="info-block" onClick={handleAssignTreatmentsDialogOpen}>
+              <div className="info-block-content">
+                <div className="info-block-icon" style={{ backgroundColor: '#B3E5FC' }}>
+                  <LocalHospitalIcon />
+                </div>
+                <Typography variant="h6" className="box-title">Trattamenti</Typography>
+                <ArrowForwardIosIcon className="info-block-arrow" />
+              </div>
+            </Paper>
+          </Grid>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Paper className="info-block">
-            <Typography variant="h6" className="box-title">Sintomi</Typography>
-            <div className="info-content">
-              {symptoms.map((symptom, index) => (
-                <Typography key={index}>{symptom.name}</Typography>
-              ))}
-            </div>
-            <Button variant="contained" color="primary" onClick={handleAssignSymptomsDialogOpen}>
-              Assegna Sintomi
-            </Button>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Paper className="info-block">
-            <Typography variant="h6" className="box-title">Eventi Traumatici</Typography>
-            <div className="info-content">
-              {traumaticEvents.map((event, index) => (
-                <Typography key={index}>{event.name}</Typography>
-              ))}
-            </div>
-            <Button variant="contained" color="primary" onClick={handleAssignTraumaticEventsDialogOpen}>
-              Assegna Eventi Traumatici
-            </Button>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Paper className="info-block">
-            <Typography variant="h6" className="box-title">Interventi</Typography>
-            <div className="info-content">
-              {surgeries.map((surgery, index) => (
-                <Typography key={index}>{surgery.name}</Typography>
-              ))}
-            </div>
-            <Button variant="contained" color="primary" onClick={handleAssignSurgeriesDialogOpen}>
-              Assegna Interventi
-            </Button>
-          </Paper>
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <Paper className="info-block">
-            <Typography variant="h6" className="box-title">Trattamenti</Typography>
-            <div className="info-content">
-              {treatments.map((treatment, index) => (
-                <Typography key={index}>{treatment.name}</Typography>
-              ))}
-            </div>
-            <Button variant="contained" color="primary" onClick={handleAssignTreatmentsDialogOpen}>
-              Assegna Trattamenti
-            </Button>
-          </Paper>
-        </Grid>
-      </Grid>
-      {showMeasurements && (
-        <ControlPanel open={showMeasurements} onClose={() => setShowMeasurements(false)} patientId={uuid} />
-      )}
-      <AssignPathologiesDialog open={assignPathologiesDialogOpen} onClose={handleAssignPathologiesDialogClose} />
-      <AssignSymptomsDialog open={assignSymptomsDialogOpen} onClose={handleAssignSymptomsDialogClose} />
-      <AssignTraumaticEventsDialog open={assignTraumaticEventsDialogOpen} onClose={handleAssignTraumaticEventsDialogClose} />
-      <AssignSurgeriesDialog open={assignSurgeriesDialogOpen} onClose={handleAssignSurgeriesDialogClose} />
-      <AssignTreatmentsDialog open={assignTreatmentsDialogOpen} onClose={handleAssignTreatmentsDialogClose} />
-      <EditPatientDialog open={editDialogOpen} onClose={handleEditDialogClose} onSubmit={handleEditSubmit} patient={patient} />
-    </Container>
+        {showMeasurements && (
+          <ControlPanel open={showMeasurements} onClose={() => setShowMeasurements(false)} patientId={uuid} />
+        )}
+        <AssignPathologiesDialog open={assignPathologiesDialogOpen} onClose={handleAssignPathologiesDialogClose} />
+        <AssignSymptomsDialog open={assignSymptomsDialogOpen} onClose={handleAssignSymptomsDialogClose} />
+        <AssignTraumaticEventsDialog open={assignTraumaticEventsDialogOpen} onClose={handleAssignTraumaticEventsDialogClose} />
+        <AssignSurgeriesDialog open={assignSurgeriesDialogOpen} onClose={handleAssignSurgeriesDialogClose} />
+        <AssignTreatmentsDialog open={assignTreatmentsDialogOpen} onClose={handleAssignTreatmentsDialogClose} />
+        <EditPatientDialog open={editDialogOpen} onClose={handleEditDialogClose} onSubmit={handleEditSubmit} patient={patient} />
+      </Container>
+    </ThemeProvider>
   );
 };
 
 export default PatientProfile;
+
