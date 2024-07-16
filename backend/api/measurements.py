@@ -76,3 +76,67 @@ def delete_measurement():
             return jsonify({"message": "Measurement not found"}), 404
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
+
+@measurement_bp.route('/measurements/by_measurement_id/<measurement_id>', methods=['GET'])
+@login_required
+def get_measurements_by_measurement_id(measurement_id):
+    try:
+        measurements = Measurement.query.filter_by(measurement_id=measurement_id).order_by(Measurement.timestamp.asc()).all()
+        if not measurements:
+            return jsonify({"message": "No measurements found"}), 404
+        
+        results = []
+        for measurement in measurements:
+            results.append({
+                "id": measurement.id,
+                "measurement_id": measurement.measurement_id,
+                "timestamp": measurement.timestamp,
+                "spostamento_mm": measurement.spostamento_mm,
+                "forza_n": measurement.forza_n,
+                "pressione_bar": measurement.pressione_bar,
+                "contropressione_bar": measurement.contropressione_bar
+            })
+        return jsonify(results), 200
+    except Exception as e:
+        return jsonify({"message": "An error occurred", "error": str(e)}), 500
+
+@measurement_bp.route('/measurements/latest', methods=['GET'])
+@login_required
+def get_latest_measurement():
+    try:
+        measurement = Measurement.query.order_by(Measurement.timestamp.desc()).first()
+        if measurement:
+            result = {
+                "id": measurement.id,
+                "measurement_id": measurement.measurement_id,  # Aggiunto measurement_id
+                "timestamp": measurement.timestamp,
+                "spostamento_mm": measurement.spostamento_mm,
+                "forza_n": measurement.forza_n,
+                "pressione_bar": measurement.pressione_bar,
+                "contropressione_bar": measurement.contropressione_bar
+            }
+            return jsonify(result), 200
+        else:
+            return jsonify({"message": "No measurements found"}), 404
+    except Exception as e:
+        return jsonify({"message": "An error occurred", "error": str(e)}), 500
+
+@measurement_bp.route('/doctor_measurements/<doctor_id>', methods=['GET'])
+@login_required
+def get_doctor_measurements(doctor_id):
+    try:
+        measurements = Measurement.query.filter_by(doctor_id=doctor_id).all()
+        results = []
+        for measurement in measurements:
+            results.append({
+                "id": measurement.id,
+                "measurement_id": measurement.measurement_id,
+                "timestamp": measurement.timestamp,
+                "spostamento_mm": measurement.spostamento_mm,
+                "forza_n": measurement.forza_n,
+                "pressione_bar": measurement.pressione_bar,
+                "contropressione_bar": measurement.contropressione_bar
+            })
+        return jsonify(results), 200
+    except Exception as e:
+        return jsonify({"message": "An error occurred", "error": str(e)}), 500
