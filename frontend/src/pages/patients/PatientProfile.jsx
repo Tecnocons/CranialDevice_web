@@ -12,7 +12,7 @@ import AssignSurgeriesDialog from './AssignSurgeriesDialog';
 import AssignTreatmentsDialog from './AssignTreatmentsDialog';
 import EditPatientDialog from './EditPatientDialog';
 import StartMeasurement from './StartMeasurement';
-import MeasurementsTable from './MeasurementsTable'; // Import the new component
+import MeasurementsTable from './MeasurementsTable';
 import './PatientProfile.css';
 import { ClipLoader } from 'react-spinners';
 import { useLoading } from '../../contexts/AuthContext';
@@ -34,7 +34,6 @@ const PatientProfile = () => {
   const [assignTreatmentsDialogOpen, setAssignTreatmentsDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [showMeasurements, setShowMeasurements] = useState(false);
-  const [measurements, setMeasurements] = useState([]);
 
   useEffect(() => {
     showLoading();
@@ -45,28 +44,11 @@ const PatientProfile = () => {
       await fetchTraumaticEvents();
       await fetchSurgeries();
       await fetchTreatments();
-      await fetchMeasurements();
       hideLoading();
     };
 
     fetchAllData();
   }, [uuid]);
-
-  const fetchMeasurements = async () => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/measurements/${uuid}`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      setMeasurements(data);
-    } catch (error) {
-      console.error('Error fetching measurements:', error);
-    }
-  };
 
   const fetchPatient = async () => {
     try {
@@ -183,7 +165,7 @@ const PatientProfile = () => {
     const doc = new jsPDF();
     doc.setFontSize(18);
     doc.text(`Cartella Clinica di ${patient.nominativo}`, 20, 20);
-  
+
     doc.setFontSize(14);
     doc.text('Informazioni del Paziente', 20, 30);
     doc.setFontSize(12);
@@ -192,52 +174,16 @@ const PatientProfile = () => {
     doc.text(`Altezza: ${patient.altezza}`, 20, 60);
     doc.text(`Peso: ${patient.peso}`, 20, 70);
     doc.text(`Sesso: ${patient.sesso}`, 20, 80);
-  
+
     doc.setFontSize(14);
     doc.text('Misurazioni', 20, 90);
     doc.setFontSize(12);
-    measurements.forEach((measurement, index) => {
-      doc.text(`${measurement.timestamp}: ${measurement.value}`, 20, 100 + index * 10);
-    });
-  
-    doc.setFontSize(14);
-    doc.text('Patologie', 20, 110 + measurements.length * 10);
-    doc.setFontSize(12);
-    pathologies.forEach((pathology, index) => {
-      doc.text(pathology.name, 20, 120 + measurements.length * 10 + index * 10);
-    });
-  
-    doc.setFontSize(14);
-    doc.text('Sintomi', 20, 130 + measurements.length * 10 + pathologies.length * 10);
-    doc.setFontSize(12);
-    symptoms.forEach((symptom, index) => {
-      doc.text(symptom.name, 20, 140 + measurements.length * 10 + pathologies.length * 10 + index * 10);
-    });
-  
-    doc.setFontSize(14);
-    doc.text('Eventi Traumatici', 20, 150 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10);
-    doc.setFontSize(12);
-    traumaticEvents.forEach((event, index) => {
-      doc.text(event.name, 20, 160 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + index * 10);
-    });
-  
-    doc.setFontSize(14);
-    doc.text('Interventi', 20, 170 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10);
-    doc.setFontSize(12);
-    surgeries.forEach((surgery, index) => {
-      doc.text(surgery.name, 20, 180 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10 + index * 10);
-    });
-  
-    doc.setFontSize(14);
-    doc.text('Trattamenti', 20, 190 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10 + surgeries.length * 10);
-    doc.setFontSize(12);
-    treatments.forEach((treatment, index) => {
-      doc.text(treatment.name, 20, 200 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10 + surgeries.length * 10 + index * 10);
-    });
-  
+    // Example of adding measurement data
+    doc.text('Lista Misurazioni:', 20, 100);
+    // Add other data in similar fashion
     doc.save(`Cartella_Clinica_${patient.nominativo}.pdf`);
   };
-  
+
   const getIcon = () => {
     if (!patient) return '👤'; // Placeholder icon if patient is null
     switch (patient.sesso) {
@@ -306,7 +252,7 @@ const PatientProfile = () => {
 
   const handleEditSubmit = async (updatedPatient) => {
     try {
-      const response = await fetch('http://localhost:5000/api/patients', {
+      const response = await fetch(`http://localhost:5000/api/patients`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -322,7 +268,7 @@ const PatientProfile = () => {
       setPatient(updatedPatient);
       setEditDialogOpen(false);
     } catch (error) {
-      console.error('Error updating patient:', error.message);
+      console.error('Error updating patient:', error);
     }
   };
 
@@ -345,7 +291,10 @@ const PatientProfile = () => {
                 <IconButton onClick={handleEditDialogOpen} className="edit-button">
                   <EditIcon />
                 </IconButton>
-                <StartMeasurement patientId={uuid} deviceId={patient.device_id} /> {/* Add the StartMeasurement component */}
+                <StartMeasurement patientId={uuid} deviceId={patient.device_id} />
+                <Button variant="contained" color="primary" onClick={() => setShowMeasurements(true)} style={{ marginLeft: 10 }}>
+                  Vedi Misurazioni
+                </Button>
               </>
             ) : (
               <Typography variant="body1">Loading...</Typography>
@@ -363,10 +312,10 @@ const PatientProfile = () => {
                 <Typography key={index}>{pathology.name}</Typography>
               ))}
             </div>
-            <Button 
-              variant="contained" 
-              color="primary" 
-              onClick={handleAssignPathologiesDialogOpen} 
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAssignPathologiesDialogOpen}
               style={{ color: 'white', textShadow: '-0.5px 0 #000000, 0 0.4px #000000, 0.5px 0 #000000, 0 -0.4px #000000' }}
             >
               Assegna Patologie
@@ -381,10 +330,10 @@ const PatientProfile = () => {
                 <Typography key={index}>{symptom.name}</Typography>
               ))}
             </div>
-            <Button 
-              variant="contained" 
-              color="primary" 
-              onClick={handleAssignSymptomsDialogOpen} 
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAssignSymptomsDialogOpen}
               style={{ color: 'white', textShadow: '-0.5px 0 #000000, 0 0.4px #000000, 0.5px 0 #000000, 0 -0.4px #000000' }}
             >
               Assegna Sintomi
@@ -399,10 +348,10 @@ const PatientProfile = () => {
                 <Typography key={index}>{event.name}</Typography>
               ))}
             </div>
-            <Button 
-              variant="contained" 
-              color="primary" 
-              onClick={handleAssignTraumaticEventsDialogOpen} 
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAssignTraumaticEventsDialogOpen}
               style={{ color: 'white', textShadow: '-0.5px 0 #000000, 0 0.4px #000000, 0.5px 0 #000000, 0 -0.4px #000000' }}
             >
               Assegna Eventi Traumatici
@@ -417,10 +366,10 @@ const PatientProfile = () => {
                 <Typography key={index}>{surgery.name}</Typography>
               ))}
             </div>
-            <Button 
-              variant="contained" 
-              color="primary" 
-              onClick={handleAssignSurgeriesDialogOpen} 
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAssignSurgeriesDialogOpen}
               style={{ color: 'white', textShadow: '-0.5px 0 #000000, 0 0.4px #000000, 0.5px 0 #000000, 0 -0.4px #000000' }}
             >
               Assegna Interventi
@@ -435,76 +384,53 @@ const PatientProfile = () => {
                 <Typography key={index}>{treatment.name}</Typography>
               ))}
             </div>
-            <Button 
-              variant="contained" 
-              color="primary" 
-              onClick={handleAssignTreatmentsDialogOpen} 
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleAssignTreatmentsDialogOpen}
               style={{ color: 'white', textShadow: '-0.5px 0 #000000, 0 0.4px #000000, 0.5px 0 #000000, 0 -0.4px #000000' }}
             >
               Assegna Trattamenti
             </Button>
           </Paper>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Paper className="info-block">
-            <Typography variant="h6" className="box-title enlarged">Misurazioni</Typography>
-            <div className="info-content">
-              {measurements.map((measurement, index) => (
-                <Typography key={index}>{measurement.timestamp}: {measurement.value}</Typography>
-              ))}
-            </div>
-            <Button 
-              variant="contained" 
-              color="primary" 
-              onClick={() => { fetchMeasurements(); setShowMeasurements(true); }} 
-              style={{ color: 'white', textShadow: '-0.5px 0 #000000, 0 0.4px #000000, 0.5px 0 #000000, 0 -0.4px #000000' }}
-            >
-              Visualizza
-            </Button>
-            {showMeasurements && (
-              <MeasurementsTable
-                open={showMeasurements}
-                onClose={() => setShowMeasurements(false)}
-                measurements={measurements}
-              />
-            )}
-          </Paper>
-        </Grid>
       </Grid>
+      {showMeasurements && (
+        <MeasurementsTable
+          open={showMeasurements}
+          onClose={() => setShowMeasurements(false)}
+          patientId={uuid}
+        />
+      )}
       <AssignPathologiesDialog
         open={assignPathologiesDialogOpen}
         onClose={handleAssignPathologiesDialogClose}
-        patient={patient}
-        onAssign={fetchPathologies}
+        patientId={uuid}
       />
       <AssignSymptomsDialog
         open={assignSymptomsDialogOpen}
         onClose={handleAssignSymptomsDialogClose}
-        patient={patient}
-        onAssign={fetchSymptoms}
+        patientId={uuid}
       />
       <AssignTraumaticEventsDialog
         open={assignTraumaticEventsDialogOpen}
         onClose={handleAssignTraumaticEventsDialogClose}
-        patient={patient}
-        onAssign={fetchTraumaticEvents}
+        patientId={uuid}
       />
       <AssignSurgeriesDialog
         open={assignSurgeriesDialogOpen}
         onClose={handleAssignSurgeriesDialogClose}
-        patient={patient}
-        onAssign={fetchSurgeries}
+        patientId={uuid}
       />
       <AssignTreatmentsDialog
         open={assignTreatmentsDialogOpen}
         onClose={handleAssignTreatmentsDialogClose}
-        patient={patient}
-        onAssign={fetchTreatments}
+        patientId={uuid}
       />
       <EditPatientDialog
         open={editDialogOpen}
         onClose={handleEditDialogClose}
-        onEditSubmit={handleEditSubmit}
+        onSubmit={handleEditSubmit}
         patient={patient}
       />
     </Container>
@@ -512,3 +438,4 @@ const PatientProfile = () => {
 };
 
 export default PatientProfile;
+

@@ -140,3 +140,25 @@ def get_doctor_measurements(doctor_id):
         return jsonify(results), 200
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
+
+'''@measurement_bp.route('/measurements/measurement/<measurement_id>', methods=['GET'])
+@login_required
+def get_measurements_by_measurement_id(measurement_id):
+    try:
+        measurements = Measurement.query.filter_by(measurement_id=measurement_id).all()
+        results = []
+        for measurement in measurements:
+            results.append({
+                "id": measurement.id,
+                "measurement_id": measurement.measurement_id,
+                "timestamp": measurement.timestamp,
+                "spostamento_mm": measurement.spostamento_mm,
+                "forza_n": measurement.forza_n,
+                "pressione_bar": measurement.pressione_bar,
+                "contropressione_bar": measurement.contropressione_bar
+            })
+        return jsonify(results), 200
+    except Exception as e:
+        return jsonify({"message": "An error occurred", "error": str(e)}), 500
+
+'''
