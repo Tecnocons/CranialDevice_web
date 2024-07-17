@@ -1,28 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Button,
-  Typography,
-  IconButton,
-  Autocomplete,
-  TextField,
-  Checkbox
-} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBox';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-
-const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkedIcon = <CheckBoxIcon fontSize="small" />;
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, Typography, TextField, FormControlLabel, Switch } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import './AssignDialogs.css';
 
 const AssignSymptomsDialog = ({ open, onClose, patient, onAssign }) => {
   const [allSymptoms, setAllSymptoms] = useState([]);
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
-  const [assignedSymptoms, setAssignedSymptoms] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showOnlyAssigned, setShowOnlyAssigned] = useState(false);
 
   useEffect(() => {
     if (patient && open) {
@@ -52,7 +37,6 @@ const AssignSymptomsDialog = ({ open, onClose, patient, onAssign }) => {
             throw new Error('Network response was not ok');
           }
           const data = await response.json();
-          setAssignedSymptoms(data);
           setSelectedSymptoms(data.map(s => s.id));
         } catch (error) {
           console.error('Error fetching assigned symptoms:', error);
@@ -64,33 +48,12 @@ const AssignSymptomsDialog = ({ open, onClose, patient, onAssign }) => {
     }
   }, [open, patient]);
 
-  const handleAutocompleteChange = (event, newValue) => {
-    const newSelectedSymptoms = newValue.map(s => s.id).filter((id) => {
-      return !assignedSymptoms.some(s => s.id === id);
-    });
-    setSelectedSymptoms(newSelectedSymptoms);
-  };
-
-  const handleRemove = async (symptomId) => {
-    try {
-      const response = await fetch('http://localhost:5000/api/patient_symptom', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ patient_uuid: patient.uuid, symptom_id: symptomId }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      setAssignedSymptoms(prev => prev.filter(s => s.id !== symptomId));
-      setSelectedSymptoms(prev => prev.filter(id => id !== symptomId));
-    } catch (error) {
-      console.error('Error removing symptom:', error);
-    }
+  const handleToggleSymptom = (symptomId) => {
+    setSelectedSymptoms((prevSelected) =>
+      prevSelected.includes(symptomId)
+        ? prevSelected.filter(id => id !== symptomId)
+        : [...prevSelected, symptomId]
+    );
   };
 
   const handleConfirm = async () => {
@@ -108,7 +71,6 @@ const AssignSymptomsDialog = ({ open, onClose, patient, onAssign }) => {
         throw new Error('Network response was not ok');
       }
 
-      const data = await response.json();
       onAssign();
       onClose();
     } catch (error) {
@@ -116,43 +78,50 @@ const AssignSymptomsDialog = ({ open, onClose, patient, onAssign }) => {
     }
   };
 
+  const filteredSymptoms = allSymptoms.filter(s => 
+    s.name.toLowerCase().includes(searchTerm.toLowerCase()) && 
+    s.name.toLowerCase().indexOf(searchTerm.toLowerCase()) === 0 &&
+    (!showOnlyAssigned || selectedSymptoms.includes(s.id))
+  );
+
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Assegna Sintomi a {patient && patient.nominativo}</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Seleziona uno o più sintomi da assegnare a questo paziente.
-        </DialogContentText>
-        <Autocomplete
-          multiple
-          options={allSymptoms}
-          getOptionLabel={(option) => option.name}
-          value={allSymptoms.filter(s => selectedSymptoms.includes(s.id) || assignedSymptoms.some(as => as.id === s.id))}
-          onChange={handleAutocompleteChange}
-          renderInput={(params) => <TextField {...params} label="Sintomi" placeholder="Seleziona sintomi" />}
-          disableCloseOnSelect
-          renderOption={(props, option, { selected }) => (
-            <li {...props}>
-              <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                style={{ marginRight: 8 }}
-                checked={selected}
-                disabled={assignedSymptoms.some(s => s.id === option.id)}
-              />
-              {option.name}
-            </li>
-          )}
+    <Dialog open={open} onClose={onClose} className="assign-dialog">
+      <DialogTitle className="assign-dialog-title">Assegna Sintomi a {patient && patient.nominativo}</DialogTitle>
+      <DialogContent className="assign-dialog-content">
+        <div className="search-bar">
+          <SearchIcon />
+          <TextField
+            label="Cerca sintomi..."
+            variant="outlined"
+            fullWidth
+            margin="dense"
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={showOnlyAssigned}
+              onChange={(e) => setShowOnlyAssigned(e.target.checked)}
+              color="primary"
+            />
+          }
+          label="Mostra solo assegnate"
+          className="assign-dialog-switch"
         />
-        <Typography variant="h6" style={{ marginTop: '16px' }}>Sintomi Assegnati</Typography>
-        {assignedSymptoms.map((symptom) => (
-          <div key={symptom.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography>{symptom.name}</Typography>
-            <IconButton onClick={() => handleRemove(symptom.id)} size="small">
-              <CloseIcon />
-            </IconButton>
-          </div>
-        ))}
+        <DialogContentText className="assign-dialog-text">
+          Sintomi
+        </DialogContentText>
+        <div className="pathology-list">
+          {filteredSymptoms.map((symptom) => (
+            <div key={symptom.id} className={`pathology-item ${selectedSymptoms.includes(symptom.id) ? 'selected' : ''}`}>
+              <div className="checkbox" onClick={() => handleToggleSymptom(symptom.id)}>
+                {selectedSymptoms.includes(symptom.id) && <span className="checkmark">✔</span>}
+              </div>
+              <Typography className="pathology-name">{symptom.name}</Typography>
+            </div>
+          ))}
+        </div>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">

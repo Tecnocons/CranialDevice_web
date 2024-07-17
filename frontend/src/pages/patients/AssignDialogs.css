@@ -1,0 +1,76 @@
+.assign-dialog {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .assign-dialog-title {
+    text-align: center;
+  }
+  
+  .assign-dialog-content {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .search-bar {
+    display: flex;
+    align-items: center;
+  }
+  
+  .search-bar svg {
+    margin-right: 8px;
+  }
+  
+  .assign-dialog-switch {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+  }
+  
+  .pathology-list {
+    margin-top: 16px;
+  }
+  
+  .pathology-item {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+    padding: 10px;
+    border: 2px solid #5b5a5a;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .pathology-item:hover {
+    background-color: #ffad61;
+  }
+
+  .pathology-item.selected {
+    background-color: #EB873F;
+    color: rgb(255, 255, 255);
+    text-shadow: -0.2px 0 #000000, 0 0.2px #000000, 0.2px 0 #000000, 0 -0.2px #000000;
+    border: #000000 2px solid;
+  }
+  
+  .checkbox {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #000000;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+  }
+  
+  .checkbox .checkmark {
+    font-size: 16px;
+    color: rgb(0, 0, 0);
+  }
+  
+  .pathology-name {
+    font-size: 16px;
+    text-shadow: -0.1px 0 #000000, 0 0.1px #000000, 0.1px 0 #000000, 0 -0.1px #000000;
+  }
+  

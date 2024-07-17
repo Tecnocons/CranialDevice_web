@@ -317,12 +317,17 @@ const PatientProfile = () => {
         {showMeasurements && (
           <ControlPanel open={showMeasurements} onClose={() => setShowMeasurements(false)} patientId={uuid} />
         )}
-        <AssignPathologiesDialog open={assignPathologiesDialogOpen} onClose={handleAssignPathologiesDialogClose} />
-        <AssignSymptomsDialog open={assignSymptomsDialogOpen} onClose={handleAssignSymptomsDialogClose} />
-        <AssignTraumaticEventsDialog open={assignTraumaticEventsDialogOpen} onClose={handleAssignTraumaticEventsDialogClose} />
-        <AssignSurgeriesDialog open={assignSurgeriesDialogOpen} onClose={handleAssignSurgeriesDialogClose} />
-        <AssignTreatmentsDialog open={assignTreatmentsDialogOpen} onClose={handleAssignTreatmentsDialogClose} />
-        <EditPatientDialog open={editDialogOpen} onClose={handleEditDialogClose} onSubmit={handleEditSubmit} patient={patient} />
+        <AssignPathologiesDialog
+          open={assignPathologiesDialogOpen}
+          onClose={handleAssignPathologiesDialogClose}
+          patient={patient}
+          onAssign={fetchPatient} // Pass the fetchPatient function to onAssign
+        />
+        <AssignSymptomsDialog open={assignSymptomsDialogOpen} onClose={handleAssignSymptomsDialogClose} patient={patient} onAssign={fetchPatient} />
+        <AssignTraumaticEventsDialog open={assignTraumaticEventsDialogOpen} onClose={handleAssignTraumaticEventsDialogClose} patient={patient} onAssign={fetchPatient} />
+        <AssignSurgeriesDialog open={assignSurgeriesDialogOpen} onClose={handleAssignSurgeriesDialogClose} patient={patient} onAssign={fetchPatient} />
+        <AssignTreatmentsDialog open={assignTreatmentsDialogOpen} onClose={handleAssignTreatmentsDialogClose} patient={patient} onAssign={fetchPatient} />
+        <EditPatientDialog open={editDialogOpen} onClose={handleEditDialogClose} onSubmit={handleEditSubmit} patient={patient} onAssign={fetchPatient} />
       </Container>
     </ThemeProvider>
   );

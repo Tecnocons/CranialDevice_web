@@ -1,28 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Button,
-  Typography,
-  IconButton,
-  Autocomplete,
-  TextField,
-  Checkbox
-} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBox';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-
-const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-const checkedIcon = <CheckBoxIcon fontSize="small" />;
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button, Typography, TextField, FormControlLabel, Switch } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import './AssignDialogs.css';
 
 const AssignTraumaticEventsDialog = ({ open, onClose, patient, onAssign }) => {
   const [allEvents, setAllEvents] = useState([]);
   const [selectedEvents, setSelectedEvents] = useState([]);
-  const [assignedEvents, setAssignedEvents] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showOnlyAssigned, setShowOnlyAssigned] = useState(false);
 
   useEffect(() => {
     if (patient && open) {
@@ -52,7 +37,6 @@ const AssignTraumaticEventsDialog = ({ open, onClose, patient, onAssign }) => {
             throw new Error('Network response was not ok');
           }
           const data = await response.json();
-          setAssignedEvents(data);
           setSelectedEvents(data.map(e => e.id));
         } catch (error) {
           console.error('Error fetching assigned traumatic events:', error);
@@ -64,33 +48,12 @@ const AssignTraumaticEventsDialog = ({ open, onClose, patient, onAssign }) => {
     }
   }, [open, patient]);
 
-  const handleAutocompleteChange = (event, newValue) => {
-    const newSelectedEvents = newValue.map(e => e.id).filter((id) => {
-      return !assignedEvents.some(e => e.id === id);
-    });
-    setSelectedEvents(newSelectedEvents);
-  };
-
-  const handleRemove = async (eventId) => {
-    try {
-      const response = await fetch('http://localhost:5000/api/patient_traumatic_event', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ patient_uuid: patient.uuid, event_id: eventId }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      setAssignedEvents(prev => prev.filter(e => e.id !== eventId));
-      setSelectedEvents(prev => prev.filter(id => id !== eventId));
-    } catch (error) {
-      console.error('Error removing traumatic event:', error);
-    }
+  const handleToggleEvent = (eventId) => {
+    setSelectedEvents((prevSelected) =>
+      prevSelected.includes(eventId)
+        ? prevSelected.filter(id => id !== eventId)
+        : [...prevSelected, eventId]
+    );
   };
 
   const handleConfirm = async () => {
@@ -108,7 +71,6 @@ const AssignTraumaticEventsDialog = ({ open, onClose, patient, onAssign }) => {
         throw new Error('Network response was not ok');
       }
 
-      const data = await response.json();
       onAssign();
       onClose();
     } catch (error) {
@@ -116,43 +78,50 @@ const AssignTraumaticEventsDialog = ({ open, onClose, patient, onAssign }) => {
     }
   };
 
+  const filteredEvents = allEvents.filter(e => 
+    e.name.toLowerCase().includes(searchTerm.toLowerCase()) && 
+    e.name.toLowerCase().indexOf(searchTerm.toLowerCase()) === 0 &&
+    (!showOnlyAssigned || selectedEvents.includes(e.id))
+  );
+
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Assegna Eventi Traumatici a {patient && patient.nominativo}</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Seleziona uno o più eventi traumatici da assegnare a questo paziente.
-        </DialogContentText>
-        <Autocomplete
-          multiple
-          options={allEvents}
-          getOptionLabel={(option) => option.name}
-          value={allEvents.filter(e => selectedEvents.includes(e.id) || assignedEvents.some(ae => ae.id === e.id))}
-          onChange={handleAutocompleteChange}
-          renderInput={(params) => <TextField {...params} label="Eventi Traumatici" placeholder="Seleziona eventi traumatici" />}
-          disableCloseOnSelect
-          renderOption={(props, option, { selected }) => (
-            <li {...props}>
-              <Checkbox
-                icon={icon}
-                checkedIcon={checkedIcon}
-                style={{ marginRight: 8 }}
-                checked={selected}
-                disabled={assignedEvents.some(e => e.id === option.id)}
-              />
-              {option.name}
-            </li>
-          )}
+    <Dialog open={open} onClose={onClose} className="assign-dialog">
+      <DialogTitle className="assign-dialog-title">Assegna Eventi Traumatici a {patient && patient.nominativo}</DialogTitle>
+      <DialogContent className="assign-dialog-content">
+        <div className="search-bar">
+          <SearchIcon />
+          <TextField
+            label="Cerca eventi traumatici..."
+            variant="outlined"
+            fullWidth
+            margin="dense"
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={showOnlyAssigned}
+              onChange={(e) => setShowOnlyAssigned(e.target.checked)}
+              color="primary"
+            />
+          }
+          label="Mostra solo assegnate"
+          className="assign-dialog-switch"
         />
-        <Typography variant="h6" style={{ marginTop: '16px' }}>Eventi Traumatici Assegnati</Typography>
-        {assignedEvents.map((event) => (
-          <div key={event.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography>{event.name}</Typography>
-            <IconButton onClick={() => handleRemove(event.id)} size="small">
-              <CloseIcon />
-            </IconButton>
-          </div>
-        ))}
+        <DialogContentText className="assign-dialog-text">
+          Eventi Traumatici
+        </DialogContentText>
+        <div className="pathology-list">
+          {filteredEvents.map((event) => (
+            <div key={event.id} className={`pathology-item ${selectedEvents.includes(event.id) ? 'selected' : ''}`}>
+              <div className="checkbox" onClick={() => handleToggleEvent(event.id)}>
+                {selectedEvents.includes(event.id) && <span className="checkmark">✔</span>}
+              </div>
+              <Typography className="pathology-name">{event.name}</Typography>
+            </div>
+          ))}
+        </div>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
