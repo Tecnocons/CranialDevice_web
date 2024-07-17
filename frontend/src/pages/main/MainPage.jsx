@@ -3,7 +3,8 @@ import { Container, Typography, Grid, Card, CardContent, CardHeader, Button, Box
 import { useAuth } from '../../contexts/AuthContext';
 import { Bar, Line } from 'react-chartjs-2';
 import { styled } from '@mui/system';
-import { useNavigate } from 'react-router-dom'; // Importazione di useNavigate
+import { useNavigate } from 'react-router-dom';
+import mqtt from 'mqtt';
 import './MainPage.css';
 
 const primaryColor = '#EB873F';
@@ -20,9 +21,10 @@ const StyledButton = styled(Button)({
 
 const MainPage = () => {
   const { user } = useAuth();
-  const navigate = useNavigate(); // Uso di useNavigate
+  const navigate = useNavigate();
   const [monthlyMeasurements, setMonthlyMeasurements] = useState(new Array(12).fill(0));
   const [modalOpen, setModalOpen] = useState(false);
+  const [sensorStatus, setSensorStatus] = useState({});
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [
@@ -32,6 +34,10 @@ const MainPage = () => {
       { data: [], label: 'Contropressione (bar)', borderColor: 'rgba(75,192,75,1)', borderWidth: 2, fill: false },
     ]
   });
+
+  const brokerUrl = process.env.REACT_APP_MQTT_BROKER_URL;
+  const username = process.env.REACT_APP_MQTT_BROKER_USERNAME;
+  const password = process.env.REACT_APP_MQTT_BROKER_PASSWORD;
 
   useEffect(() => {
     const fetchMeasurements = async () => {
@@ -101,6 +107,58 @@ const MainPage = () => {
     setModalOpen(false);
   };
 
+  const handleCheckStatus = () => {
+    if (!user || !user.helmetId) {
+      console.error('Helmet ID is missing');
+      return;
+    }
+
+    const options = { username, password, reconnectPeriod: 1000 };
+    const client = mqtt.connect(brokerUrl, options);
+    const timeout = setTimeout(() => {
+      setSensorStatus({ error: "Helmet not connected" });
+      client.end(); // Close the connection if no response
+    }, 5000); // 5 seconds timeout
+
+    client.on('connect', () => {
+      console.log('Connected to MQTT broker');
+      client.subscribe(`caschetto/${user.helmetId}/status`, (err) => {
+        if (!err) {
+          client.publish(`caschetto/${user.helmetId}/check_status`, 'check');
+        }
+      });
+    });
+
+    client.on('message', (topic, message) => {
+      if (topic === `caschetto/${user.helmetId}/status`) {
+        const status = JSON.parse(message.toString());
+        setSensorStatus(status);
+        clearTimeout(timeout); // Clear the timeout if response is received
+        client.end(); // Close the connection after receiving the status
+      }
+    });
+
+    client.on('error', (err) => {
+      console.error('Connection error:', err);
+      clearTimeout(timeout);
+    });
+
+    client.on('close', () => {
+      console.log('Connection to MQTT broker closed');
+      clearTimeout(timeout);
+    });
+
+    client.on('offline', () => {
+      console.log('MQTT client offline');
+      clearTimeout(timeout);
+    });
+
+    client.on('reconnect', () => {
+      console.log('Reconnecting to MQTT broker...');
+      clearTimeout(timeout);
+    });
+  };
+
   const data = {
     labels: [
       'January', 'February', 'March', 'April', 'May', 'June',
@@ -158,14 +216,38 @@ const MainPage = () => {
 
           <Grid item xs={12} sm={6} md={6} className="grid-item">
             <Card className="card">
-              <CardHeader title="Ultima Misurazione" className="card-title" />
-              <CardContent>
+                          <CardContent>
                 <Typography variant="body2" className="card-text">
                   Visualizza l'ultima misurazione effettuata...
                 </Typography>
                 <StyledButton variant="contained" className="btn" onClick={handleOpenModal}>
                   Dettagli
                 </StyledButton>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={6} className="grid-item">
+            <Card className="card">
+              <CardHeader title="Stato dei Sensori" className="card-title" />
+              <CardContent>
+                <Typography variant="body2" className="card-text">
+                  Controlla lo stato dei sensori del caschetto.
+                </Typography>
+                <StyledButton variant="contained" className="btn" onClick={handleCheckStatus}>
+                  Check
+                </StyledButton>
+                <Box mt={2}>
+                  {Object.keys(sensorStatus).length > 0 && (
+                    <ul>
+                      {Object.keys(sensorStatus).map((sensor, index) => (
+                        <li key={index}>
+                          {sensor}: {sensorStatus[sensor]}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </Box>
               </CardContent>
             </Card>
           </Grid>
