@@ -6,6 +6,7 @@ import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import mqtt from 'mqtt';
 import './MainPage.css';
+import SensorsIcon from '@mui/icons-material/Sensors';  // Importa l'icona da Material-UI
 
 const primaryColor = '#EB873F';
 const darkPrimaryColor = '#CF6F2E';
@@ -24,6 +25,7 @@ const MainPage = () => {
   const navigate = useNavigate();
   const [monthlyMeasurements, setMonthlyMeasurements] = useState(new Array(12).fill(0));
   const [modalOpen, setModalOpen] = useState(false);
+  const [sensorModalOpen, setSensorModalOpen] = useState(false);
   const [sensorStatus, setSensorStatus] = useState({});
   const [chartData, setChartData] = useState({
     labels: [],
@@ -135,6 +137,7 @@ const MainPage = () => {
         setSensorStatus(status);
         clearTimeout(timeout); // Clear the timeout if response is received
         client.end(); // Close the connection after receiving the status
+        setSensorModalOpen(true); // Open modal with sensor status
       }
     });
 
@@ -157,6 +160,10 @@ const MainPage = () => {
       console.log('Reconnecting to MQTT broker...');
       clearTimeout(timeout);
     });
+  };
+
+  const handleCloseSensorModal = () => {
+    setSensorModalOpen(false);
   };
 
   const data = {
@@ -216,38 +223,14 @@ const MainPage = () => {
 
           <Grid item xs={12} sm={6} md={6} className="grid-item">
             <Card className="card">
-                          <CardContent>
+              <CardHeader title="Ultima Misurazione" className="card-title" />
+              <CardContent>
                 <Typography variant="body2" className="card-text">
                   Visualizza l'ultima misurazione effettuata...
                 </Typography>
                 <StyledButton variant="contained" className="btn" onClick={handleOpenModal}>
                   Dettagli
                 </StyledButton>
-              </CardContent>
-            </Card>
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={6} className="grid-item">
-            <Card className="card">
-              <CardHeader title="Stato dei Sensori" className="card-title" />
-              <CardContent>
-                <Typography variant="body2" className="card-text">
-                  Controlla lo stato dei sensori del caschetto.
-                </Typography>
-                <StyledButton variant="contained" className="btn" onClick={handleCheckStatus}>
-                  Check
-                </StyledButton>
-                <Box mt={2}>
-                  {Object.keys(sensorStatus).length > 0 && (
-                    <ul>
-                      {Object.keys(sensorStatus).map((sensor, index) => (
-                        <li key={index}>
-                          {sensor}: {sensorStatus[sensor]}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </Box>
               </CardContent>
             </Card>
           </Grid>
@@ -272,6 +255,13 @@ const MainPage = () => {
             </Card>
           </Grid>
         </Grid>
+
+        <div className="btn-toolset-container">
+          <div className="btn-toolset" onClick={handleCheckStatus}>
+            <SensorsIcon className="btn-icon" />
+            <span className="btn-text">Check Stato dei Sensori</span>
+          </div>
+        </div>
       </Container>
 
       <Dialog open={modalOpen} onClose={handleCloseModal} fullWidth maxWidth="md">
@@ -281,6 +271,28 @@ const MainPage = () => {
             Dettagli della misurazione
           </Typography>
           <Line data={chartData} />
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={sensorModalOpen} onClose={handleCloseSensorModal} maxWidth="sm" fullWidth={false}>
+        <DialogTitle>Stato dei Sensori</DialogTitle>
+        <DialogContent style={{ maxHeight: '80vh', minWidth: '60vw' }}>
+          <Box display="flex" justifyContent="space-between">
+            <Box>
+              {Object.keys(sensorStatus).length > 0 && (
+                <ul>
+                  {Object.keys(sensorStatus).map((sensor, index) => (
+                    <li key={index}>
+                      {sensor}: {sensorStatus[sensor]}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Box>
+            <Box>
+              <img src="/path-to-your-image.png" alt="Sensor Status" style={{ width: '100%', height: 'auto' }} />
+            </Box>
+          </Box>
         </DialogContent>
       </Dialog>
     </div>
