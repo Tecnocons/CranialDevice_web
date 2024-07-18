@@ -1,9 +1,13 @@
 .patient-info-container {
   margin-top: 20px;
+  position: relative;
+  text-align: center;
 }
 
 .back-button {
-  margin-bottom: 20px;
+  position: absolute;
+  top: 16px;
+  left: 16px;
 }
 
 .patient-header {
@@ -19,6 +23,7 @@
 
 .patient-details {
   flex-grow: 1;
+  margin-right: 100px;
 }
 
 .edit-button,
@@ -26,13 +31,55 @@
   margin-left: 10px;
 }
 
+.settings-container {
+  display: inline-flex;
+  /*align-items: center;*/
+  justify-content: flex-start;
+  cursor: pointer;
+  position: relative;
+  background-color: transparent;
+  border-radius: 20px;
+  transition: background-color 0.5s ease-in-out;
+}
+
+.settings-icon {
+  font-size: 50px;
+  transition: transform 0.5s ease-in-out;
+}
+
+.settings-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin-left: 10px;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out, margin-left 0.5s ease-in-out;
+}
+
+.settings-container:hover {
+  background-color: white;
+  padding: 10px 75px; /* Increase the padding to make the box wider */
+  align-items: flex-start;
+  
+}
+
+.settings-container:hover .settings-icon {
+  transform: translateX(-40px);
+}
+
+.settings-container:hover .settings-label {
+  opacity: 1;
+  margin-left: 25px;
+}
+
 .info-block {
   cursor: pointer;
-  transition: box-shadow 0.3s ease-in-out;
+  transition: none;
 }
 
 .info-block:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: none;
 }
 
 .info-block-content {

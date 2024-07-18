@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Grid, Paper, Typography, IconButton, Button } from '@mui/material';
+import { Container, Grid, Paper, Typography, IconButton, Box } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import SaveAltIcon from '@mui/icons-material/SaveAlt';
-import EditIcon from '@mui/icons-material/Edit';
+import SettingsIcon from '@mui/icons-material/Widgets';
 import jsPDF from 'jspdf';
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import EditIcon from '@mui/icons-material/Edit';
 import AssignPathologiesDialog from './AssignPathologiesDialog';
 import AssignSymptomsDialog from './AssignSymptomsDialog';
 import AssignTraumaticEventsDialog from './AssignTraumaticEventsDialog';
 import AssignSurgeriesDialog from './AssignSurgeriesDialog';
 import AssignTreatmentsDialog from './AssignTreatmentsDialog';
 import EditPatientDialog from './EditPatientDialog';
-import StartMeasurement from './StartMeasurement';
 import ControlPanel from './ControlPanel';
 import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import HealingIcon from '@mui/icons-material/Healing';
@@ -137,6 +137,9 @@ const PatientProfile = () => {
     doc.save(`Cartella_Clinica_${patient.nominativo}.pdf`);
   };
 
+  
+
+
   const getIcon = () => {
     if (!patient) return '👤'; // Placeholder icon if patient is null
     switch (patient.sesso) {
@@ -174,7 +177,7 @@ const PatientProfile = () => {
   const handleAssignTraumaticEventsDialogClose = () => {
     setAssignTraumaticEventsDialogOpen(false);
     fetchPatient(); // Refresh patient data after assignment
-  };
+  }; //jj
 
   const handleAssignSurgeriesDialogOpen = () => {
     setAssignSurgeriesDialogOpen(true);
@@ -245,17 +248,19 @@ const PatientProfile = () => {
                   <IconButton onClick={handleEditDialogOpen} className="edit-button">
                     <EditIcon />
                   </IconButton>
-                  <StartMeasurement patientId={uuid} deviceId={patient.device_id} />
-                  <Button variant="contained" color="primary" onClick={() => setShowMeasurements(true)}>
-                    Vedi Misurazioni
-                  </Button>
+                  <IconButton onClick={generatePDF} className="pdf-button">
+                    <SaveAltIcon />
+                  </IconButton>
                 </>
               ) : (
                 <Typography variant="body1">Loading...</Typography>
               )}
             </div>
-            <IconButton onClick={generatePDF} className="pdf-button">
-              <SaveAltIcon />
+          </Grid>
+          <Grid item xs={12} className="center">
+            <IconButton className="settings-container" onClick={() => setShowMeasurements(true)}>
+              <SettingsIcon className="settings-icon" />
+              <Typography variant="h6" className="settings-label">Gestisci</Typography>
             </IconButton>
           </Grid>
           <Grid item xs={12} md={6}>
@@ -279,7 +284,7 @@ const PatientProfile = () => {
                 <ArrowForwardIosIcon className="info-block-arrow" />
               </div>
             </Paper>
-            </Grid>
+          </Grid>
           <Grid item xs={12} md={6}>
             <Paper className="info-block" onClick={handleAssignTraumaticEventsDialogOpen}>
               <div className="info-block-content">
@@ -327,7 +332,7 @@ const PatientProfile = () => {
         <AssignTraumaticEventsDialog open={assignTraumaticEventsDialogOpen} onClose={handleAssignTraumaticEventsDialogClose} patient={patient} onAssign={fetchPatient} />
         <AssignSurgeriesDialog open={assignSurgeriesDialogOpen} onClose={handleAssignSurgeriesDialogClose} patient={patient} onAssign={fetchPatient} />
         <AssignTreatmentsDialog open={assignTreatmentsDialogOpen} onClose={handleAssignTreatmentsDialogClose} patient={patient} onAssign={fetchPatient} />
-        <EditPatientDialog open={editDialogOpen} onClose={handleEditDialogClose} onSubmit={handleEditSubmit} patient={patient} onAssign={fetchPatient} />
+        <EditPatientDialog open={editDialogOpen} onClose={handleEditDialogClose} onSubmit={handleEditSubmit} patient={patient} />
       </Container>
     </ThemeProvider>
   );

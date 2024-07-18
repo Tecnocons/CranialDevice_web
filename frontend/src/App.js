@@ -13,6 +13,7 @@ import TraumaticEvent from './pages/traumatic_events/TraumaticEventList';
 import SurgeryList from './pages/surgery/SurgeryList';
 import TreatmentList from './pages/treatments/TreatmentList';
 import LatestMeasurement from './pages/main/LatestMeasurementModal';
+import StartMeasurement from './pages/patients/StartMeasurement';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useAuth, AuthProvider, LoadingProvider, useLoading } from './contexts/AuthContext';
 import { Outlet } from 'react-router-dom';
@@ -103,6 +104,7 @@ function App() {
             <Route path="/surgeries" element={<RouteWrapper element={<SurgeryList />} />} />
             <Route path="/treatments" element={<RouteWrapper element={<TreatmentList />} />} />
             <Route path="/latest-measurement" element={<RouteWrapper element={<LatestMeasurement />} />} />
+            <Route path="/start-measurement" element={<RouteWrapper element={<StartMeasurement />} />} />
           </Route>
         </Routes>
         <LoadingIndicator />
