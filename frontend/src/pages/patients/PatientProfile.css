@@ -72,11 +72,11 @@
 }
 
 .info-block {
-  cursor: pointer;
-  transition: none;
-  border-radius: 20px;
-  transition: box-shadow 0.3s, border-radius 0.3s;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer !important;
+  transition: none !important;
+  border-radius: 20px !important;
+  transition: box-shadow 0.3s, border-radius 0.3s !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
 }
 
 .info-block:hover {
