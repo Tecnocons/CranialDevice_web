@@ -33,8 +33,7 @@
 
 .settings-container {
   display: inline-flex;
-  /*align-items: center;*/
-  justify-content: flex-start;
+  align-items: center;
   cursor: pointer;
   position: relative;
   background-color: transparent;
@@ -60,8 +59,6 @@
 .settings-container:hover {
   background-color: white;
   padding: 10px 75px; /* Increase the padding to make the box wider */
-  align-items: flex-start;
-  
 }
 
 .settings-container:hover .settings-icon {

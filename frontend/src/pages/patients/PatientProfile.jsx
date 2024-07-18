@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Grid, Paper, Typography, IconButton, Box } from '@mui/material';
+import { Container, Grid, Paper, Typography,IconButton, Box } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SettingsIcon from '@mui/icons-material/Widgets';
@@ -137,9 +137,6 @@ const PatientProfile = () => {
     doc.save(`Cartella_Clinica_${patient.nominativo}.pdf`);
   };
 
-  
-
-
   const getIcon = () => {
     if (!patient) return '👤'; // Placeholder icon if patient is null
     switch (patient.sesso) {
@@ -177,7 +174,7 @@ const PatientProfile = () => {
   const handleAssignTraumaticEventsDialogClose = () => {
     setAssignTraumaticEventsDialogOpen(false);
     fetchPatient(); // Refresh patient data after assignment
-  }; //jj
+  };
 
   const handleAssignSurgeriesDialogOpen = () => {
     setAssignSurgeriesDialogOpen(true);
@@ -226,7 +223,7 @@ const PatientProfile = () => {
     } catch (error) {
       console.error('Error updating patient:', error);
     }
-  };
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -338,5 +335,5 @@ const PatientProfile = () => {
   );
 };
 
-export default PatientProfile;
 
+export default PatientProfile;
