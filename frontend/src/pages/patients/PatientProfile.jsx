@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Grid, Paper, Typography,IconButton, Box } from '@mui/material';
+import { Container, Grid, Paper, Typography, IconButton, Box } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SettingsIcon from '@mui/icons-material/Widgets';
@@ -219,19 +219,22 @@ const PatientProfile = () => {
       }
 
       setPatient(updatedPatient);
+      // Continue from where you left off
       setEditDialogOpen(false);
     } catch (error) {
       console.error('Error updating patient:', error);
     }
-  }
+  };
 
   return (
     <ThemeProvider theme={theme}>
       <Container className="patient-info-container">
-        <IconButton onClick={() => navigate(-1)} className="back-button">
-          <ArrowBackIcon />
-        </IconButton>
         <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <IconButton onClick={() => navigate(-1)} className="back-button">
+              <ArrowBackIcon />
+            </IconButton>
+          </Grid>
           <Grid item xs={12} className="patient-header">
             <div className="patient-icon">{getIcon()}</div>
             <div className="patient-details">
@@ -323,7 +326,7 @@ const PatientProfile = () => {
           open={assignPathologiesDialogOpen}
           onClose={handleAssignPathologiesDialogClose}
           patient={patient}
-          onAssign={fetchPatient} // Pass the fetchPatient function to onAssign
+          onAssign={fetchPatient}
         />
         <AssignSymptomsDialog open={assignSymptomsDialogOpen} onClose={handleAssignSymptomsDialogClose} patient={patient} onAssign={fetchPatient} />
         <AssignTraumaticEventsDialog open={assignTraumaticEventsDialogOpen} onClose={handleAssignTraumaticEventsDialogClose} patient={patient} onAssign={fetchPatient} />
@@ -334,6 +337,5 @@ const PatientProfile = () => {
     </ThemeProvider>
   );
 };
-
 
 export default PatientProfile;

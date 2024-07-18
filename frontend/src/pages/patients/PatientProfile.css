@@ -5,9 +5,10 @@
 }
 
 .back-button {
-  position: absolute;
-  top: 16px;
-  left: 16px;
+  position: absolute !important;
+  top: 16px !important;
+  left: 16px !important;
+  z-index: 10 !important; /* Ensure it stays on top */
 }
 
 .patient-header {
@@ -36,47 +37,54 @@
   align-items: center;
   cursor: pointer;
   position: relative;
-  background-color: transparent;
-  border-radius: 20px;
-  transition: background-color 0.5s ease-in-out;
+  background-color: transparent !important;
+  border-radius: 20px !important;
+  transition: background-color 0.5s ease-in-out !important;
 }
 
 .settings-icon {
-  font-size: 50px;
-  transition: transform 0.5s ease-in-out;
+  font-size: 50px !important;
+  transition: transform 0.5s ease-in-out !important;
 }
 
 .settings-label {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  margin-left: 10px;
-  opacity: 0;
-  transition: opacity 0.5s ease-in-out, margin-left 0.5s ease-in-out;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  margin-left: 10px !important;
+  opacity: 0 !important;
+  transition: opacity 0.5s ease-in-out, margin-left 0.5s ease-in-out !important;
 }
 
 .settings-container:hover {
-  background-color: white;
-  padding: 10px 75px; /* Increase the padding to make the box wider */
+  background-color: white !important;
+  padding: 10px 75px !important; /* Increase the padding to make the box wider */
 }
 
 .settings-container:hover .settings-icon {
-  transform: translateX(-40px);
+  transform: translateX(-40px) !important;
 }
 
 .settings-container:hover .settings-label {
-  opacity: 1;
-  margin-left: 25px;
+  opacity: 1 !important;
+  margin-left: 25px !important;
 }
 
 .info-block {
   cursor: pointer;
   transition: none;
+  border-radius: 20px;
+  transition: box-shadow 0.3s, border-radius 0.3s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .info-block:hover {
-  box-shadow: none;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  border-color: black;
+  border: solid 0px;
+  width: 102%;
+  height: 102%;
 }
 
 .info-block-content {
@@ -104,7 +112,7 @@
 }
 
 .info-block button {
-  align-self: flex-end;
+  align-self: flex-end ; 
 }
 
 .patient-details h4 {
