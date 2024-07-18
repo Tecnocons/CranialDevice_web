@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Grid, Card, CardContent, CardHeader, Button, Box, Dialog, DialogTitle, DialogContent } from '@mui/material';
+import { Container, Typography, Grid, Card, CardContent, CardHeader, Button, Box, Dialog, DialogTitle, DialogContent, Slide, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { useAuth } from '../../contexts/AuthContext';
-import { Bar, Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import mqtt from 'mqtt';
 import './MainPage.css';
-import SensorsIcon from '@mui/icons-material/Sensors';  // Importa l'icona da Material-UI
+import SensorsIcon from '@mui/icons-material/Sensors'; // Importa l'icona da Material-UI
+import statusDeviceImage from '../../assets/status_device.png';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 const primaryColor = '#EB873F';
 const darkPrimaryColor = '#CF6F2E';
@@ -18,6 +22,10 @@ const StyledButton = styled(Button)({
   },
   textShadow: '-0.2px 0 #000000, 0 0.2px #000000, 0.2px 0 #000000, 0 -0.2px #000000',
   color: '#FFFFFF',
+});
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
 });
 
 const MainPage = () => {
@@ -166,6 +174,22 @@ const MainPage = () => {
     setSensorModalOpen(false);
   };
 
+  const renderStatusWithLED = (status) => {
+    const isOk = status.toUpperCase() === 'OK';
+    return (
+      <Box display="flex" alignItems="center">
+        <Typography variant="body1" style={{ fontWeight: 'bold', marginRight: '10px' }}>
+          {status.toUpperCase()}
+        </Typography>
+        {isOk ? (
+          <CheckCircleIcon style={{ color: 'green' }} />
+        ) : (
+          <CancelIcon style={{ color: 'red' }} />
+        )}
+      </Box>
+    );
+  };
+
   const data = {
     labels: [
       'January', 'February', 'March', 'April', 'May', 'June',
@@ -259,39 +283,41 @@ const MainPage = () => {
         <div className="btn-toolset-container">
           <div className="btn-toolset" onClick={handleCheckStatus}>
             <SensorsIcon className="btn-icon" />
-            <span className="btn-text">Check Stato dei Sensori</span>
+            <span className="btn-text">Check Device Status</span>
           </div>
         </div>
       </Container>
-
-      <Dialog open={modalOpen} onClose={handleCloseModal} fullWidth maxWidth="md">
-        <DialogTitle>Ultima Misurazione</DialogTitle>
-        <DialogContent>
-          <Typography variant="h6" gutterBottom>
-            Dettagli della misurazione
-          </Typography>
-          <Line data={chartData} />
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={sensorModalOpen} onClose={handleCloseSensorModal} maxWidth="sm" fullWidth={false}>
-        <DialogTitle>Stato dei Sensori</DialogTitle>
-        <DialogContent style={{ maxHeight: '80vh', minWidth: '60vw' }}>
-          <Box display="flex" justifyContent="space-between">
-            <Box>
-              {Object.keys(sensorStatus).length > 0 && (
-                <ul>
-                  {Object.keys(sensorStatus).map((sensor, index) => (
-                    <li key={index}>
-                      {sensor}: {sensorStatus[sensor]}
+      <Dialog
+        open={sensorModalOpen}
+        onClose={handleCloseSensorModal}
+        maxWidth={false}
+        TransitionComponent={Transition}
+        className="modal-animate"
+      >
+        <Box display="flex" justifyContent="space-between" alignItems="center" padding="8px 16px">
+          <IconButton edge="start" color="inherit" onClick={handleCloseSensorModal} aria-label="close">
+            <CloseIcon />
+          </IconButton>
+          <DialogTitle className="dialog-title">Stato dei Sensori</DialogTitle>
+          <span></span> {/* Placeholder to align the title to center */}
+        </Box>
+        <hr className="divider" />
+        <DialogContent style={{ maxHeight: '80vh', minWidth: '50vh', display: 'flex', justifyContent: 'space-between', padding: '20px 20px', borderRadius: '20px' }}>
+          <Box display="flex" flexDirection="column" style={{ width: '60%' }}>
+            {Object.keys(sensorStatus).length > 0 && (
+              <ul style={{ listStyleType: 'none', padding: 0 }}>
+                {Object.keys(sensorStatus).map((sensor, index) => (
+                  <Box key={index} className="status-box">
+                    <li style={{ textAlign: 'left', marginBottom: '10px', fontSize: '1.2em' }}>
+                      {sensor}:<br /> {renderStatusWithLED(sensorStatus[sensor])}
                     </li>
-                  ))}
-                </ul>
-              )}
-            </Box>
-            <Box>
-              <img src="/path-to-your-image.png" alt="Sensor Status" style={{ width: '100%', height: 'auto' }} />
-            </Box>
+                  </Box>
+                ))}
+              </ul>
+            )}
+          </Box>
+          <Box style={{ width: '48%', display: 'flex', alignItems: 'center', justifyContent: 'center', paddingLeft: '1px' }}>
+            <img src={statusDeviceImage} alt="Sensor Status" style={{ width: '100%', height: 'auto', opacity: '0.9' }} />
           </Box>
         </DialogContent>
       </Dialog>
