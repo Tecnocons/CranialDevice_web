@@ -16,7 +16,7 @@
 }
 
 .control-panel-icon {
-    font-size: 64px; /* Increase icon size */
+    font-size: 64px !important; /* Increase icon size */
     margin-bottom: 10px;
     transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
     
