@@ -4,7 +4,6 @@ import { Container, Grid, Paper, Typography, IconButton, Box } from '@mui/materi
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SettingsIcon from '@mui/icons-material/Widgets';
-import jsPDF from 'jspdf';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import EditIcon from '@mui/icons-material/Edit';
@@ -20,6 +19,7 @@ import HealingIcon from '@mui/icons-material/Healing';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import BuildIcon from '@mui/icons-material/Build';
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
+import generatePDF from './GeneratePdf';
 import './PatientProfile.css';
 import { ClipLoader } from 'react-spinners';
 import { useLoading } from '../../contexts/AuthContext';
@@ -44,6 +44,12 @@ const PatientProfile = () => {
   const navigate = useNavigate();
   const { showLoading, hideLoading, isLoading } = useLoading();
   const [patient, setPatient] = useState(null);
+  const [measurements, setMeasurements] = useState([]);
+  const [pathologies, setPathologies] = useState([]);
+  const [symptoms, setSymptoms] = useState([]);
+  const [traumaticEvents, setTraumaticEvents] = useState([]);
+  const [surgeries, setSurgeries] = useState([]);
+  const [treatments, setTreatments] = useState([]);
   const [assignPathologiesDialogOpen, setAssignPathologiesDialogOpen] = useState(false);
   const [assignSymptomsDialogOpen, setAssignSymptomsDialogOpen] = useState(false);
   const [assignTraumaticEventsDialogOpen, setAssignTraumaticEventsDialogOpen] = useState(false);
@@ -56,6 +62,7 @@ const PatientProfile = () => {
     showLoading();
     const fetchAllData = async () => {
       await fetchPatient();
+      await fetchAdditionalData();
       hideLoading();
     };
 
@@ -78,63 +85,58 @@ const PatientProfile = () => {
     }
   };
 
-  const generatePDF = () => {
-    const doc = new jsPDF();
-    doc.setFontSize(18);
-    doc.text(`Cartella Clinica di ${patient.nominativo}`, 20, 20);
+  const fetchAdditionalData = async () => {
+    try {
+      const [pathologiesRes, symptomsRes, traumaticEventsRes, surgeriesRes, treatmentsRes] = await Promise.all([
+        fetch(`http://localhost:5000/api/patient_pathology/${uuid}`, { credentials: 'include' }),
+        fetch(`http://localhost:5000/api/patient_symptom/${uuid}`, { credentials: 'include' }),
+        fetch(`http://localhost:5000/api/patient_traumatic_event/${uuid}`, { credentials: 'include' }),
+        fetch(`http://localhost:5000/api/patient_surgery/${uuid}`, { credentials: 'include' }),
+        fetch(`http://localhost:5000/api/patient_treatment/${uuid}`, { credentials: 'include' }),
+      ]);
 
-    doc.setFontSize(14);
-    doc.text('Informazioni del Paziente', 20, 30);
-    doc.setFontSize(12);
-    doc.text(`Nome: ${patient.nominativo}`, 20, 40);
-    doc.text(`Età: ${patient.eta}`, 20, 50);
-    doc.text(`Altezza: ${patient.altezza}`, 20, 60);
-    doc.text(`Peso: ${patient.peso}`, 20, 70);
-    doc.text(`Sesso: ${patient.sesso}`, 20, 80);
+      const [pathologiesData, symptomsData, traumaticEventsData, surgeriesData, treatmentsData] = await Promise.all([
+        pathologiesRes.json(),
+        symptomsRes.json(),
+        traumaticEventsRes.json(),
+        surgeriesRes.json(),
+        treatmentsRes.json(),
+      ]);
 
-    doc.setFontSize(14);
-    doc.text('Misurazioni', 20, 90);
-    doc.setFontSize(12);
-    measurements.forEach((measurement, index) => {
-      doc.text(`${measurement.date}: ${measurement.value}`, 20, 100 + index * 10);
-    });
+      setPathologies(pathologiesData);
+      setSymptoms(symptomsData);
+      setTraumaticEvents(traumaticEventsData);
+      setSurgeries(surgeriesData);
+      setTreatments(treatmentsData);
+    } catch (error) {
+      console.error('Error fetching additional data:', error);
+    }
+  };
 
-    doc.setFontSize(14);
-    doc.text('Patologie', 20, 110 + measurements.length * 10);
-    doc.setFontSize(12);
-    pathologies.forEach((pathology, index) => {
-      doc.text(pathology.name, 20, 120 + measurements.length * 10 + index * 10);
-    });
+  const handleEditSubmit = async (updatedPatient) => {
+    try {
+      const updatedPatientWithUuid = {
+        ...updatedPatient,
+        uuid: patient.uuid // Assicurati che l'UUID sia incluso
+      };
+      const response = await fetch(`http://localhost:5000/api/patients`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(updatedPatientWithUuid),
+      });
 
-    doc.setFontSize(14);
-    doc.text('Sintomi', 20, 130 + measurements.length * 10 + pathologies.length * 10);
-    doc.setFontSize(12);
-    symptoms.forEach((symptom, index) => {
-      doc.text(symptom.name, 20, 140 + measurements.length * 10 + pathologies.length * 10 + index * 10);
-    });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
 
-    doc.setFontSize(14);
-    doc.text('Eventi Traumatici', 20, 150 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10);
-    doc.setFontSize(12);
-    traumaticEvents.forEach((event, index) => {
-      doc.text(event.name, 20, 160 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + index * 10);
-    });
-
-    doc.setFontSize(14);
-    doc.text('Interventi', 20, 170 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10);
-    doc.setFontSize(12);
-    surgeries.forEach((surgery, index) => {
-      doc.text(surgery.name, 20, 180 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10 + index * 10);
-    });
-
-    doc.setFontSize(14);
-    doc.text('Trattamenti', 20, 190 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10 + surgeries.length * 10);
-    doc.setFontSize(12);
-    treatments.forEach((treatment, index) => {
-      doc.text(treatment.name, 20, 200 + measurements.length * 10 + pathologies.length * 10 + symptoms.length * 10 + traumaticEvents.length * 10 + surgeries.length * 10 + index * 10);
-    });
-
-    doc.save(`Cartella_Clinica_${patient.nominativo}.pdf`);
+      setPatient(updatedPatientWithUuid);
+      setEditDialogOpen(false);
+    } catch (error) {
+      console.error('Error updating patient:', error);
+    }
   };
 
   const getIcon = () => {
@@ -203,34 +205,11 @@ const PatientProfile = () => {
     fetchPatient(); // Refresh patient data
   };
 
-  const handleEditSubmit = async (updatedPatient) => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/patients`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(updatedPatient),
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-
-      setPatient(updatedPatient);
-      // Continue from where you left off
-      setEditDialogOpen(false);
-    } catch (error) {
-      console.error('Error updating patient:', error);
-    }
-  };
-
   return (
     <ThemeProvider theme={theme}>
       <Container className="patient-info-container">
         <Grid container spacing={3}>
-          <Grid item xs={12}>
+          <Grid item xs={12} className="back-button-container">
             <IconButton onClick={() => navigate(-1)} className="back-button">
               <ArrowBackIcon />
             </IconButton>
@@ -248,7 +227,7 @@ const PatientProfile = () => {
                   <IconButton onClick={handleEditDialogOpen} className="edit-button">
                     <EditIcon />
                   </IconButton>
-                  <IconButton onClick={generatePDF} className="pdf-button">
+                  <IconButton onClick={() => generatePDF(patient, measurements, pathologies, symptoms, traumaticEvents, surgeries, treatments)} className="pdf-button">
                     <SaveAltIcon />
                   </IconButton>
                 </>
@@ -328,14 +307,40 @@ const PatientProfile = () => {
           patient={patient}
           onAssign={fetchPatient}
         />
-        <AssignSymptomsDialog open={assignSymptomsDialogOpen} onClose={handleAssignSymptomsDialogClose} patient={patient} onAssign={fetchPatient} />
-        <AssignTraumaticEventsDialog open={assignTraumaticEventsDialogOpen} onClose={handleAssignTraumaticEventsDialogClose} patient={patient} onAssign={fetchPatient} />
-        <AssignSurgeriesDialog open={assignSurgeriesDialogOpen} onClose={handleAssignSurgeriesDialogClose} patient={patient} onAssign={fetchPatient} />
-        <AssignTreatmentsDialog open={assignTreatmentsDialogOpen} onClose={handleAssignTreatmentsDialogClose} patient={patient} onAssign={fetchPatient} />
-        <EditPatientDialog open={editDialogOpen} onClose={handleEditDialogClose} onSubmit={handleEditSubmit} patient={patient} />
+        <AssignSymptomsDialog
+          open={assignSymptomsDialogOpen}
+          onClose={handleAssignSymptomsDialogClose}
+          patient={patient}
+          onAssign={fetchPatient}
+        />
+        <AssignTraumaticEventsDialog
+          open={assignTraumaticEventsDialogOpen}
+          onClose={handleAssignTraumaticEventsDialogClose}
+          patient={patient}
+          onAssign={fetchPatient}
+        />
+        <AssignSurgeriesDialog
+          open={assignSurgeriesDialogOpen}
+          onClose={handleAssignSurgeriesDialogClose}
+          patient={patient}
+          onAssign={fetchPatient}
+        />
+        <AssignTreatmentsDialog
+          open={assignTreatmentsDialogOpen}
+          onClose={handleAssignTreatmentsDialogClose}
+          patient={patient}
+          onAssign={fetchPatient}
+        />
+        <EditPatientDialog
+          open={editDialogOpen}
+          onClose={handleEditDialogClose}
+          onEditSubmit={handleEditSubmit}
+          patient={patient}
+        />
       </Container>
     </ThemeProvider>
   );
 };
 
 export default PatientProfile;
+

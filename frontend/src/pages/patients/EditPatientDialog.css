@@ -1,0 +1,51 @@
+.dialog-title {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    font-size: 24px !important;
+    font-weight: bold !important;
+    margin-bottom: 16px !important;
+    position: relative !important;
+  }
+  
+  .dialog-title::after {
+    content: '';
+    display: block;
+    width: 80%;
+    height: 2px;
+    background: linear-gradient(to right, #1976d2, #63a4ff);
+    position: absolute;
+    bottom: -8px;
+  }
+  
+  .dialog-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  
+  .text-field-container {
+    display: flex;
+    align-items: center;
+    width: calc(50% - 16px); /* Two text fields per row */
+  }
+  
+  .text-field-container .MuiTextField-root {
+    flex-grow: 1;
+  }
+  
+  .text-field-icon {
+    margin-right: 8px;
+  }
+  
+  .dialog-actions {
+    display: flex;
+    justify-content: space-between;
+    padding: 16px;
+  }
+  
+  .dialog-actions .MuiButton-root {
+    width: 45%;
+    font-weight: bold;
+  }
+  
