@@ -6,8 +6,9 @@ import { Bar } from 'react-chartjs-2';
 import { styled } from '@mui/system';
 import { useNavigate } from 'react-router-dom';
 import mqtt from 'mqtt';
+import LatestMeasurementModal from './LatestMeasurementModal'; // Importa il componente modale
 import './MainPage.css';
-import SensorsIcon from '@mui/icons-material/Sensors'; // Importa l'icona da Material-UI
+import SensorsIcon from '@mui/icons-material/Sensors'; 
 import statusDeviceImage from '../../assets/status_device.png';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -44,6 +45,7 @@ const MainPage = () => {
       { data: [], label: 'Contropressione (bar)', borderColor: 'rgba(75,192,75,1)', borderWidth: 2, fill: false },
     ]
   });
+  const [latestMeasurementOpen, setLatestMeasurementOpen] = useState(false); // Stato per la finestra modale
 
   const brokerUrl = process.env.REACT_APP_MQTT_BROKER_URL;
   const username = process.env.REACT_APP_MQTT_BROKER_USERNAME;
@@ -78,43 +80,11 @@ const MainPage = () => {
   }, [user]);
 
   const handleOpenModal = async () => {
-    setModalOpen(true);
-    try {
-      const response = await fetch('http://localhost:5000/api/measurements/latest', {
-        method: 'GET',
-        credentials: 'include',
-      });
-      const latestMeasurement = await response.json();
-      const measurementId = latestMeasurement.measurement_id;
-
-      const responseAll = await fetch(`http://localhost:5000/api/measurements/by_measurement_id/${measurementId}`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      const data = await responseAll.json();
-
-      const labels = data.map((measurement) => new Date(measurement.timestamp).toLocaleTimeString());
-      const forzaData = data.map((measurement) => measurement.forza_n);
-      const spostamentoData = data.map((measurement) => measurement.spostamento_mm);
-      const pressioneData = data.map((measurement) => measurement.pressione_bar);
-      const contropressioneData = data.map((measurement) => measurement.contropressione_bar);
-
-      setChartData({
-        labels,
-        datasets: [
-          { data: forzaData, label: 'Forza (N)', borderColor: 'rgba(75,192,192,1)', borderWidth: 2, fill: false },
-          { data: spostamentoData, label: 'Spostamento (mm)', borderColor: 'rgba(192,75,75,1)', borderWidth: 2, fill: false },
-          { data: pressioneData, label: 'Pressione (bar)', borderColor: 'rgba(75,75,192,1)', borderWidth: 2, fill: false },
-          { data: contropressioneData, label: 'Contropressione (bar)', borderColor: 'rgba(75,192,75,1)', borderWidth: 2, fill: false },
-        ]
-      });
-    } catch (error) {
-      console.error('Error fetching latest measurement:', error);
-    }
+    setLatestMeasurementOpen(true); // Apri la finestra modale
   };
 
   const handleCloseModal = () => {
-    setModalOpen(false);
+    setLatestMeasurementOpen(false); // Chiudi la finestra modale
   };
 
   const handleCheckStatus = () => {
@@ -321,6 +291,7 @@ const MainPage = () => {
           </Box>
         </DialogContent>
       </Dialog>
+      <LatestMeasurementModal open={latestMeasurementOpen} handleClose={handleCloseModal} />
     </div>
   );
 };
