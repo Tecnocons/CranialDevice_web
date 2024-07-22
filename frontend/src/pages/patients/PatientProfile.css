@@ -8,7 +8,36 @@
   position: absolute !important;
   top: 16px !important;
   left: 16px !important;
-  z-index: 10 !important; /* Ensure it stays on top */
+  z-index: 10 !important;
+  background: transparent !important;
+}
+
+.back-button .MuiSvgIcon-root {
+  font-size: 50px !important;
+}
+
+@keyframes slideOutIn {
+  0%, 100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  25% {
+    transform: translateX(-50%);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  75% {
+    transform: translateX(50%);
+    opacity: 0;
+  }
+}
+
+.back-button:hover .MuiSvgIcon-root {
+  animation: slideOutIn 2.5s infinite;
+  animation-timing-function: ease-in-out;
 }
 
 .patient-header {
@@ -18,18 +47,109 @@
 }
 
 .patient-icon {
-  font-size: 50px;
+  font-size: 100px;
   margin-right: 20px;
 }
 
 .patient-details {
   flex-grow: 1;
-  margin-right: 100px;
+  margin-right: 150px;
+  position: relative;
 }
 
-.edit-button,
+.edit-button-wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+.edit-button {
+  position: relative;
+  overflow: visible;
+  background: transparent !important;
+}
+
+.pencil-icon {
+  font-size: 45px !important;
+  transition: none !important;
+  background: transparent !important;
+}
+
+@keyframes writeLine {
+  0% {
+    transform: translate(0, 0) rotate(0);
+  }
+  40% {
+    transform: translate(-60px, -10px) rotate(-45deg);
+  }
+  60% {
+    transform: translate(-60px, -10px) rotate(-45deg);
+  }
+  80% {
+    transform: translate(-60px, -10px);
+  }
+  100% {
+    transform: translate(0, 0) rotate(0);
+  }
+}
+
+@keyframes drawLine {
+  0% {
+    width: 0;
+  }
+  60% {
+    width: 0;
+  }
+  100% {
+    width: 60px;
+  }
+}
+
+.edit-button .line {
+  position: absolute;
+  bottom: 10px;
+  left: -60px;
+  width: 0;
+  height: 2px;
+  background-color: lightgray;
+  opacity: 0;
+}
+
+.edit-button-wrapper:hover .line {
+  animation: drawLine 3s;
+  animation-delay: 1.3s;
+  opacity: 1;
+}
+
+.edit-button-wrapper:hover .pencil-icon {
+  animation: writeLine 4s;
+  background: transparent !important;
+}
+
 .pdf-button {
   margin-left: 10px;
+  margin-top: 20px;
+  position: relative;
+  overflow: visible;
+  background: transparent !important;
+}
+
+.pdf-button .MuiSvgIcon-root {
+  font-size: 45px !important; /* Make the PDF icon larger */
+  transition: none !important;
+  background: transparent !important;
+}
+
+@keyframes downloadBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.pdf-button:hover .MuiSvgIcon-root {
+  animation: downloadBounce 1s infinite;
 }
 
 .settings-container {
@@ -59,7 +179,7 @@
 
 .settings-container:hover {
   background-color: white !important;
-  padding: 10px 75px !important; /* Increase the padding to make the box wider */
+  padding: 10px 75px !important;
 }
 
 .settings-container:hover .settings-icon {
@@ -112,7 +232,7 @@
 }
 
 .info-block button {
-  align-self: flex-end ; 
+  align-self: flex-end;
 }
 
 .patient-details h4 {

@@ -224,9 +224,12 @@ const PatientProfile = () => {
                   <Typography variant="body1">Altezza: {patient.altezza}</Typography>
                   <Typography variant="body1">Peso: {patient.peso}</Typography>
                   <Typography variant="body1">Sesso: {patient.sesso}</Typography>
-                  <IconButton onClick={handleEditDialogOpen} className="edit-button">
-                    <EditIcon />
-                  </IconButton>
+                  <div className="edit-button-wrapper">
+                    <IconButton onClick={handleEditDialogOpen} className="edit-button">
+                      <EditIcon className="pencil-icon" />
+                      <div className="line"></div>
+                    </IconButton>
+                  </div>
                   <IconButton onClick={() => generatePDF(patient, measurements, pathologies, symptoms, traumaticEvents, surgeries, treatments)} className="pdf-button">
                     <SaveAltIcon />
                   </IconButton>
