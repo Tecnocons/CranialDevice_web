@@ -23,14 +23,13 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData) => {
-    if (!userData.helmetId) {
-      console.error("helmetId is missing in userData");
+    if (!userData.helmetId || !userData.uuid) {
+      console.error("helmetId or userID is missing in userData");
       return;
     }
     localStorage.setItem('user', JSON.stringify(userData));
     setUser(userData);
   };
-  
 
   const logout = () => {
     localStorage.removeItem('user');

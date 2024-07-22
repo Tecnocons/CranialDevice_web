@@ -17,6 +17,7 @@ def login():
         return jsonify({
             'name': user.name,
             'isAdmin': user.isadmin,
-            'helmetId': user.helmetId  # Ensure helmetId is included
+            'helmetId': user.helmetId,  # Ensure helmetId is included
+            'uuid': user.uuid
         }), 200
     return jsonify({'message': 'Invalid credentials'}), 401

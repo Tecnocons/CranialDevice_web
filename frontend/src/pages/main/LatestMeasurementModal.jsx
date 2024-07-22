@@ -1,67 +1,109 @@
 import React, { useEffect, useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, Typography } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, IconButton, Typography } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { Line } from 'react-chartjs-2';
 
-const LatestMeasurementModal = ({ open, handleClose }) => {
-  const [chartData, setChartData] = useState({
-    labels: [],
-    datasets: [
-      { data: [], label: 'Forza (N)', borderColor: 'rgba(75,192,192,1)', borderWidth: 2, fill: false },
-      { data: [], label: 'Spostamento (mm)', borderColor: 'rgba(192,75,75,1)', borderWidth: 2, fill: false },
-      { data: [], label: 'Pressione (bar)', borderColor: 'rgba(75,75,192,1)', borderWidth: 2, fill: false },
-      { data: [], label: 'Contropressione (bar)', borderColor: 'rgba(75,192,75,1)', borderWidth: 2, fill: false },
-    ]
-  });
+const LatestMeasurementModal = ({ open, handleClose, uuid }) => {
+  const [chartData, setChartData] = useState({});
 
   useEffect(() => {
     if (open) {
-      const fetchLatestMeasurement = async () => {
-        try {
-          const response = await fetch('http://localhost:5000/api/measurements/latest', {
-            method: 'GET',
-            credentials: 'include',
-          });
-          const latestMeasurement = await response.json();
-          const measurementId = latestMeasurement.measurement_id;
-
-          const responseAll = await fetch(`http://localhost:5000/api/measurements/by_measurement_id/${measurementId}`, {
-            method: 'GET',
-            credentials: 'include',
-          });
-          const data = await responseAll.json();
-
-          const labels = data.map((measurement) => new Date(measurement.timestamp).toLocaleTimeString());
-          const forzaData = data.map((measurement) => measurement.forza_n);
-          const spostamentoData = data.map((measurement) => measurement.spostamento_mm);
-          const pressioneData = data.map((measurement) => measurement.pressione_bar);
-          const contropressioneData = data.map((measurement) => measurement.contropressione_bar);
-
-          setChartData({
-            labels,
-            datasets: [
-              { data: forzaData, label: 'Forza (N)', borderColor: 'rgba(75,192,192,1)', borderWidth: 2, fill: false },
-              { data: spostamentoData, label: 'Spostamento (mm)', borderColor: 'rgba(192,75,75,1)', borderWidth: 2, fill: false },
-              { data: pressioneData, label: 'Pressione (bar)', borderColor: 'rgba(75,75,192,1)', borderWidth: 2, fill: false },
-              { data: contropressioneData, label: 'Contropressione (bar)', borderColor: 'rgba(75,192,75,1)', borderWidth: 2, fill: false },
-            ]
-          });
-        } catch (error) {
-          console.error('Error fetching latest measurement:', error);
-        }
-      };
-
       fetchLatestMeasurement();
     }
   }, [open]);
 
+  const fetchLatestMeasurement = async () => {
+    if (!uuid) {
+      console.error('User ID is missing');
+      return;
+    }
+  
+    try {
+      // Fetch all measurements for the doctor's patients
+      const measurementResponse = await fetch(`http://localhost:5000/api/doctor_measurements/${uuid}`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      const measurements = await measurementResponse.json();
+  
+      // Find the latest measurement_id among all patients
+      const latestMeasurement = measurements.reduce((latest, current) => {
+        if (!latest || new Date(current.timestamp) > new Date(latest.timestamp)) {
+          return current;
+        }
+        return latest;
+      }, null);
+  
+      if (!latestMeasurement) {
+        setChartData({});
+        return;
+      }
+  
+      // Filter measurements by the latest measurement_id
+      const latestMeasurementId = latestMeasurement.measurement_id;
+      const latestMeasurements = measurements.filter(measurement => measurement.measurement_id === latestMeasurementId);
+  
+      // Prepare the chart data
+      const labels = latestMeasurements.map(measurement => new Date(measurement.timestamp).toLocaleString());
+      const spostamentoData = latestMeasurements.map(measurement => measurement.spostamento_mm);
+      const forzaData = latestMeasurements.map(measurement => measurement.forza_n);
+      const pressioneData = latestMeasurements.map(measurement => measurement.pressione_bar);
+      const contropressioneData = latestMeasurements.map(measurement => measurement.contropressione_bar);
+  
+      const data = {
+        labels,
+        datasets: [
+          {
+            label: 'Spostamento (mm)',
+            data: spostamentoData,
+            borderColor: 'rgba(75,192,192,1)',
+            borderWidth: 2,
+            fill: false,
+          },
+          {
+            label: 'Forza (N)',
+            data: forzaData,
+            borderColor: 'rgba(192,75,75,1)',
+            borderWidth: 2,
+            fill: false,
+          },
+          {
+            label: 'Pressione (bar)',
+            data: pressioneData,
+            borderColor: 'rgba(75,75,192,1)',
+            borderWidth: 2,
+            fill: false,
+          },
+          {
+            label: 'Contropressione (bar)',
+            data: contropressioneData,
+            borderColor: 'rgba(75,192,75,1)',
+            borderWidth: 2,
+            fill: false,
+          },
+        ],
+      };
+  
+      setChartData(data);
+    } catch (error) {
+      console.error('Error fetching latest measurement:', error);
+    }
+  };
+
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
-      <DialogTitle>Ultima Misurazione</DialogTitle>
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <DialogTitle>
+        Ultima Misurazione
+        <IconButton onClick={handleClose} style={{ position: 'absolute', right: 8, top: 8 }}>
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
       <DialogContent>
-        <Typography variant="h6" gutterBottom>
-          Dettagli della misurazione
-        </Typography>
-        <Line data={chartData} />
+        {chartData.labels ? (
+          <Line data={chartData} options={{ responsive: true, maintainAspectRatio: false }} />
+        ) : (
+          <Typography variant="body1">Nessuna misurazione trovata.</Typography>
+        )}
       </DialogContent>
     </Dialog>
   );

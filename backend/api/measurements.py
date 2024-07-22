@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from models import db
 from models.measurements import Measurement
-
+from models.patient import Patients
 measurement_bp = Blueprint('measurement', __name__)
 
 @measurement_bp.route('/measurements', methods=['POST'])
@@ -121,11 +121,17 @@ def get_latest_measurement():
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
-"""@measurement_bp.route('/doctor_measurements/<doctor_id>', methods=['GET'])
+@measurement_bp.route('/doctor_measurements/<doctor_id>', methods=['GET'])
 @login_required
 def get_doctor_measurements(doctor_id):
     try:
-        measurements = Measurement.query.filter_by(doctor_id=doctor_id).all()
+        # Ottieni la lista dei pazienti associati al dottore
+        patients = Patients.query.filter_by(doctorid=doctor_id).all()
+        patient_ids = [patient.uuid for patient in patients]
+
+        # Ottieni tutte le misurazioni per i pazienti del dottore
+        measurements = Measurement.query.filter(Measurement.patient_id.in_(patient_ids)).all()
+
         results = []
         for measurement in measurements:
             results.append({
@@ -135,12 +141,13 @@ def get_doctor_measurements(doctor_id):
                 "spostamento_mm": measurement.spostamento_mm,
                 "forza_n": measurement.forza_n,
                 "pressione_bar": measurement.pressione_bar,
-                "contropressione_bar": measurement.contropressione_bar
+                "contropressione_bar": measurement.contropressione_bar,
+                "patient_id": measurement.patient_id
             })
         return jsonify(results), 200
     except Exception as e:
-        return jsonify({"message": "An error occurred", "error": str(e)}), 500"""
-
+        return jsonify({"message": "An error occurred", "error": str(e)}), 500
+    
 '''@measurement_bp.route('/measurements/measurement/<measurement_id>', methods=['GET'])
 @login_required
 def get_measurements_by_measurement_id(measurement_id):

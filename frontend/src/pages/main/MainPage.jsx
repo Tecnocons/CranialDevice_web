@@ -53,10 +53,10 @@ const MainPage = () => {
 
   useEffect(() => {
     const fetchMeasurements = async () => {
-      if (!user || !user.id) return;
+      if (!user || !user.uuid) return;
 
       try {
-        const response = await fetch(`http://localhost:5000/api/doctor_measurements/${user.id}`, {
+        const response = await fetch(`http://localhost:5000/api/doctor_measurements/${user.uuid}`, {
           method: 'GET',
           credentials: 'include',
         });
@@ -74,14 +74,23 @@ const MainPage = () => {
       }
     };
 
-    if (user && user.id) {
+    if (user && user.uuid) {
       fetchMeasurements();
     }
   }, [user]);
 
   const handleOpenModal = async () => {
+    console.log('handleOpenModal called');
+    console.log('Current user object:', user); // Debug statement
+  
+    if (!user || !user.uuid) {
+      console.error('User ID is missing');
+      return;
+    }
+  
     setLatestMeasurementOpen(true); // Apri la finestra modale
   };
+  
 
   const handleCloseModal = () => {
     setLatestMeasurementOpen(false); // Chiudi la finestra modale
@@ -291,7 +300,7 @@ const MainPage = () => {
           </Box>
         </DialogContent>
       </Dialog>
-      <LatestMeasurementModal open={latestMeasurementOpen} handleClose={handleCloseModal} />
+      <LatestMeasurementModal open={latestMeasurementOpen} handleClose={handleCloseModal} uuid={user.uuid} />
     </div>
   );
 };

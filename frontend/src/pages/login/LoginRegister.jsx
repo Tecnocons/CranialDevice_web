@@ -139,10 +139,12 @@ function LoginRegister() {
     setMessage(data.message);
 
     if (response.ok) {
-      if (!data.helmetId) {
-        console.error("helmetId is missing in userData");
+      console.log('Login response data:', data); // Debug statement
+
+      if (!data.helmetId || !data.uuid) {
+        console.error("helmetId or uuid is missing in userData");
       }
-      setUser({ name: data.name, isAdmin: data.isAdmin, helmetId: data.helmetId });
+      setUser({ name: data.name, isAdmin: data.isAdmin, helmetId: data.helmetId, uuid: data.uuid });
       navigate(`/main?admin=${data.isAdmin}`);
     }
   };
