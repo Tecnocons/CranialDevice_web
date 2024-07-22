@@ -19,7 +19,7 @@
 }
 
 .measurements-table {
-  width: calc(100%);
+  width: calc(100% - 150px);
 }
 
 .measurements-table th {

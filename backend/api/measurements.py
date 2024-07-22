@@ -121,7 +121,7 @@ def get_latest_measurement():
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
-@measurement_bp.route('/doctor_measurements/<doctor_id>', methods=['GET'])
+"""@measurement_bp.route('/doctor_measurements/<doctor_id>', methods=['GET'])
 @login_required
 def get_doctor_measurements(doctor_id):
     try:
@@ -139,7 +139,7 @@ def get_doctor_measurements(doctor_id):
             })
         return jsonify(results), 200
     except Exception as e:
-        return jsonify({"message": "An error occurred", "error": str(e)}), 500
+        return jsonify({"message": "An error occurred", "error": str(e)}), 500"""
 
 '''@measurement_bp.route('/measurements/measurement/<measurement_id>', methods=['GET'])
 @login_required

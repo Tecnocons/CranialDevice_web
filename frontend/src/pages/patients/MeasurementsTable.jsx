@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, IconButton, Typography, Select, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, TablePagination } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import './MeasurementsTable.css';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import './MeasurementsTable.css';
 
 const MeasurementsTable = ({ open, onClose, patientId }) => {
   const [measurements, setMeasurements] = useState([]);
@@ -96,6 +96,8 @@ const MeasurementsTable = ({ open, onClose, patientId }) => {
     setPage(0);
   };
 
+  const uniqueMeasurements = Object.values(groupedMeasurements).map(group => group[0]);
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <DialogTitle>
@@ -145,12 +147,14 @@ const MeasurementsTable = ({ open, onClose, patientId }) => {
                 <Table className="measurements-table">
                   <TableHead>
                     <TableRow>
+                      <TableCell>Measurement ID</TableCell>
                       <TableCell>Timestamp</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {filteredMeasurements.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((measurement, index) => (
+                    {uniqueMeasurements.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((measurement, index) => (
                       <TableRow key={index} onClick={() => handleMeasurementClick(measurement.measurement_id)} style={{ cursor: 'pointer' }}>
+                        <TableCell>{measurement.measurement_id}</TableCell>
                         <TableCell>{new Date(measurement.timestamp).toLocaleString()}</TableCell>
                       </TableRow>
                     ))}
@@ -160,7 +164,7 @@ const MeasurementsTable = ({ open, onClose, patientId }) => {
               <TablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"
-                count={filteredMeasurements.length}
+                count={uniqueMeasurements.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}
