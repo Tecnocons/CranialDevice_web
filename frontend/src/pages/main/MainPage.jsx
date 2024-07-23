@@ -51,29 +51,39 @@ const MainPage = () => {
   const username = process.env.REACT_APP_MQTT_BROKER_USERNAME;
   const password = process.env.REACT_APP_MQTT_BROKER_PASSWORD;
 
-  useEffect(() => {
-    const fetchMeasurements = async () => {
-      if (!user || !user.uuid) return;
+  const fetchMeasurements = async () => {
+    if (!user || !user.uuid) return;
 
-      try {
-        const response = await fetch(`http://localhost:5000/api/doctor_measurements/${user.uuid}`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-        const data = await response.json();
-        const measurementsCount = new Array(12).fill(0);
+    try {
+      const endpoint = user.isAdmin 
+        ? 'http://localhost:5000/api/measurements/all'
+        : `http://localhost:5000/api/doctor_measurements/${user.uuid}`;
 
-        data.forEach((measurement) => {
-          const month = new Date(measurement.timestamp).getMonth();
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      const data = await response.json();
+      const measurementsCount = new Array(12).fill(0);
+      const measurementIdsByMonth = new Array(12).fill(null).map(() => new Set());
+
+      data.forEach((measurement) => {
+        const month = new Date(measurement.timestamp).getMonth();
+        const measurementId = measurement.measurement_id;
+
+        if (!measurementIdsByMonth[month].has(measurementId)) {
+          measurementIdsByMonth[month].add(measurementId);
           measurementsCount[month] += 1;
-        });
+        }
+      });
 
-        setMonthlyMeasurements(measurementsCount);
-      } catch (error) {
-        console.error('Error fetching measurements:', error);
-      }
-    };
+      setMonthlyMeasurements(measurementsCount);
+    } catch (error) {
+      console.error('Error fetching measurements:', error);
+    }
+  };
 
+  useEffect(() => {
     if (user && user.uuid) {
       fetchMeasurements();
     }
@@ -91,7 +101,6 @@ const MainPage = () => {
     setLatestMeasurementOpen(true); // Apri la finestra modale
   };
   
-
   const handleCloseModal = () => {
     setLatestMeasurementOpen(false); // Chiudi la finestra modale
   };
@@ -179,7 +188,7 @@ const MainPage = () => {
         label: 'Treatments',
         backgroundColor: '#155677',
         borderColor: '#123456',
-        borderWidth: 1,
+        borderWidth: 2,
         hoverBackgroundColor: '#123456',
         hoverBorderColor: '#123456',
         data: monthlyMeasurements,
