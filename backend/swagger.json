@@ -1,0 +1,2026 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "Medical Web App API",
+      "description": "API for Medical Web App"
+    },
+    "host": "localhost:5000",
+    "basePath": "/api",
+    "schemes": [
+      "http"
+    ],
+    "paths": {
+      "/register": {
+        "post": {
+          "summary": "Register Admin",
+          "description": "Register a new admin user.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": ["name", "password"]
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Admin registered successfully"
+            },
+            "400": {
+              "description": "User already exists or missing name/password"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/check-admin": {
+        "get": {
+          "summary": "Check Admin",
+          "description": "Check if an admin exists.",
+          "responses": {
+            "200": {
+              "description": "Admin check status",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "isFirstUser": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/add-user": {
+        "post": {
+          "summary": "Add User",
+          "description": "Add a new user.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "isadmin": {
+                    "type": "boolean"
+                  }
+                },
+                "required": ["name", "password", "isadmin"]
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "User added successfully"
+            },
+            "400": {
+              "description": "User already exists or missing fields"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/login": {
+        "post": {
+          "summary": "User Login",
+          "description": "Authenticate user and provide a token.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": ["name", "password"]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Login successful, token provided",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "isAdmin": {
+                    "type": "boolean"
+                  },
+                  "helmetId": {
+                    "type": "string"
+                  },
+                  "uuid": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Invalid credentials"
+            }
+          }
+        }
+      },
+      "/measurements": {
+        "post": {
+          "summary": "Add Measurement",
+          "description": "Add a new measurement.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patient_id": {
+                    "type": "string"
+                  },
+                  "measurement_id": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "spostamento_mm": {
+                    "type": "number"
+                  },
+                  "forza_n": {
+                    "type": "number"
+                  },
+                  "pressione_bar": {
+                    "type": "number"
+                  },
+                  "contropressione_bar": {
+                    "type": "number"
+                  }
+                },
+                "required": ["patient_id", "measurement_id", "timestamp", "spostamento_mm", "forza_n", "pressione_bar", "contropressione_bar"]
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Measurement added successfully"
+            },
+            "400": {
+              "description": "Missing fields in the request data"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Delete Measurement",
+          "description": "Delete a measurement.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "measurement_id": {
+                    "type": "string"
+                  }
+                },
+                "required": ["measurement_id"]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Measurement deleted successfully"
+            },
+            "400": {
+              "description": "Measurement ID is required"
+            },
+            "404": {
+              "description": "Measurement not found"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/measurements/{patient_id}": {
+        "get": {
+          "summary": "Get Measurements",
+          "description": "Retrieve measurements for a specific patient.",
+          "parameters": [
+            {
+              "name": "patient_id",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Measurements retrieved",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "measurement_id": {
+                      "type": "string"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "spostamento_mm": {
+                      "type": "number"
+                    },
+                    "forza_n": {
+                      "type": "number"
+                    },
+                    "pressione_bar": {
+                      "type": "number"
+                    },
+                    "contropressione_bar": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/measurements/by_measurement_id/{measurement_id}": {
+        "get": {
+          "summary": "Get Measurements by Measurement ID",
+          "description": "Retrieve measurements by measurement ID.",
+          "parameters": [
+            {
+              "name": "measurement_id",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Measurements retrieved",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "measurement_id": {
+                      "type": "string"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "spostamento_mm": {
+                      "type": "number"
+                    },
+                    "forza_n": {
+                      "type": "number"
+                    },
+                    "pressione_bar": {
+                      "type": "number"
+                    },
+                    "contropressione_bar": {
+                      "type": "number"
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "No measurements found"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/measurements/latest": {
+        "get": {
+          "summary": "Get Latest Measurement",
+          "description": "Retrieve the latest measurement.",
+          "responses": {
+            "200": {
+              "description": "Latest measurement retrieved",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "measurement_id": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "spostamento_mm": {
+                    "type": "number"
+                  },
+                  "forza_n": {
+                    "type": "number"
+                  },
+                  "pressione_bar": {
+                    "type": "number"
+                  },
+                  "contropressione_bar": {
+                    "type": "number"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "No measurements found"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/doctor_measurements/{doctor_id}": {
+        "get": {
+          "summary": "Get Doctor's Measurements",
+          "description": "Retrieve measurements for patients of a specific doctor.",
+          "parameters": [
+            {
+              "name": "doctor_id",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Measurements retrieved",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "measurement_id": {
+                      "type": "string"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "spostamento_mm": {
+                      "type": "number"
+                    },
+                    "forza_n": {
+                      "type": "number"
+                    },
+                    "pressione_bar": {
+                      "type": "number"
+                    },
+                    "contropressione_bar": {
+                      "type": "number"
+                    },
+                    "patient_id": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/pathologies": {
+        "post": {
+          "summary": "Create Pathology",
+          "description": "Create a new pathology.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                },
+                "required": ["name"]
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Pathology created successfully"
+            },
+            "400": {
+              "description": "Name is required"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        },
+        "get": {
+          "summary": "Get Pathologies",
+          "description": "Retrieve all pathologies.",
+          "responses": {
+            "200": {
+              "description": "Pathologies retrieved",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        },
+        "put": {
+          "summary": "Update Pathology",
+          "description": "Update an existing pathology.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                },
+                "required": ["id"]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Pathology updated successfully"
+            },
+            "400": {
+              "description": "ID is required"
+            },
+            "404": {
+              "description": "Pathology not found"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/pathologies/{id}": {
+        "delete": {
+          "summary": "Delete Pathology",
+          "description": "Delete an existing pathology.",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "type": "integer"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Pathology deleted successfully"
+            },
+            "404": {
+              "description": "Pathology not found"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/pathologies/bulk_delete": {
+        "delete": {
+          "summary": "Bulk Delete Pathologies",
+          "description": "Delete multiple pathologies at once.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "required": ["ids"]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Pathologies deleted successfully"
+            },
+            "400": {
+              "description": "IDs are required"
+            },
+            "404": {
+              "description": "No pathologies found for given IDs"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/patient_pathology": {
+        "post": {
+          "summary": "Assign Pathology",
+          "description": "Assign pathologies to a patient.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patient_uuid": {
+                    "type": "string"
+                  },
+                  "pathology_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "required": ["patient_uuid", "pathology_ids"]
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Pathologies assigned successfully"
+            },
+            "400": {
+              "description": "Missing fields in the request data"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Unassign Pathology",
+          "description": "Unassign a pathology from a patient.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patient_uuid": {
+                    "type": "string"
+                  },
+                  "pathology_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["patient_uuid", "pathology_id"]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Pathology unassigned successfully"
+            },
+            "400": {
+              "description": "Patient UUID and Pathology ID are required"
+            },
+            "404": {
+              "description": "PatientPathology not found"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/patient_pathology/{patient_uuid}": {
+        "get": {
+          "summary": "Get Patient Pathologies",
+          "description": "Retrieve pathologies assigned to a patient.",
+          "parameters": [
+            {
+              "name": "patient_uuid",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Pathologies retrieved",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/patients": {
+        "post": {
+          "summary": "Create Patient",
+          "description": "Create a new patient.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "eta": {
+                    "type": "integer"
+                  },
+                  "altezza": {
+                    "type": "number"
+                  },
+                  "peso": {
+                    "type": "number"
+                  },
+                  "nominativo": {
+                    "type": "string"
+                  },
+                  "sesso": {
+                    "type": "string"
+                  }
+                },
+                "required": ["eta", "altezza", "peso", "nominativo", "sesso"]
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Patient created successfully"
+            },
+            "400": {
+              "description": "Missing fields in the request data"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        },
+        "get": {
+          "summary": "Get Patients",
+          "description": "Retrieve all patients.",
+          "responses": {
+            "200": {
+              "description": "Patients retrieved",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "uuid": {
+                      "type": "string"
+                    },
+                    "eta": {
+                      "type": "integer"
+                    },
+                    "altezza": {
+                      "type": "number"
+                    },
+                    "peso": {
+                      "type": "number"
+                    },
+                    "nominativo": {
+                      "type": "string"
+                    },
+                    "sesso": {
+                      "type": "string"
+                    },
+                    "doctorid": {
+                      "type": "string"
+                    },
+                    "doctor_name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        },
+        "put": {
+          "summary": "Update Patient",
+          "description": "Update an existing patient.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "uuid": {
+                    "type": "string"
+                  },
+                  "eta": {
+                    "type": "integer"
+                  },
+                  "altezza": {
+                    "type": "number"
+                  },
+                  "peso": {
+                    "type": "number"
+                  },
+                  "nominativo": {
+                    "type": "string"
+                  },
+                  "sesso": {
+                    "type": "string"
+                  },
+                  "doctorid": {
+                    "type": "string"
+                  }
+                },
+                "required": ["uuid"]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Patient updated successfully"
+            },
+            "400": {
+              "description": "UUID is required"
+            },
+            "404": {
+              "description": "Patient not found"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/patients/{uuid}": {
+        "get": {
+          "summary": "Get Patient",
+          "description": "Retrieve details of a specific patient.",
+          "parameters": [
+            {
+              "name": "uuid",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Patient details retrieved",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "uuid": {
+                    "type": "string"
+                  },
+                  "eta": {
+                    "type": "integer"
+                  },
+                  "altezza": {
+                    "type": "number"
+                  },
+                  "peso": {
+                    "type": "number"
+                  },
+                  "nominativo": {
+                    "type": "string"
+                  },
+                  "sesso": {
+                    "type": "string"
+                  },
+                  "doctorid": {
+                    "type": "string"
+                  },
+                  "doctor_name": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Patient not found"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Delete Patient",
+          "description": "Delete an existing patient.",
+          "parameters": [
+            {
+              "name": "uuid",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Patient deleted successfully"
+            },
+            "404": {
+              "description": "Patient not found"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/patients/assigned": {
+        "get": {
+          "summary": "Get Assigned Patients",
+          "description": "Retrieve patients assigned to a specific doctor.",
+          "parameters": [
+            {
+              "name": "doctor_name",
+              "in": "query",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Assigned patients retrieved",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "uuid": {
+                      "type": "string"
+                    },
+                    "eta": {
+                      "type": "integer"
+                    },
+                    "altezza": {
+                      "type": "number"
+                    },
+                    "peso": {
+                      "type": "number"
+                    },
+                    "nominativo": {
+                      "type": "string"
+                    },
+                    "sesso": {
+                      "type": "string"
+                    },
+                    "doctorid": {
+                      "type": "string"
+                    },
+                    "doctor_name": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Doctor name is required"
+            },
+            "404": {
+              "description": "Doctor not found"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/patients/bulk_delete": {
+        "delete": {
+          "summary": "Bulk Delete Patients",
+          "description": "Delete multiple patients at once.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "uuids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": ["uuids"]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Patients deleted successfully"
+            },
+            "400": {
+              "description": "UUIDs are required"
+            },
+            "404": {
+              "description": "No patients found for given UUIDs"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/surgeries": {
+        "get": {
+          "summary": "Get Surgeries",
+          "description": "Retrieve all surgeries.",
+          "responses": {
+            "200": {
+              "description": "Surgeries retrieved",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        },
+        "post": {
+          "summary": "Create Surgery",
+          "description": "Create a new surgery.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                },
+                "required": ["name"]
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Surgery created successfully"
+            },
+            "400": {
+              "description": "Name is required"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/patient_surgery": {
+        "post": {
+          "summary": "Assign Surgery",
+          "description": "Assign surgeries to a patient.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patient_uuid": {
+                    "type": "string"
+                  },
+                  "surgery_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "required": ["patient_uuid", "surgery_ids"]
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Surgeries assigned successfully"
+            },
+            "400": {
+              "description": "Missing fields in the request data"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Unassign Surgery",
+          "description": "Unassign a surgery from a patient.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patient_uuid": {
+                    "type": "string"
+                  },
+                  "surgery_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["patient_uuid", "surgery_id"]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Surgery unassigned successfully"
+            },
+            "400": {
+              "description": "Patient UUID and Surgery ID are required"
+            },
+            "404": {
+              "description": "PatientSurgery not found"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/patient_surgery/{patient_uuid}": {
+        "get": {
+          "summary": "Get Patient Surgeries",
+          "description": "Retrieve surgeries assigned to a patient.",
+          "parameters": [
+            {
+              "name": "patient_uuid",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Surgeries retrieved",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/symptoms": {
+        "get": {
+          "summary": "Get Symptoms",
+          "description": "Retrieve all symptoms.",
+          "responses": {
+            "200": {
+              "description": "Symptoms retrieved",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        },
+        "post": {
+          "summary": "Create Symptom",
+          "description": "Create a new symptom.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                },
+                "required": ["name"]
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Symptom created successfully"
+            },
+            "400": {
+              "description": "Name is required"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        },
+        "put": {
+          "summary": "Update Symptom",
+          "description": "Update an existing symptom.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "integer"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                },
+                "required": ["id"]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Symptom updated successfully"
+            },
+            "400": {
+              "description": "ID is required"
+            },
+            "404": {
+              "description": "Symptom not found"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Delete Symptoms",
+          "description": "Delete multiple symptoms.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "required": ["ids"]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Symptoms deleted successfully"
+            },
+            "400": {
+              "description": "No IDs provided"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/patient_symptom": {
+        "post": {
+          "summary": "Assign Symptom",
+          "description": "Assign symptoms to a patient.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patient_uuid": {
+                    "type": "string"
+                  },
+                  "symptom_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "required": ["patient_uuid", "symptom_ids"]
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Symptoms assigned successfully"
+            },
+            "400": {
+              "description": "Missing fields in the request data"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Unassign Symptom",
+          "description": "Unassign a symptom from a patient.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patient_uuid": {
+                    "type": "string"
+                  },
+                  "symptom_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["patient_uuid", "symptom_id"]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Symptom unassigned successfully"
+            },
+            "400": {
+              "description": "Patient UUID and Symptom ID are required"
+            },
+            "404": {
+              "description": "PatientSymptom not found"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/patient_symptom/{patient_uuid}": {
+        "get": {
+          "summary": "Get Patient Symptoms",
+          "description": "Retrieve symptoms assigned to a patient.",
+          "parameters": [
+            {
+              "name": "patient_uuid",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Symptoms retrieved",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/traumatic_events": {
+        "get": {
+          "summary": "Get Traumatic Events",
+          "description": "Retrieve all traumatic events.",
+          "responses": {
+            "200": {
+              "description": "Traumatic events retrieved",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        },
+        "post": {
+          "summary": "Create Traumatic Event",
+          "description": "Create a new traumatic event.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                },
+                "required": ["name"]
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Traumatic event created successfully"
+            },
+            "400": {
+              "description": "Name is required"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/patient_traumatic_event": {
+        "post": {
+          "summary": "Assign Traumatic Event",
+          "description": "Assign traumatic events to a patient.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patient_uuid": {
+                    "type": "string"
+                  },
+                  "event_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "required": ["patient_uuid", "event_ids"]
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Traumatic events assigned successfully"
+            },
+            "400": {
+              "description": "Missing fields in the request data"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Unassign Traumatic Event",
+          "description": "Unassign a traumatic event from a patient.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patient_uuid": {
+                    "type": "string"
+                  },
+                  "event_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["patient_uuid", "event_id"]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Traumatic event unassigned successfully"
+            },
+            "400": {
+              "description": "Patient UUID and Traumatic Event ID are required"
+            },
+            "404": {
+              "description": "PatientTraumaticEvent not found"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/patient_traumatic_event/{patient_uuid}": {
+        "get": {
+          "summary": "Get Patient Traumatic Events",
+          "description": "Retrieve traumatic events assigned to a patient.",
+          "parameters": [
+            {
+              "name": "patient_uuid",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Traumatic events retrieved",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/treatments": {
+        "get": {
+          "summary": "Get Treatments",
+          "description": "Retrieve all treatments.",
+          "responses": {
+            "200": {
+              "description": "Treatments retrieved",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        },
+        "post": {
+          "summary": "Create Treatment",
+          "description": "Create a new treatment.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  }
+                },
+                "required": ["name"]
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Treatment created successfully"
+            },
+            "400": {
+              "description": "Name is required"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/patient_treatment": {
+        "post": {
+          "summary": "Assign Treatment",
+          "description": "Assign treatments to a patient.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patient_uuid": {
+                    "type": "string"
+                  },
+                  "treatment_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "required": ["patient_uuid", "treatment_ids"]
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Treatments assigned successfully"
+            },
+            "400": {
+              "description": "Missing fields in the request data"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Unassign Treatment",
+          "description": "Unassign a treatment from a patient.",
+          "parameters": [
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patient_uuid": {
+                    "type": "string"
+                  },
+                  "treatment_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["patient_uuid", "treatment_id"]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Treatment unassigned successfully"
+            },
+            "400": {
+              "description": "Patient UUID and Treatment ID are required"
+            },
+            "404": {
+              "description": "PatientTreatment not found"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/patient_treatment/{patient_uuid}": {
+        "get": {
+          "summary": "Get Patient Treatments",
+          "description": "Retrieve treatments assigned to a patient.",
+          "parameters": [
+            {
+              "name": "patient_uuid",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Treatments retrieved",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/users": {
+        "get": {
+          "summary": "Get Users",
+          "description": "Retrieve all users or a specific user.",
+          "parameters": [
+            {
+              "name": "uuid",
+              "in": "query",
+              "required": false,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Users retrieved",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "uuid": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "isadmin": {
+                      "type": "boolean"
+                    },
+                    "helmetId": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "User not found"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/users/{uuid}": {
+        "get": {
+          "summary": "Get User",
+          "description": "Retrieve details of a specific user.",
+          "parameters": [
+            {
+              "name": "uuid",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User details retrieved",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "uuid": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "isadmin": {
+                    "type": "boolean"
+                  },
+                  "helmetId": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "User not found"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        },
+        "put": {
+          "summary": "Update User",
+          "description": "Update details of a specific user.",
+          "parameters": [
+            {
+              "name": "uuid",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "isadmin": {
+                    "type": "boolean"
+                  },
+                  "helmetId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User updated successfully"
+            },
+            "400": {
+              "description": "User already exists"
+            },
+            "404": {
+              "description": "User not found"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      },
+      "/users/{uuid}/helmet": {
+        "put": {
+          "summary": "Update Helmet ID",
+          "description": "Update helmet ID for a specific user.",
+          "parameters": [
+            {
+              "name": "uuid",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "body",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "helmetId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Helmet ID updated successfully"
+            },
+            "400": {
+              "description": "Helmet ID already exists"
+            },
+            "404": {
+              "description": "User not found"
+            },
+            "500": {
+              "description": "An error occurred"
+            }
+          }
+        }
+      }
+    }
+  }
+  
