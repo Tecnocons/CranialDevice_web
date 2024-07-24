@@ -20,7 +20,11 @@ const ControlPanel = ({ open, onClose, patientId }) => {
   const handleOpenLatestMeasurementChart = () => setActiveDialog('latestMeasurementChart');
   const handleCloseDialog = () => setActiveDialog(null);
 
-  const handleOpenMeasurementDialog = () => setMeasurementDialogOpen(true);
+  const handleOpenMeasurementDialog = () => {
+    setActiveDialog(null); // Reset any active dialog
+    setMeasurementDialogOpen(true);
+  };
+  
   const handleCloseMeasurementDialog = () => setMeasurementDialogOpen(false);
 
   return (

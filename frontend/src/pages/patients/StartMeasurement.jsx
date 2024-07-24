@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import mqtt from 'mqtt';
-import { Button, Dialog, DialogContent, DialogTitle, MobileStepper, Typography, Box, FormGroup, FormControlLabel, Checkbox, TextField } from '@mui/material';
+import { Button, Dialog, DialogContent, DialogTitle, MobileStepper, Typography, Box, FormGroup, FormControlLabel, Checkbox, TextField, Grid } from '@mui/material';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import { Line } from 'react-chartjs-2';
-import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement, Legend, Title, Tooltip } from 'chart.js';
+import { Chart as ChartJS, LineElement, CategoryScale, LinearScale, PointElement, Legend, Title, Tooltip, TimeScale } from 'chart.js';
+import zoomPlugin from 'chartjs-plugin-zoom';
 import { useAuth } from '../../contexts/AuthContext';
 
-ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Legend, Title, Tooltip);
+ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Legend, Title, Tooltip, TimeScale, zoomPlugin);
 
 const instructions = [
   "Ensure the helmet is properly positioned.",
@@ -22,15 +23,11 @@ const StartMeasurement = ({ open, onClose, patientId }) => {
 
   const [activeStep, setActiveStep] = useState(0);
   const [data, setData] = useState([]);
-  const [chartData, setChartData] = useState({
-    labels: [],
-    datasets: [
-      { data: [], label: 'Forza (N)', borderColor: 'rgba(75,192,192,1)', borderWidth: 2, fill: false },
-      { data: [], label: 'Spostamento (mm)', borderColor: 'rgba(192,75,75,1)', borderWidth: 2, fill: false },
-      { data: [], label: 'Pressione (bar)', borderColor: 'rgba(75,75,192,1)', borderWidth: 2, fill: false },
-      { data: [], label: 'Contropressione (bar)', borderColor: 'rgba(75,192,75,1)', borderWidth: 2, fill: false },
-    ]
-  });
+  const [forzaData, setForzaData] = useState([]);
+  const [spostamentoData, setSpostamentoData] = useState([]);
+  const [pressioneData, setPressioneData] = useState([]);
+  const [contropressioneData, setContropressioneData] = useState([]);
+  const [labels, setLabels] = useState([]);
   const [measuring, setMeasuring] = useState(false);
   const [measurementComplete, setMeasurementComplete] = useState(false);
   const [client, setClient] = useState(null);
@@ -51,9 +48,8 @@ const StartMeasurement = ({ open, onClose, patientId }) => {
 
       mqttClient.on('connect', () => {
         console.log('Connected to MQTT broker');
-        console.log('user data:', user);
         const config = {
-          forza: forza,  
+          forza: forza,
           numero_cicli: numeroCicli,
           patient_id: patientId
         };
@@ -68,15 +64,11 @@ const StartMeasurement = ({ open, onClose, patientId }) => {
         try {
           const parsedData = parseMessage(messageStr);
           setData(prevData => [...prevData, parsedData]);
-          setChartData(prevChartData => ({
-            labels: [...prevChartData.labels, new Date().toLocaleTimeString()],
-            datasets: [
-              { ...prevChartData.datasets[0], data: [...prevChartData.datasets[0].data, parsedData.forza_N] },
-              { ...prevChartData.datasets[1], data: [...prevChartData.datasets[1].data, parsedData.spostamento_mm] },
-              { ...prevChartData.datasets[2], data: [...prevChartData.datasets[2].data, parsedData.pressione_bar] },
-              { ...prevChartData.datasets[3], data: [...prevChartData.datasets[3].data, parsedData.contropressione_bar] },
-            ]
-          }));
+          setLabels(prevLabels => [...prevLabels, prevLabels.length]);
+          setForzaData(prevData => [...prevData, parsedData.forza_N]);
+          setSpostamentoData(prevData => [...prevData, parsedData.spostamento_mm]);
+          setPressioneData(prevData => [...prevData, parsedData.pressione_bar]);
+          setContropressioneData(prevData => [...prevData, parsedData.contropressione_bar]);
         } catch (error) {
           console.error('Error parsing MQTT message:', error);
         }
@@ -101,6 +93,24 @@ const StartMeasurement = ({ open, onClose, patientId }) => {
       return () => mqttClient.end();
     }
   }, [measuring]);
+
+  useEffect(() => {
+    if (!open) {
+      resetState();
+    }
+  }, [open]);
+
+  const resetState = () => {
+    setActiveStep(0);
+    setData([]);
+    setForzaData([]);
+    setSpostamentoData([]);
+    setPressioneData([]);
+    setContropressioneData([]);
+    setLabels([]);
+    setMeasuring(false);
+    setMeasurementComplete(false);
+  };
 
   const parseMessage = (messageStr) => {
     const data = messageStr.split(', ').reduce((acc, curr) => {
@@ -135,33 +145,138 @@ const StartMeasurement = ({ open, onClose, patientId }) => {
   };
 
   const startMeasurementProcess = () => {
-    setOpen(true);
-    setActiveStep(0);
-    setMeasurementComplete(false);
-    setData([]);
-    setChartData({
-      labels: [],
-      datasets: [
-        { data: [], label: 'Forza (N)', borderColor: 'rgba(75,192,192,1)', borderWidth: 2, fill: false },
-        { data: [], label: 'Spostamento (mm)', borderColor: 'rgba(192,75,75,1)', borderWidth: 2, fill: false },
-        { data: [], label: 'Pressione (bar)', borderColor: 'rgba(75,75,192,1)', borderWidth: 2, fill: false },
-        { data: [], label: 'Contropressione (bar)', borderColor: 'rgba(75,192,75,1)', borderWidth: 2, fill: false },
-      ]
-    });
+    resetState();
   };
 
-  const toggleDatasetVisibility = (datasetIndex) => {
-    setVisibleDatasets(prevState => {
-      const newState = { ...prevState };
-      const key = Object.keys(visibleDatasets)[datasetIndex];
-      newState[key] = !prevState[key];
-      return newState;
-    });
+  const toggleDatasetVisibility = (datasetKey) => {
+    setVisibleDatasets(prevState => ({
+      ...prevState,
+      [datasetKey]: !prevState[datasetKey]
+    }));
   };
+
+  const renderChart = (label, data, borderColor) => (
+    <Line 
+      data={{ labels, datasets: [{ data, label, borderColor, borderWidth: 2, fill: false }] }} 
+      options={{
+        scales: {
+          x: {
+            type: 'linear',
+            position: 'bottom',
+            title: {
+              display: true,
+              text: 'Seconds'
+            }
+          }
+        },
+        plugins: {
+          zoom: {
+            pan: {
+              enabled: true,
+              mode: 'x'
+            },
+            zoom: {
+              wheel:{
+                enabled:true
+              },
+              pinch: {
+                enabled: true
+              },
+              mode: 'xy',
+            }
+          }
+        }
+      }}
+    />
+  );
+
+  const combinedChart = (
+    <Line 
+      data={{
+        labels,
+        datasets: [
+          { data: forzaData, label: 'Forza (N)', yAxisID: 'y', borderColor: 'rgba(75,192,192,1)', borderWidth: 2, fill: false },
+          { data: spostamentoData, label: 'Spostamento (mm)', yAxisID: 'y1', borderColor: 'rgba(192,75,75,1)', borderWidth: 2, fill: false },
+          { data: pressioneData, label: 'Pressione (bar)', yAxisID: 'y2', borderColor: 'rgba(75,75,192,1)', borderWidth: 2, fill: false },
+          { data: contropressioneData, label: 'Contropressione (bar)', yAxisID: 'y3', borderColor: 'rgba(75,192,75,1)', borderWidth: 2, fill: false }
+        ]
+      }}
+      options={{
+        scales: {
+          x: {
+            type: 'linear',
+            position: 'bottom',
+            title: {
+              display: true,
+              text: 'Seconds'
+            }
+          },
+          y: {
+            type: 'linear',
+            position: 'left',
+            title: {
+              display: true,
+              text: 'Forza (N)'
+            }
+          },
+          y1: {
+            type: 'linear',
+            position: 'right',
+            title: {
+              display: true,
+              text: 'Spostamento (mm)'
+            },
+            grid: {
+              drawOnChartArea: false
+            }
+          },
+          y2: {
+            type: 'linear',
+            position: 'left',
+            title: {
+              display: true,
+              text: 'Pressione (bar)'
+            },
+            grid: {
+              drawOnChartArea: false
+            }
+          },
+          y3: {
+            type: 'linear',
+            position: 'right',
+            title: {
+              display: true,
+              text: 'Contropressione (bar)'
+            },
+            grid: {
+              drawOnChartArea: false
+            }
+          }
+        },
+        plugins: {
+          zoom: {
+            pan: {
+              enabled: true,
+              mode: 'x'
+            },
+            zoom: {
+              wheel:{
+                enabled:true
+              },
+              pinch: {
+                enabled: true
+              },
+              mode: 'xy',
+            }
+          }
+        }
+      }}
+    />
+  );
 
   return (
     <div>
-      <Dialog open={open} onClose={onClose} fullWidth>
+      <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
         <DialogTitle>Istruzioni per la Misurazione</DialogTitle>
         <DialogContent>
           {!measuring && !measurementComplete && (
@@ -213,15 +328,20 @@ const StartMeasurement = ({ open, onClose, patientId }) => {
           {measuring && (
             <div>
               <Typography variant="h6">Real-Time Data</Typography>
-              {data.length > 0 && (
-                <>
-                  <Typography>Spostamento (mm): {data[data.length - 1].spostamento_mm}</Typography>
-                  <Typography>Forza (N): {data[data.length - 1].forza_N}</Typography>
-                  <Typography>Pressione (bar): {data[data.length - 1].pressione_bar}</Typography>
-                  <Typography>Contropressione (bar): {data[data.length - 1].contropressione_bar}</Typography>
-                </>
-              )}
-              <Line data={chartData} />
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={6}>
+                  {renderChart('Forza (N)', forzaData, 'rgba(75,192,192,1)')}
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  {renderChart('Spostamento (mm)', spostamentoData, 'rgba(192,75,75,1)')}
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  {renderChart('Pressione (bar)', pressioneData, 'rgba(75,75,192,1)')}
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  {renderChart('Contropressione (bar)', contropressioneData, 'rgba(75,192,75,1)')}
+                </Grid>
+              </Grid>
               <Box textAlign="center" p={2}>
                 <Button variant="contained" color="primary" onClick={handleMeasurementComplete}>
                   Stop Measurement
@@ -233,13 +353,13 @@ const StartMeasurement = ({ open, onClose, patientId }) => {
             <div>
               <Typography variant="h6">Measurement Complete</Typography>
               <FormGroup row>
-                {Object.keys(visibleDatasets).map((key, index) => (
+                {Object.keys(visibleDatasets).map((key) => (
                   <FormControlLabel
                     key={key}
                     control={
                       <Checkbox
                         checked={visibleDatasets[key]}
-                        onChange={() => toggleDatasetVisibility(index)}
+                        onChange={() => toggleDatasetVisibility(key)}
                         name={key}
                       />
                     }
@@ -247,10 +367,30 @@ const StartMeasurement = ({ open, onClose, patientId }) => {
                   />
                 ))}
               </FormGroup>
-              <Line data={{
-                labels: chartData.labels,
-                datasets: chartData.datasets.filter((_, i) => visibleDatasets[Object.keys(visibleDatasets)[i]])
-              }} />
+              <Grid container spacing={2}>
+                {visibleDatasets.forza && (
+                  <Grid item xs={12} md={6}>
+                    {renderChart('Forza (N)', forzaData, 'rgba(75,192,192,1)')}
+                  </Grid>
+                )}
+                {visibleDatasets.spostamento && (
+                  <Grid item xs={12} md={6}>
+                    {renderChart('Spostamento (mm)', spostamentoData, 'rgba(192,75,75,1)')}
+                  </Grid>
+                )}
+                {visibleDatasets.pressione && (
+                  <Grid item xs={12} md={6}>
+                    {renderChart('Pressione (bar)', pressioneData, 'rgba(75,75,192,1)')}
+                  </Grid>
+                )}
+                {visibleDatasets.contropressione && (
+                  <Grid item xs={12} md={6}>
+                    {renderChart('Contropressione (bar)', contropressioneData, 'rgba(75,192,75,1)')}
+                  </Grid>
+                )}
+              </Grid>
+              <Typography variant="h6" style={{ marginTop: '20px' }}>Combined Chart</Typography>
+              {combinedChart}
             </div>
           )}
         </DialogContent>
